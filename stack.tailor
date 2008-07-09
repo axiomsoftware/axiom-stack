@@ -1,0 +1,17 @@
+[DEFAULT]
+verbose = True
+
+[project]
+target = bzr:target
+start-revision = INITIAL
+root-directory = /cygdrive/c/dev/stack
+state-file = tailor.state
+source = svn:source
+subdir = .
+
+[bzr:target]
+
+[svn:source]
+module = axiom/trunk
+repository = http://file.axiomstack.com/public
+trust-root = True
