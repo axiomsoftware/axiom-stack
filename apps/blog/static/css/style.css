@@ -1,0 +1,130 @@
+﻿/*  General  */
+body, div, p, h1, h2, h3, ul, ol, li, form, fieldset, img {padding:0;margin:0;border:0;}
+body {background-color:#FFFFFF;font-size:66.75%;font-family:"Verdana","Arial","Helvetica",sans-serif;font-weight:400;}
+a {color:#000099;font-family:inherit;font-weight:inherit;font-size:inherit;}
+a:link, a:active, a:visited, a:hover {text-decoration:underline;}
+.keyword {font-weight:700;}
+.hidden {display:none;}
+.default_text { font-weight:700; }
+.error { color:red; font-weight:700; padding:10px 0; }
+.success { color:green; font-weight:700; padding: 10px 0; }
+
+/*  Page Wrapper  */
+.twocolwrap, .threecolwrap {width:755px;margin:0 auto;background-color:#FFFFFF;overflow:hidden;}
+.threecolwrap {width:980px;}
+
+/*  Header  */
+.header {width:755px;text-align:center;}
+.header .ad {display:none;}
+.header .vp {width:753px;height:70px;margin-top:18px;border:1px solid #888888;background-color:#EEEEEE;overflow:hidden;text-align:left;}
+.header .vp h2 {margin:25px;}
+.header .vp h2 a {color:inherit;}
+.header .vp h2 a:hover {text-decoration:none;}
+.header img {margin-top:18px;}
+.threecolwrap .header {width:980px;}
+.threecolwrap .header .ad {width:728px; height:90px; display:block;margin:10px auto;}
+.threecolwrap .header .vp {width:978px;}
+
+/*  Narrow Column  */
+.narrowcol {width:173px;font-size:0.9em;float:left;}
+.narrowcol div {padding:0.90em 15px;margin:10px 0;background-color:#DDDDDD;overflow:hidden;}
+.narrowcol ul {padding-left:15px;}
+.narrowcol h2 {font-size:1.0em;font-weight:700;}
+.narrowcol .search input {font-size:0.9em;}
+.narrowcol .search input.submit {cursor:pointer;}
+.narrowcol .recent li {padding-bottom:0.5em;}
+
+/*  Main Column  */
+.maincol {width:582px;_width:538px;padding:15px 0;_padding:15px 22px;overflow:hidden;float:left;}
+.maincol h1 {margin:0 22px 0.6em;font-size:1.3em;font-weight:700;}
+.maincol h2 {margin:0 22px 0.7em;font-size:1.15em;font-weight:500;}
+.maincol h2.current {font-size:1.3em; margin:0; padding:0;}
+.maincol h3 {margin-bottom:0.85em;font-size:1.3em;font-weight:500;}
+.maincol ul {margin:0 22px;list-style-type:none;}
+.maincol ul.comments {margin-bottom:10px;}
+.maincol li {padding:0 0 1.10em;margin-bottom:1.20em;border-bottom:1px solid #888888;overflow:hidden;}
+.maincol ul.comments li {border-bottom:0;}
+.maincol p {margin-top:0.5em;margin-bottom:1.1em;line-height:1.5em;}
+.maincol .searchPages {width:auto;text-align:center;margin-bottom:10px;}
+.maincol .byline {font-size:10px;margin:0;}
+.maincol ul li .byline {margin:0;font-size:0.95em;line-height:1.5em;}
+.maincol .links {text-align:right;margin:10px 0 0;font-size:10px; clear:both;}
+.maincol .caption {width:370px;padding:0 15px;font-size:0.90em;line-height:1.30em;}
+.maincol img.photo {margin:0 15px 2px 0;float:left;}
+.maincol img.video {margin-top:15px;}
+.maincol .fullBlog {padding-bottom:10px;margin:0 22px 10px;border-bottom:1px solid #888888;overflow:hidden;}
+.maincol .fullBlog img {float:left; margin-top:10px; margin-right:10px;}
+.maincol .fullBlog h1 {margin-left:0;}
+.maincol .fullBlog .caption  {float:left;width:240px;clear:left;}
+.maincol form {overflow:hidden;margin:0 22px;}
+.maincol form h2 {margin:10px 0;font-size:14px;}
+.maincol form .errors {overflow:hidden;_height:100%;}
+.maincol form .errors .error {width:250px;}
+.maincol form .reqname  {width:48%; float: left;}
+.maincol form .inmail  {width:48%; float: right;}
+.maincol form .reqemail {width:48%; float: right;}
+.maincol form div div input {border:1px solid #7B9EBD;width:250px;}
+.maincol form .anon div {padding: 5px 0 15px 20px;}
+.maincol form .openid div {padding: 5px 0 5px 20px;}
+.maincol form .comments {padding-top:15px;margin-bottom:15px;clear:both;}
+.maincol form textarea {width:99%;height:200px;padding:1px;border:1px solid #7B9EBD;}
+.maincol form p {margin-top:0;margin-bottom:0;}
+.maincol form p.error {margin-bottom:0;color:#FF0000;font-weight:700;}
+.maincol form p.on {display:block;}
+.maincol .submitted {padding:0; margin:0 36px 0 22px;}
+.maincol #validate {width:250px;}
+.maincol .searchTitle {margin-bottom:20px;}
+.maincol .searchTitle h1 {padding-right:1em;}
+.maincol .searchTitle h1,.maincol .searchTitle p {display:inline;margin:0;}
+.maincol ol {padding-left:25px;}
+.maincol ol h2, .maincol ol p {margin:0;}
+.maincol ol li {padding:0;margin:0 0 10px 0;border:0;overflow:visible;}
+.maincol .results li {border:0;padding:0;margin-bottom:5px;}
+.maincol .results .number {text-align:right;width:17px;float:left;margin-right:8px;}
+.maincol .results h2 {margin-bottom:0;}
+.maincol .results li > span {margin:0 0 0 25px;}
+.maincol .results li > p {margin:2px 0 0 25px;}
+.threecolwrap .maincol {width:471px;_width:424px;}
+.threecolwrap .maincol form .errors .error {width:200px;}
+.threecolwrap .maincol form input.name, .threecolwrap .maincol form input.mail {width:196px;}
+.threecolwrap .maincol form textarea {width:422px;_width:419px;}
+.maincol .paging {float:left; width:540px; height:20px;}
+.maincol .paging .paging_wrap {margin:0 auto; text-align:center; width:50%;}
+.maincol .paging .paging_wrap div {margin-left:6px; float:left;text-align:center; display:block; height:24px; width:auto;padding-top:1px;}
+.maincol .pagnig .paging_wrap div a {padding:0; line-height:1em;}
+.maincol .paging .paging_wrap .next {width:30px;}
+.maincol .paging .paging_wrap .link a {width:14px; padding-right:4px;}
+.maincol .paging .paging_wrap .link a span {color:#32519C;}
+.maincol .paging .paging_wrap .link .notselected span {width:14px; text-align:center;line-height:1em; display:block;padding:0 4px 0 0; font-size:1em;border:1px solid black; border-width:0 1px 0 0;}
+.maincol .paging .paging_wrap .link .notselected .last {border:none;line-height:1em;font-size:1em;}
+.maincol .paging .paging_wrap .link .selected span {width:14px; text-align:center;line-height:1em; display:block;padding:0 4px 0 0; font-size:1.1em;border:1px solid black; border-width:0 1px 0 0;}
+.maincol .paging .paging_wrap .link .selected .last {border:none;line-height:1em;font-size:1.1em;}
+.maincol .paging .paging_wrap .previous {width:62px;}
+.maincol .paging .paging_wrap div a {display:block; text-align:center;}
+
+/*  Wide Column  */
+.widecol {width:336px;padding:15px 0;text-align:center;overflow:hidden;}
+.widecol > * {text-align:left;overflow:hidden;}
+.widecol .recent {width:336px;margin-bottom:30px;text-align:left;}
+.widecol .recent h2 {padding:5px 5px 10px;border:1px solid #000;font-size:1em;font-weight:bold;}
+.widecol .recent ul {padding-left:30px;border:1px solid #000;border-width:0 1px 1px;font-size:0.95em;}
+.widecol .recent li {padding:5px;}
+.widecol img {margin-bottom:15px;}
+
+/*  Footer  */
+.footer {padding:10px;border-top:1px solid #888888;font-size:0.90em;clear:both;overflow:hidden;_height:100%; width:980px;}
+
+/*  Popup  */
+#opacity {width:100%;_width:200%;height:100%;_height:1000px;background-color:#c0c0c0;filter:alpha(opacity=50);-moz-opacity:.50;opacity:.50;z-index:10;position:absolute;left:0;top:0;}
+#popup {border:1px solid #808080;background:#fff;position:absolute;left:300px;top:290px;z-index:11;}
+#popup .btns {margin:1.5em 0 1em 0;clear:both; float:right;}
+#popup .btns a {padding-top: 4px;margin-left:5px;height:21px; width:40px; background:#FFF url(../images/new_btn3.gif) no-repeat;cursor:pointer;float:left;color:#12377f;text-align:center;border:0;text-decoration:none;}
+#popup .red {color:red;}
+#popup .green {color:green;}
+
+/*  Successful at publishing posting  */
+.test {width:230px; padding:1em 10px;}
+.test .header {float:left;width:230px; display:block;/*background:#EBEBEB;*/}
+.test p {clear:left;}
+.test a.close {padding:1px;background-color:#eb8b73;color:#fff;line-height:1em;float:right;}
+.test h2 {font-size:1.3em; float:left; margin-bottom:12px;}

@@ -1,0 +1,20 @@
+<html xmlns:tal="http://axiomstack.com/tale">
+  <head>
+	<link rel="icon" type="image/gif" tal:attr="href: app.getStaticMountpoint('favicon.ico')"/>
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('ext-2.0.2/resources/css/ext-all.css')" />
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('ext-2.0.2/resources/css/xtheme-gray.css')" />
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('inspector.css')" />
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/adapter/ext/ext-base.js')"/>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/ext-all.js')"/>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/docs/resources/TabCloseMenu.js')"/>
+	<script type="text/javascript" tal:text="$">
+	  Ext.BLANK_IMAGE_URL = '${app.getStaticMountpoint('ext-2.0.2/resources/images/default/s.gif')}';
+	  var apps = ${this.apps_info().toSource()};
+	</script>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('inspector.js')"/>
+	<title>Axiom Management Interface</title>
+  </head>
+  <body>
+	<div id="object_tree"></div>
+  </body>
+</html>

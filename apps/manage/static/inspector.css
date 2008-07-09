@@ -1,0 +1,6 @@
+body { font-family:tahoma,arial,helvetica,sans-serif; font-size:12px; }
+.home { padding: 10px; }
+.home p { margin: 6px 0 }
+.x-tree-node-el .object-icon {  background-image: url(ext-2.0.2/resources/images/default/tree/leaf.gif) }
+.field-wrapper, .field-wrapper input { width: 100%; }
+input.form-item-disabled { background: #eee; }

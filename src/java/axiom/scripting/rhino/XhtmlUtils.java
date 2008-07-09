@@ -1,0 +1,83 @@
+package axiom.scripting.rhino;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Scriptable;
+
+import axiom.util.XmlUtils;
+
+public class XhtmlUtils {
+
+    public static String[] getXhtmlLinks(Object xhtml) {
+    	if (xhtml instanceof Scriptable) {
+    		Scriptable sxhtml = (Scriptable) xhtml;
+    		String classname = sxhtml.getClassName().toLowerCase();
+    		if ("xml".equals(classname) || "xmllist".equals(classname)) {
+    			final String XHTML_LINKS_EVAL = 
+    				"xhtml..*.@href + xhtml..*.@src";
+
+    			Context cx = Context.getCurrentContext();
+    			ImporterTopLevel itl = new ImporterTopLevel(cx);
+    			itl.put("xhtml", itl, sxhtml);
+    			Object ret = cx.evaluateString(itl, XHTML_LINKS_EVAL, "", 0, null);
+    			itl = null;
+    			
+    			if (ret != null && ret instanceof Scriptable) {
+    				Scriptable s = (Scriptable) ret;
+    				final int length = s.getIds().length;
+    				String[] links = new String[length];
+    				for (int i = 0; i < length; i++) {
+    					links[i] = s.get(i, s).toString();
+    				}
+
+    				return links;
+    			}
+    		}
+    	}
+        
+        return new String[0];
+    }
+    
+    public static void removeLinkFromXhtml(Object xhtml, String link) {
+    	if (xhtml instanceof Scriptable) {
+    		Scriptable sxhtml = (Scriptable) xhtml;
+    		String classname = sxhtml.getClassName().toLowerCase();
+    		if ("xml".equals(classname) || "xmllist".equals(classname)) {
+    			final String XHTML_DEL_LINK = 
+    				"var link_re = new RegExp('" + link + "/?');"+ 
+    				"for each (var x in xhtml..*.(link_re.test(@href.toString() ||  @src.toString()))) { " +
+    					"x.parent().replace(x.childIndex(), x.*); " +
+    				"}";
+    			Context cx = Context.getCurrentContext();
+    			ImporterTopLevel itl = new ImporterTopLevel(cx);
+    			itl.put("xhtml", itl, sxhtml);
+    			cx.evaluateString(itl, XHTML_DEL_LINK, "", 0, null);
+    			itl = null;
+    		}
+    	}
+    }
+    
+    public static void updateLinkInXhtml(Object xhtml, String oldlink, String newlink) {
+    	if (xhtml instanceof Scriptable) {
+    		Scriptable sxhtml = (Scriptable) xhtml;
+    		String classname = sxhtml.getClassName().toLowerCase();
+    		if ("xml".equals(classname) || "xmllist".equals(classname)) {
+    			final String XHTML_DEL_LINK = 
+    				"var oldlink_re = new RegExp('" + oldlink + "/?');"+ 
+    				"for each (var x in xhtml..*.(oldlink_re.test(@href.toString() || @src.toString() || @action.toString()))) { " +
+    					"for each(var attr in ['href', 'src', 'action']){"+
+    						"if(oldlink_re.test(x.@[attr])){" +
+    							"x.@[attr] = '"+newlink+"';"+
+    						"}"+
+    					"}"+
+    				"}";
+    			Context cx = Context.getCurrentContext();
+    			ImporterTopLevel itl = new ImporterTopLevel(cx);
+    			itl.put("xhtml", itl, sxhtml);
+    			cx.evaluateString(itl, XHTML_DEL_LINK, "", 0, null);
+    			itl = null;
+    		}
+    	}
+    }
+	
+}

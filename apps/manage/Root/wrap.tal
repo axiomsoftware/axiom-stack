@@ -1,0 +1,13 @@
+<html xmlns:tal="http://axiomstack.com/tale">
+  <head>
+	<title>Axiom Application Manager</title>
+  	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('axiom/manage.css')"/>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('jquery.js')"></script>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('scripts/login.js')"/>
+  </head>
+<body>
+  <div class="section" style="margin-left: 20%; width:700px;">
+	<ax tal:replace="this[content](data)"/>
+   </div>
+</body>
+</html>

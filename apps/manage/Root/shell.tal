@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://axiomstack.com/tale">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Axiom - Shell</title>
+	<style type="text/css">
+	  body {font:1em bold Arial,helvetica,sans-serif;color:#333;}
+	  #container {margin:20px 0 0 20px;}
+	  code {border:1px solid #ccc;width:70%;display:block;padding:.5em;margin:10px 0px;background:#efefef;color:#000;}
+	  h1 {font:2em bold Arial,helvetica,sans-serif;}
+	  p.error {color:#669900;font-weight:bold;}
+	  p.path {color:#555;font-size:.8em;}
+
+	  label {display:block;margin-right:20px;font-size:.85em;font-weight:bold;text-transform:uppercase;margin-bottom:2px;}
+	  textarea {border:1px solid #666;padding:.3em;height:20em;width:70%;margin-bottom:10px;}
+	  button {display:block;border:1px solid;background:#333;color:#ddd;font-size:.7em;text-transform:uppercase;font-weight:bold;padding:.3em;cursor:pointer;}
+	</style>
+	<script type="text/javascript" tal:attributes="src string:${root/getStaticMountpoint}/edit_area/edit_area_full.js"></script>
+	<script type="text/javascript" tal:attributes="src string:${root/getStaticMountpoint}/dojo/dojo.js"></script>
+	<script language="Javascript" type="text/javascript">
+	  // initialization
+	  editAreaLoader.init({
+		  id: "commands",	// id of the textarea to transform
+		  start_highlight: true,	// if start with highlight
+		  allow_resize: "both",
+		  allow_toggle: false,
+		  language: "en",
+		  syntax: "js",
+		  toolbar: "new_document, "+/*save, load,*/" |, search, go_to_line, |, undo, redo, |, select_font, |, change_smooth_selection, highlight, reset_highlight, |, help",
+		  load_callback: "loadResource",
+		  /*save_callback: "saveResource",*/
+		  min_height: 500,
+		  replace_tab_by_spaces: 4
+	  });
+	</script>
+	<script type="text/javascript" tal:attributes="src string:${root/getStaticMountpoint}/scripts/shell.js">
+	</script>
+  </head>
+  <body>
+	<div id="container">
+	  <h1>Axiom Shell</h1>
+	  <textarea id="commands" name="commands"> </textarea>
+	  <button onclick="executeCode()">Execute</button>
+	  <code id="output"> </code>
+	</div>
+  </body>
+</html>

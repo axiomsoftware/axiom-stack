@@ -1,0 +1,11 @@
+<form method="post" action="new_user" onsubmit="return creation_validate();">
+  <h1>Create Administrator Account</h1>
+  <p>Welcome to Axiom.  Please create an administrative account:</p>
+  <div class="error_message"></div>
+  <table class="form-table">
+	<tr><td class="label"><label for="username">Username:</label> </td><td><input name="username"/></td></tr>
+	<tr><td class="label"><label for="password">Password:</label></td><td><input name="password" type="password"/></td></tr>
+	<tr><td class="label"><label for="reenter-password">Reenter Password:</label></td><td><input name="reenter-password" type="password"/></td></tr>
+	<tr><td class="label"><input type="submit" value="Create User"/></td><td></td></tr>
+  </table>
+</form>

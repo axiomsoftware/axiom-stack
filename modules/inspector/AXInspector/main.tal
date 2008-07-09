@@ -1,0 +1,44 @@
+<html xmlns:tal="http://axiomstack.com/tale">
+  <head>
+	<link rel="icon" type="image/gif" tal:attr="href: app.getStaticMountpoint('favicon.ico')"/>
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('ext-2.0.2/resources/css/ext-all.css')" />
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('ext-2.0.2/resources/css/xtheme-gray.css')" />
+	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint(data.login ? 'login.css' : 'inspector.css')" />
+	<script tal:omit="true" tal:if="req.data.debug">
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/adapter/ext/ext-base.js')"/>
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/ext-all.js')"/>
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/TabCloseMenu.js')"/>
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint('ext-2.0.2/radiogroup/radiogroup.js')"/>
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint( data.login ? 'login.js' : 'inspector.js' )"/>
+	</script>
+	<script tal:omit="true" tal:if="!req.data.debug">
+	  <script type="text/javascript" tal:attr="src: app.getStaticMountpoint( data.login ? 'login-all.js' : 'inspector-all.js' )"/>
+	</script>
+	<script type="text/javascript" tal:text="$">
+	  Ext.BLANK_IMAGE_URL = '${app.getStaticMountpoint('ext-2.0.2/resources/images/default/s.gif')}';
+	  var prototypes = ${this.addable_prototypes().toSource()};
+	  var handler_url = "${req.action}"; 
+	  var static_mountpoint = "${app.getStaticMountpoint()}";
+	  var login_errors = ${this.login_errors(data)};
+	</script>
+	<title>Axiom Inspector</title>
+  </head>
+  <body>
+	<div tal:if="!data.login" id="home-tab">
+	  <img tal:attr="src: app.getStaticMountpoint('logo.gif')"/>
+	  <p>Welcome to the Axiom Inspector!</p>
+	  <p>Use the object tree to the left to explore your application or enter Javascript with the shell below.</p>
+	  <ul>
+		<li>To traverse through your objects, use the explorer tree on the left. Each object is displayed by its id.</li>
+		<li>Click the (+) icon next an object to view its children.</li>
+		<li>Left-clicking on the object's id in the tree opens a new tab with a form where you can view and edit the object's properties.</li>
+		<li>Right-clicking on a object opens a context menu with options to delete the selected object, refresh the object's display tab or add a new object to the selected object's children. </li>
+
+		<li>The shell can be toggled between single-line interpreter mode and multi-line mode with the 'toggle' button.</li>
+		<li>While in single-line mode, use the up and down arrow keys to page through previously entered commands.</li>
+		<li>The value returned from the shell is the value of the entire expression.</li>
+		<li>The shell has a built-in println function.</li>
+	  </ul>
+	</div>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<div class="tabpane" xmlns:tal="http://axiomstack.com/tale">
+	<div class="tabs">
+		<ul>
+			<li><a tal:attr="href: this.getURI('edit_posting')">Create</a></li>
+			<li><a tal:attr="href: this.getURI('manage_postings')">Manage Posts</a></li>
+			<li tal:if="session.user.is_admin()"><a tal:attr="href: this.getURI('manage_whitelist')">Manage Whitelist</a></li>
+			<li tal:if="session.user.is_admin()" class="curr">Manage Categories</li>
+		</ul>
+	</div>
+	<div class="pane managecategories">
+		<h1>Manage Categories</h1>
+		<h3 tal:if="req.data.delete_error == 'true'" id="error" class="error">Please Select the Categories to Delete.</h3>
+		<h3 tal:if="req.data.deleted == 'true'" id="success" class="success">You have Successfully Deleted the Selected Categories.</h3>
+		<h3 tal:if="req.data.duplicate == 'true'" id="error" class="error">The Specified Category, or one whose name is too similar already exists.</h3>
+		<h3 tal:if="req.data.added == 'true'" id="success" class="success">You have Successfully Created the Specified Category.</h3>
+		<h3 id="validation" class="error hidden"></h3>
+		<form tal:attr="action:this.getURI('add_category')" class="createcat" onsubmit="return validate_category()">
+			<fieldset>
+				<label for="name">Create new Category:</label>
+				<input id="name" name="name" type="text" />
+				<input class="button" type="submit" name="add" value="Create" />
+			</fieldset>
+		</form>
+		<form tal:if="categories.length > 0" tal:attr="action: this.getURI('delete_categories')" id="managecats" class="clear" method="post">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Select: <a href="javascript:void(0)" onclick="select_all()">All</a>, <a href="javascript:void(0)" onclick="unselect_all()">None</a></th>
+						<th>Number of Posts</th>
+					</tr>
+				</thead>
+				<tbody>	
+					<tr tal:repeat="c: categories" tal:attr="'class': (repeat.c.index % 2 == 0 ) ? 'alt' : ''">
+						<td><input tal:attr="value: c._id" name="cat" type="checkbox" class="cb" /></td>
+						<td><a tal:attr="href: c.getURI()" tal:content="c.title"></a></td>
+						<td tal:content="c.get_post_count()"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<input class="button" type="submit" value="Delete Selected Categories" id="delete" />
+			</div>
+		</form>
+		<div tal:if="categories.length == 0" class="noresults">
+			<p>There are currently no Categories.</p>
+		</div>
+	</div>
+</div>

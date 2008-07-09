@@ -1,0 +1,27 @@
+<div id="dashboard" class="section" xmlns:tal="http://axiomstack.com/tale">
+  <div id="messages" style="display: none"> </div>
+  <div id="actions">
+	<div id="shell">
+	  <textarea id="commands" name="commands"> </textarea>
+	  <a class="button form-button" style="float:right;" onclick="executeCode()">Execute (Ctrl+E)</a>
+	  <label class="result-label">Results:</label>
+	  <code id="output"> </code> 
+
+	</div> 
+
+	<ul>
+	  <li><a style="float:right" tal:attr="href: this.getURI('logout')">Logout</a></li>
+	  <li><a onclick="openShell()" class="button form-button" href="javascript:void(0);">JS Shell</a></li>
+	  <li><a onclick="openTests()" class="button form-button" href="javascript:void(0);">Run Tests</a></li>
+	  <!-- <li><a onclick="appAction('apigen')" class="button form-button" href="javascript:void(0);">Generate API</a></li> -->
+	</ul>
+	<p id="dashboard_stats"/>
+  </div>
+  <div id="home">
+	<p> Select or create an application to get started.</p>
+	<p><a onclick="newApp()" href="javascript:void(0);">Create New Application</a> | <a tal:attr="href: this.getURI('logout')">Logout</a></p>
+	<p id="new_app">
+	  New Application Name: <input id="new_app_name" name="new_app_name"/> <a href="javascript:void(0);" onclick="createApp()" class="button form-button">Create</a>
+	</p>
+  </div>
+</div>
