@@ -1,0 +1,84 @@
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://axiomstack.com/tale">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="Content-Language" content="en"/>
+		<title>Blog Management System</title>
+		<link tal:attr="href: app.getStaticMountpoint('css/admin.css')" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	<script tal:text="$" type="text/javascript">
+	//<![CDATA[
+	function validate() {
+		var invalid_emails = ${invalid_emails};
+		var fullname = document.getElementById('fullname').value;
+		var email = document.getElementById('email').value;
+		var password1 = document.getElementById('password1').value;
+		var password2 = document.getElementById('password2').value;
+		if (fullname == '' || email == '' || password1 == '' || password2 == '') {
+			document.getElementById('validation').innerHTML = 'Please fill out all fields before continuing.'
+			document.getElementById('validation').style.display = 'block';
+			return false;
+		}
+		var email_regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		if (!email_regex.test(email)) {
+			document.getElementById('validation').innerHTML = 'Please enter a valid Email Address before proceeding.';
+			document.getElementById('validation').style.display = 'block';
+			return false;
+		}
+		for (var i = 0; i < invalid_emails.length; i++) {
+			if (email == invalid_emails[i]) {
+				document.getElementById('validation').innerHTML = 'This Email Address is already in use.  Please use another.'
+				document.getElementById('validation').style.display = 'block';
+				return false;
+			}
+		}
+		if (password1 != password2) {
+			document.getElementById('validation').innerHTML = 'Please make sure the Password fields match before proceeding.'
+			document.getElementById('validation').style.display = 'block';
+			return false;				
+		}
+		if (password1.length < 4) {
+			document.getElementById('validation').innerHTML = 'Please make sure your Password is at least 4 characters long before proceeding.'
+			document.getElementById('validation').style.display = 'block';
+			return false;
+		}
+		return true;
+	}
+	//]]>
+	</script>
+		<div id="wrapper">
+			<div class="header">
+				<div class="tl"></div>
+				<div class="tr"></div>
+				<h3><img tal:attr="src: app.getStaticMountpoint('images/axiom_blog_logo.gif')" alt="Axiom Blog" /><br/>Blog Management System</h3>
+			</div>
+			<div class="main signin">
+				<form tal:attr="action: this.getURI('verify')" method="post" onsubmit="return validate()">
+					<h1>Verify Information</h1>
+					<span id="validation" class="hidden error"></span>
+					<p>Please verify the information below to activate your account.</p>
+					<fieldset>
+						<input tal:attr="value: this._id" type="hidden" name="user_id" />
+						<label for="username">User Name</label>
+						<span tal:content="this.username"></span>
+						<label for="fullname">Full Name</label>
+						<input tal:attr="value: this.fullname" id="fullname" name="fullname" type="text" />
+						<label for="email">Email Address</label>
+						<input tal:attr="value: this.email" id="email" name="email" type="text" />
+						<label for="password1">Set Password</label>
+						<input id="password1" name="password1" type="password" />
+						<label for="password2">Confirm Password</label>
+						<input id="password2" name="password2" type="password" />
+						<br/><br/>
+						<input class="button" type="submit" value="Verify" />
+					</fieldset>
+				</form>
+			</div>
+			<div class="footer">
+				<div class="bl"></div>
+				<div class="br"></div>
+			</div>
+		</div>
+	</body>
+</html>
+

@@ -1,0 +1,39 @@
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://axiomstack.com/tale">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="Content-Language" content="en"/>
+		<title>Blog Management System</title>
+		<link tal:attr="href: app.getStaticMountpoint('css/admin.css')" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<div class="header">
+				<div class="tl"></div>
+				<div class="tr"></div>
+				<h3><img tal:attr="src: app.getStaticMountpoint('images/axiom_blog_logo.gif')" alt="Axiom Blog" /><br/>Blog Management System</h3>
+			</div>
+			<div class="main signin">
+				<form tal:attr="action: this.getURI('login')" method="post">
+					<h1>Sign In</h1>
+					<span tal:if="error != null" tal:content="error" class="error"></span>
+					<span tal:if="req.data.notice == 'true'" class="success">Your Password Reset Notice has been sent</span>
+					<span tal:if="req.data.reset == 'true'" class="success">Your Password has been Reset</span>
+					<p>If you have an account, sign in below.</p>
+					<fieldset>
+						<label for="username">User Name</label>
+						<input id="username" name="username" type="text" />
+						<label for="password">Password</label>
+						<input id="password" name="password" type="password" />
+						<div><a tal:attr="href: this.getURI('forgotpw')">I Forgot My Password</a></div>
+						<input class="button" type="submit" value="Sign In" />
+					</fieldset>
+				</form>
+			</div>
+			<div class="footer">
+				<div class="bl"></div>
+				<div class="br"></div>
+			</div>
+		</div>
+	</body>
+</html>
+

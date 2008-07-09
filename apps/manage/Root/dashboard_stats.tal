@@ -1,0 +1,6 @@
+<table id="dashboard_stats" tal:var="application: data['application'] || this.getAppByName(req.data.app)" xmlns:tal="http://axiomstack.com/tale">
+  <tr><td>Cache Usage</td><td tal:text="$">${application.getCacheUsage()} / ${application.getProperty('cachesize')|| 1000}</td></tr> 
+  <tr><td>Active Sessions</td><td tal:content="application.getSessions().size()"/></tr> 
+  <tr><td>Free Evaluators</td><td tal:content="application.countFreeEvaluators()"/></tr> 
+  <tr><td>Active Evaluators</td><td tal:content="application.countActiveEvaluators()"/></tr> 
+</table>

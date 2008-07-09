@@ -1,0 +1,20 @@
+<div class="section" xmlns:tal="http://axiomstack.com/tale">
+  <h2>Test Results</h2>
+  <p id="messages" style="display: none"> </p>
+  <table>
+	<tr><td>Total Tests</td><td tal:content="results.test_results.length"/></tr>
+	<tr><td>Total Failures</td><td tal:content="results.failures"/></tr> 
+	<tr><td>Total Errors</td><td tal:content="results.errors"/></tr> 
+  </table>
+
+  <h3 tal:if="results.failures">Failures</h3>
+  <table tal:if="results.failures" tal:var="failures: results.test_results.findAll(function(x){return x.failure})" >
+	<tr tal:repeat="test: failures"><td tal:content="test.name"></td><td tal:content="test.failure.toString()"/></tr>
+  </table>
+
+  <h3 tal:if="results.errors">Errors</h3>
+  <table tal:if="results.errors" tal:var="errors: results.test_results.findAll(function(x){return x.error})">
+	<tr tal:repeat="test: errors"><td tal:content="test.name"></td><td tal:content="test.error.toString()"/></tr>
+  </table>
+
+</div>

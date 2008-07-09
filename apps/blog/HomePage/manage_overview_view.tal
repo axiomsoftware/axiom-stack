@@ -1,0 +1,97 @@
+<div xmlns:tal="http://axiomstack.com/tale">
+	<h1 tal:content="'An Overview of: ' + this.title"></h1>
+	<div class="overview post-overview">
+		<table class="posts" summary="The most recent posts to the blog.">
+			<thead>
+				<tr>
+					<th><em>Recent Posts</em></th>
+					<th>Status</th>
+					<th>Author</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td colspan="3"><a tal:attr="href:this.getURI('manage_postings')">Manage Posts</a></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr tal:if="posts.length > 0" tal:repeat="post: posts" tal:attr="'class': (repeat.post.index % 2 == 0 ) ? 'alt' : ''">
+					<td class="al">
+						<h2><a tal:attr="href: post.uri" tal:content="post.title"></a></h2>
+						<div tal:if="post.comments_count > 0">Comments (<a tal:attr="onclick: 'toggle_comment(this,\'' + post._id + '\')'" href="javascript:void(0)">View Comments</a>)</div>
+						<div tal:if="post.comments_count > 0" tal:attr="id: post._id" class="comments hidden">
+							<div tal:repeat="comment: post.comments" tal:attr="id: 'comment_' + comment._id" class="comment">
+								<h3 tal:if="comment.comment_type == 'Anonymous'">From <a tal:attr="href:'mailto:'+comment.email" tal:content="comment.name"></a> at <span tal:replace="comment.date.formatted()" /></h3>
+								<h3 tal:if="comment.comment_type == 'OpenID'">From <img tal:attr="src: app.getStaticMountpoint('images/openid-logo.gif')" alt="OpenID" /> <a tal:attr="href:comment.openid_identifier" tal:content="comment.openid_identifier"></a> at <span tal:replace="comment.date.formatted()" /></h3>
+								<div tal:content="comment.approved ? 'Approved' : 'Pending Approval'" tal:attr="'class': comment.approved ? 'success' : 'error' "></div>
+								<p tal:content="comment.body"></p>
+							</div>
+						</div>
+
+					</td>
+					<td tal:content="post.post_status"></td>
+					<td tal:content="post.author"></td>
+				</tr>
+				<tr tal:if="posts.length == 0">
+					<td colspan="3">There have been no Posts on this Blog</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+<div  tal:if="session.user.is_admin()" class="overview-container">
+	<div class="overview">
+		<table summary="The registered users for the site (admin and authors).">
+			<thead>
+				<tr>
+					<th colspan="2"><em>Authors</em></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td colspan="2"><a tal:attr="href:this.getURI('manage_authors')">Manage Authors</a></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr tal:repeat="author: authors" tal:attr="'class': (repeat.author.index % 2 == 0 ) ? 'alt' : ''">
+					<td tal:content="author.fullname" class="al"></td>
+					<td tal:content="author.role"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div  class="overview">
+		<table summary="The setting for the site, such as default setting on comments and resolution.">
+			<thead>
+				<tr>
+					<th colspan="3"><em>Quick Settings</em></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td colspan="2"><a tal:attr="href:this.getURI('manage_settings')">Change Blog Settings</a></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr class="alt">
+					<td class="al">Posts Per Page:</td>
+					<td tal:content="this.posts_per_page"></td>
+				</tr>
+				<tr>
+					<td class="al">Show Author Email Links:</td>
+					<td tal:content="this.author_email_links ? 'Yes' : 'No'"></td>
+				</tr>
+				<tr class="alt">
+					<td class="al">Show Commenter Email Links:</td>
+					<td tal:content="this.comment_email_links ? 'Yes' : 'No'"></td>
+				</tr>
+				<tr>
+					<td class="al">Receive Notifications for Comments:</td>
+					<td tal:content="this.comment_notifications ? 'Yes' : 'No'"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>
+

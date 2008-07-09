@@ -1,0 +1,36 @@
+<html xmlns:tal="http://axiomstack.com/tale">
+  <head>
+	<title>Axiom Application Manager</title>
+  	<link rel="stylesheet" type="text/css" tal:attr="href: manage.getStaticMountpoint('axiom/manage.css')"/>
+	<script type="text/javascript" tal:attr="src: manage.getStaticMountpoint('editarea_0_7/edit_area/edit_area_full.js')"></script>
+	<script type="text/javascript" tal:attr="src: manage.getStaticMountpoint('jquery.js')"></script>
+	<script language="Javascript" type="text/javascript" tal:text="$">
+	  editAreaLoader.init({
+	  id: "commands",	// id of the textarea to transform
+	  start_highlight: true,	// if start with highlight
+	  allow_resize: "both",
+	  allow_toggle: false,
+	  language: "en",
+	  syntax: "js",
+	  toolbar: "new_document, load, |, search, go_to_line, |, undo, redo, |, select_font, |, change_smooth_selection, highlight, reset_highlight, |, help",
+	  load_callback: "loadResource",
+	  min_height: 500,
+	  replace_tab_by_spaces: 4,
+	  plugins: 'axiom'
+	  });
+	</script>
+	<script type="text/javascript" tal:attr="src: manage.getStaticMountpoint('scripts/shell.js')">
+	</script>
+
+  </head>
+  <body>
+	<div id="container">
+	  <div class="section">
+		<h2>Shell</h2>
+		<textarea id="commands" name="commands"> </textarea>
+		<a class="button form-button" style="float:right;" onclick="executeCode()">Execute (Ctrl+E)</a>
+		<label class="result-label">Results:</label><code id="output"> </code>
+	  </div>
+	</div> 
+  </body>
+</html>

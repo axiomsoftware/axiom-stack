@@ -1,0 +1,9 @@
+<form method="post" action="authenticate" xmlns:tal="http://axiomstack.com/tale">
+  <h1>Login</h1>
+  <div tal:if="req.data.error" style="display:block" class="error_message">Invalid username / password.</div>
+  <table class="form-table">
+	<tr><td class="label"><label for="username">Username:</label> </td><td><input name="username"/></td></tr>
+	<tr><td class="label"><label for="password">Password:</label></td><td><input name="password" type="password"/></td></tr>
+	<tr><td class="label"><input type="submit" value="Login"/></td><td></td></tr>
+  </table>
+</form>

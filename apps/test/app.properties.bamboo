@@ -1,0 +1,3 @@
+automaticResourceUpdate = true
+mountpoint = /test
+onstart = run_tests

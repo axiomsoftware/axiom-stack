@@ -1,0 +1,86 @@
+<div class="tabpane" xmlns:tal="http://axiomstack.com/tale">
+	<div class="tabs">
+		<ul>
+			<li class="curr">Basic Settings</li>
+			<li><a tal:attr="href: this.getURI('manage_templates')">Template Settings</a></li>
+		</ul>
+	</div>
+	<div class="pane basic">
+		<h1>Basic Settings</h1>
+		<h3 tal:if="req.data.saved == 'true'" id="success" class="success">You have Successfully Saved your Settings.</h3>
+		<h3 tal:if="req.data.imported == 'true'" id="success" class="success">You have Successfully Imported Your WordPress Posts and Categories.</h3>
+		<h3 tal:if="req.data.import_error == 'true'" id="error" class="error">Your WordPress XML File could not be recognized.</h3>
+		<h3 id="validation" class="error hidden"></h3>
+		<form tal:attr="action: this.getURI('save_settings')" method="post" onsubmit="return validate_settings()">
+			<h2>General</h2>
+			<ul>
+				<li>
+					<h3>Title:</h3><span><input tal:attr="value: this.title" type="text" name="title" id="title" /></span>
+				</li>
+				<li>
+					<h3>Description:</h3><span><input tal:attr="value: this.description" type="text" name="description" id="description" /></span>
+				</li>
+				<li>
+					<h3>Posts Per Page:</h3>
+					<span>
+						<select name="posts_per_page" id="posts_per_page">
+							<option tal:attr="selected: this.posts_per_page == '5'" value="5">5</option>
+							<option tal:attr="selected: this.posts_per_page == '6'" value="6">6</option>
+							<option tal:attr="selected: this.posts_per_page == '7'" value="7">7</option>
+							<option tal:attr="selected: this.posts_per_page == '8'" value="8">8</option>
+							<option tal:attr="selected: this.posts_per_page == '9'" value="9">9</option>
+							<option tal:attr="selected: this.posts_per_page == '10'" value="10">10</option>
+							<option tal:attr="selected: this.posts_per_page == '11'" value="11">11</option>
+							<option tal:attr="selected: this.posts_per_page == '12'" value="12">12</option>
+							<option tal:attr="selected: this.posts_per_page == '13'" value="13">13</option>
+							<option tal:attr="selected: this.posts_per_page == '14'" value="14">14</option>
+							<option tal:attr="selected: this.posts_per_page == '15'" value="15">15</option>
+						</select>
+					</span>
+				</li>
+				<li>
+					<h3>Show Author Email Links:</h3>
+					<span>
+						<input tal:attr="checked: this.author_email_links" type="radio" name="author_email_links" id="author_email_links_true" value="true" />
+						<label for="author_email_links_true">Yes</label>
+						<input tal:attr="checked: !this.author_email_links" type="radio" name="author_email_links" id="author_email_links_false" value="false" />
+						<label for="author_email_links_false">No</label>
+					</span>
+				</li>
+			</ul>
+			<h2>Comments</h2>
+			<ul>
+				<li>
+					<h3>Show Commenter Email Links<br/>(Only for Anonymous Comments):</h3>
+					<span>
+						<input tal:attr="checked: this.comment_email_links" type="radio" name="comment_email_links" id="comment_email_links_true" value="true" />
+						<label for="comment_email_links_true">Yes</label>
+						<input tal:attr="checked: !this.comment_email_links" type="radio" name="comment_email_links" id="comment_email_links_false" value="false" />
+						<label for="comment_email_links_false">No</label>
+					</span>
+				</li>
+				<li>
+					<h3>Receive Notifications for Comments:</h3>
+					<span>
+						<input tal:attr="checked: this.comment_notifications" type="radio" name="comment_notifications" id="comment_notifications_true" value="true" />
+						<label for="comment_notifications_true">Yes</label>
+						<input tal:attr="checked: !this.comment_notifications" type="radio" name="comment_notifications" id="comment_notifications_false" value="false" />
+						<label for="comment_notifications_false">No</label>
+					</span>
+				</li>
+			</ul>
+			<input class="button" type="submit" value="Save Settings" />
+		</form>
+		<form tal:attr="action: this.getURI('import_wordpress')" enctype="multipart/form-data" method="post" class="import_form">
+			<h2>Import WordPress Posts</h2>
+			<ul>
+				<li>You can import the posts and categories from your Wordpress Blog by first Exporting them into a .xml file from WordPress, and then selecting that file below.</li>
+				<li>
+					<h3>WordPress Posts File:</h3><span><input type="file" name="wordpress" id="wordpress" /></span>
+				</li>
+			</ul>
+			<input id="wordpress_btn" class="button" type="submit" value="Import" onclick="hide_wordpress_button(this)" />
+			<h3 id="wordpress_msg" class="hidden importing">Your WordPress Posts and Categories are Importing...Please Wait.</h3>
+		</form>
+	</div>
+</div>

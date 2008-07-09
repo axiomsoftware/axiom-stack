@@ -1,0 +1,54 @@
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://axiomstack.com/tale">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="Content-Language" content="en"/>
+		<title>Blog Management System</title>
+		<link tal:attr="href: app.getStaticMountpoint('css/admin.css')" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	<script type="text/javascript">
+	function validate() {
+		if (document.getElementById('email').value == '') {
+			document.getElementById('validation').innerHTML = 'Please enter your Email Address before continuing.'
+			document.getElementById('validation').style.display = 'block';
+			if (document.getElementById('error')) {
+				document.getElementById('error').style.display = 'none';
+			}
+			return false;
+		}
+		var email_regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		if (!email_regex.test(document.getElementById('email').value)) {
+			document.getElementById('validation').innerHTML = 'Please enter a valid Email Address before continuing.';
+			document.getElementById('validation').style.display = 'block';
+			return false;
+		}
+		return true;
+	}
+	</script>
+		<div id="wrapper">
+			<div class="header">
+				<div class="tl"></div>
+				<div class="tr"></div>
+				<h3><img tal:attr="src: app.getStaticMountpoint('images/axiom_blog_logo.gif')" alt="Axiom Blog" /><br/>Blog Management System</h3>
+			</div>
+			<div class="main signin">
+				<form tal:attr="action: this.getURI('forgotpw')" method="post" onsubmit="return validate()">
+					<h1>Forgot Password?</h1>
+					<span tal:if="error != null" tal:content="error" id="error" class="error"></span>
+					<span id="validation" class="hidden error"></span>
+					<p>Enter your Email Address and you will receive an email with instructions on how to reset your password.</p>
+					<fieldset>
+						<label for="email">Email Address</label>
+						<input id="email" name="email" type="text" />
+						<br/><br/>
+						<input class="button" type="submit" value="Continue" />
+					</fieldset>
+				</form>
+			</div>
+			<div class="footer">
+				<div class="bl"></div>
+				<div class="br"></div>
+			</div>
+		</div>
+	</body>
+</html>

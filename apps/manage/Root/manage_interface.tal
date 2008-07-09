@@ -1,0 +1,25 @@
+<html xmlns:tal="http://axiomstack.com/tale" tal:var="applist: this.getApps()">
+  <head>
+	<title>Axiom Application Manager</title>
+  	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('axiom/manage.css')"/>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('jquery.js')"></script>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('editarea_0_7/edit_area/edit_area_full.js')"></script>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('scripts/shell.js')"/>
+	<script type="text/javascript" tal:text="$">
+	  var staticMountpoint = '${app.getStaticMountpoint()}';
+	  var manageURI = '${this.getURI()}';
+	</script> 
+  </head>
+  <body tal:var="application: applist[0]">
+  <div id="apps">
+	  <ul id="applist"  tal:repeat-content="a: applist" class="applist">
+		<li class="active first" onclick="home()" tal:if="repeat.a.index == 0">Manage Home</li>
+		<li tal:attr="onclick: 'setApp(\''+a.getName()+'\',\''+a.getBaseURI()+'\', this)'" tal:content="a.getName()"></li>
+	  </ul>
+  </div>
+
+  <div id="container">
+	<div tal:replace="this.dashboard(data)"/>
+  </div> 
+  </body>
+</html>

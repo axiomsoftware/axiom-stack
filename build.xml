@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<project name="axiom" default="all" basedir=".">
+    <!-- =================================================================== -->
+    <!-- Initializes some variables                                          -->
+    <!-- =================================================================== -->
+	
+    <property name="project" value="axiom"/>
+	<property name="home.dir" value="."/>
+	<property name="build.dir" value="${home.dir}/build"/>
+	<property name="lib.dir" value="${home.dir}/lib"/>
+	<property name="src.dir" value="${home.dir}/src"/>
+	<property name="apps.dir" value="${home.dir}/apps"/>
+	<property name="modules.dir" value="${home.dir}/modules"/>
+	<property name="jsdoc.dir" value="${home.dir}/jsdoc"/>
+	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
+	<property name="utils.dir" value="${home.dir}/utils"/>
+	<property name="java.version.default" value="1.6"/>
+	<property name="axiom-jar.name" value="axiom.jar"/>
+	<property name="launcher-jar.name" value="launcher.jar"/>
+	<property name="js-jar.name" value="js.zip"/>
+	<property name="test.app" value="test"/>
+	<property environment="env"/>
+
+	
+	<path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${env.JAVA_HOME}/lib">
+	    	<include name="tools.jar"/>
+        </fileset>
+	</path>
+
+	<target name="all" depends="build"/>
+	
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/classes"/>
+    </target>
+	
+	<target name="clean">
+		<delete file="${home.dir}/${launcher-jar.name}"/>
+		<delete file="${lib.dir}/${axiom-jar.name}"/>
+		<delete file="${lib.dir}/${js-jar.name}"/>
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="build" depends="clean, init">
+		<condition property="java_version"
+			value="${env.JAVA_VERSION}"
+			else="${java.version.default}">
+			<and>
+				<isset property="env.JAVA_VERSION"/>
+			</and>
+		</condition>
+
+		<antcall target="jar">
+			<param name="version" value="${java_version}"/>
+		</antcall>		
+
+	</target>
+
+	<target name="compile" depends="init">
+		<property name="deprecation" value="off"/>
+		<property name="debug" value="on"/>
+        <property name="optimize" value="on"/>
+		<property name="encoding" value="utf-8" /> 
+
+		<condition property="version"
+			value="${java.version.default}">
+			<not>
+				<isset property="version"/>
+			</not>
+		</condition>
+
+		<!-- compress inspector client-side js-->
+    	<java jar="${lib.dir}/js.jar" fork="true">
+			<arg value="${modules.dir}/inspector/static/compress.js"/>
+    		<arg value="${modules.dir}/inspector/static"/>
+    	</java>
+
+		<javac srcdir="${src.dir}/java"
+ 			encoding="${encoding}"
+            source="${version}"
+            target="${version}"
+	    	destdir="${build.dir}/classes"
+            debug="${debug}"
+            deprecation="${deprecation}"
+            optimize="${optimize}">
+            <classpath refid="classpath" />
+        </javac>
+	</target>
+	
+	<target name="jar" depends="compile" description="Packages the JAR file">
+		<!-- Build axiom.jar-->
+		<jar jarfile="${lib.dir}/${axiom-jar.name}"
+            basedir="${build.dir}/classes"
+	    	excludes="**/test/**, **/main/launcher/**"/>
+
+		<!-- build js.zip -->
+		<zip compress="false" destfile="${lib.dir}/js.zip" 
+		     basedir="${src.dir}/js"/>
+
+		<!-- Build launcher.jar -->
+		<jar jarfile="${home.dir}/${launcher-jar.name}"
+            basedir="${build.dir}/classes"
+            includes="**/main/launcher/**"
+            manifest="${src.dir}/java/axiom/main/launcher/manifest.txt"/>
+	</target>
+
+	<target name="test">
+		<move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
+
+		<move todir="${apps.dir}" includeemptydirs="false">
+			<fileset dir="${apps.dir}" casesensitive="yes">
+				<exclude name="**/${test.app}/*"/>
+				<include name="**/app.properties"/>
+			</fileset>
+			<mapper type="glob" from="*" to="*.testing"/>
+		</move>
+
+		<antcall target="build">
+			<param name="version" value="${java_version}"/>
+		</antcall>		
+
+		<java jar="${home.dir}/launcher.jar" fork="true" timeout="150000">
+			<sysproperty key="file.encoding" value="UTF-8"/>
+			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
+			<arg line="-w 8081 -h ${home.dir}"/>
+		</java>
+
+		<move todir="${apps.dir}" includeemptydirs="false">
+			<fileset dir="${apps.dir}" casesensitive="yes">
+				<exclude name="**/${test.app}/*"/>
+				<include name="**/app.properties.testing"/>
+			</fileset>
+			<mapper type="glob" from="*.testing" to="*"/>
+		</move>
+
+		<move file="${apps.dir}/test/app.properties" tofile="${apps.dir}/${test.app}/app.properties.test"/>
+
+	</target>
+
+	<target name="javadoc">
+		<javadoc sourcepath="${src.dir}/java" 
+			destdir="${javadoc.dir}" 
+			packagenames="*" 
+			classpathref="classpath"/>
+	</target>
+
+	<target name="jsdoc" depends="compile">
+		<javadoc 
+			doclet="axiom.util.JSDoclet" 
+			docletpath="${build.dir}/classes/" 
+			sourcepath="${src.dir}/java"
+			classpathref="classpath">
+			<packageset dir="${src.dir}/java" defaultexcludes="yes">
+				<include name="axiom/**"/>
+			</packageset>
+		</javadoc>
+
+		<java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
+			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=doc alldoc.js ${src.dir}/js/Global"/>
+		</java>
+		
+		<delete file="alldoc.js"/>
+	</target>
+
+</project>

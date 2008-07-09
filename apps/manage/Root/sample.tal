@@ -1,0 +1,8 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal" style="clear:left;">
+  <h1>Sample Axiom Content</h1>
+  <table>
+    <tr>
+      <td>This is only an example!</td>
+    </tr>
+  </table>
+</div>

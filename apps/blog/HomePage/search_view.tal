@@ -1,0 +1,20 @@
+<div class="maincol resultcol" xmlns:tal="http://axiomstack.com/tale">
+	<div tal:if="posts.length == 0">
+		<p>There are no results for this search.  Please try another search.</p>
+	</div>
+	<div tal:if="posts.length > 0" class="result">
+		<div class="searchTitle">
+			<h1>Search Results:</h1>
+			<p>
+				<span tal:content="start"></span> - <span tal:content="len"></span> of <span tal:content="total"></span> total results for <strong tal:content="req.data.query ? req.data.query : 'No Search Term Entered'" class="keyword"></strong>
+			</p>
+		</div>
+		<ul>
+			<li tal:repeat="p:posts">
+				<h2><span tal:content="parseInt(start) + parseInt(repeat.p.index) + '.'"></span> <a tal:attr="href: p.getURI()" tal:content="p.title"></a></h2>
+				<span tal:content="'Added By ' + p.get_author_name() + ' at ' + p.date.formatted()"></span>
+			</li>
+		</ul>
+	</div>
+	<span tal:replace="pagination" />
+</div>

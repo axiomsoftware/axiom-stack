@@ -1,0 +1,59 @@
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://axiomstack.com/tale" tal:var="home_page: get_home_page()">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en"/>
+		<title tal:content-if="this.title || data.title"></title>
+		<meta tal:attr="content: this.description" name="description" />
+		<link tal:attr="href: app.getStaticMountpoint('css/style.css')" rel="stylesheet" type="text/css" />
+		<link tal:if="this._prototype=='HomePage'" tal:attr="href: 'http://' + req.data.http_host + this.getURI('rss')" rel="alternate" type="application/rss+xml" title="RSS 2.0 Content"  />
+		<link tal:if="home_page.style" tal:attr="href: app.getStaticMountpoint(home_page.style+'/skin.css')" rel="stylesheet"  type="text/css" />
+		<link tal:if="home_page.custom_style" tal:attr="href: home_page.getURI('user_style')" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<div tal:attr="'class': check_setting('layout','twocol') ? 'twocolwrap' : 'threecolwrap'">
+				<div class="header">
+					<div class="vp">
+						<h2><a tal:attr="href: home_page.getURI()" tal:content="home_page.title"></a></h2>
+					</div>
+				</div>
+				<div class="narrowcol">
+					<div class="search">
+						<form tal:attr="action: home_page.getURI('blog_search')" method="get">
+							<fieldset>
+								<h2><label for="query">Search the Blog</label></h2>
+								<input id="query" name="query"  type="text" />
+								<input class="submit"  type="submit" value="Go" />
+							</fieldset>
+						</form>
+					</div>
+					<div class="categories">
+						<h2>Categories</h2>
+						<ul>
+							<li tal:repeat="c: home_page.get_categories()"><a tal:attr="href: c.getURI()" tal:content="c.title + ' (' + c.get_post_count() + ')'"></a></li>
+						</ul>
+					</div>
+					<div tal:if="check_setting('layout','twocol')" class="recent">
+						<h2>Recent Entries</h2>
+						<ul>
+							<li tal:repeat="r: home_page.recent_posts()"><a tal:attr="href: r.getURI()" tal:content="r.title"></a></li>
+						</ul>
+					</div>
+				</div>
+				<span tal:replace="content" />
+				<div tal:if="check_setting('layout','threecol')" class="widecol">
+					<div class="recent">
+						<h2>Recent Entries</h2>
+						<ul>
+							<li tal:repeat="r: home_page.recent_posts()"><a tal:attr="href: r.getURI()" tal:content="r.title"></a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="footer">
+					<div>Developed by <a href="http://www.axiomsoftwareinc.com">Axiom&#174; Software Inc.</a></div>
+					<div>Powered by <a href="http://www.axiomstack.com">Axiom&#174; Stack</a></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

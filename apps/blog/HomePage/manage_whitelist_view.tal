@@ -1,0 +1,61 @@
+<div class="tabpane" xmlns:tal="http://axiomstack.com/tale">
+	<div class="tabs">
+		<ul>
+			<li><a tal:attr="href: this.getURI('edit_posting')">Create</a></li>
+			<li><a tal:attr="href: this.getURI('manage_postings')">Manage Posts</a></li>
+			<li tal:if="session.user.is_admin()" class="curr">Manage Whitelist</li>
+			<li tal:if="session.user.is_admin()"><a tal:attr="href: this.getURI('manage_categories')">Manage Categories</a></li> <!-- TODO: Only Admin -->
+		</ul>
+	</div>
+
+	<div class="pane managewhitelist">
+		<h1>Manage OpenID Whitelist</h1>
+		<h3 id="validation" class="error hidden"></h3>	
+		<h3 tal:if="req.data.error == 'true'" id="error" class="error">Please Select OpenID Account(s) to Whitelist or Remove from the Whitelist.</h3>
+		<h3 tal:if="req.data.added == 'true'" id="success" class="success">You have Successfully Whitelisted the specified OpenID Account(s).</h3>
+		<h3 tal:if="req.data.whitelisted == 'true'" id="success" class="success">You have Successfully Whitelisted the Selected OpenID Account(s).</h3>
+		<h3 tal:if="req.data.removed == 'true'" id="success" class="success">You have Successfully Removed the Selected OpenID Account(s) from the Whitelist.</h3>
+		<div class="pagination">
+			<div>
+				View: <a tal:if="view != 'All'" tal:attr="href: this.getURI('manage_whitelist')">All Accounts</a><strong tal:if="view == 'All'">All Accounts</strong> | <a tal:if="view != 'Whitelist'" tal:attr="href: this.getURI('manage_whitelist?view=Whitelist')">Whitelist</a><strong tal:if="view == 'Whitelist'">Whitelist</strong> | <a tal:if="view != 'Pending'" tal:attr="href: this.getURI('manage_whitelist?view=Pending')">Pending Whitelist</a><strong tal:if="view == 'Pending'">Pending Whitelist</strong>
+			</div>
+		</div>
+
+		<form tal:attr="action:this.getURI('save_whitelist')" class="addtowl" onsubmit="return validate_whitelist()">
+			<fieldset>
+				<label for="openid_identity">Add OpenID Account to Whitelist:</label>
+				<input id="openid_identity" name="openid_identity" type="text" />
+				<input class="button" type="submit" name="type" value="Add" />
+			</fieldset>
+		</form>
+
+		<form tal:if="accounts.length > 0" tal:attr="action: this.getURI('save_whitelist')" id="managewhitelistform" class="clear" method="post">
+			<input tal:if="view != 'All'" tal:attr="value: view" type="hidden" name="view" />
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Select: <a href="javascript:void(0)" onclick="select_all()">All</a>, <a href="javascript:void(0)" onclick="unselect_all()">None</a></th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr tal:repeat="a: accounts" tal:attr="'class': (repeat.a.index % 2 == 0 ) ? 'alt' : ''">
+						<td><input tal:attr="value: a" name="account" type="checkbox" class="cb" /></td>
+						<td><a tal:attr="href:a" tal:content="a"></a></td>
+						<td tal:content="get_home_page().openid_whitelist.contains(a) ? 'Whitelisted' : 'Pending Whitelist'"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<input tal:if="view != 'Whitelist'" class="button" type="submit" name="type" value="Whitelist Selected Accounts" />
+				<input tal:if="view != 'Pending'" class="button" type="submit" name="type" value="Remove Selected Accounts from Whitelist" />
+			</div>
+		</form>
+
+		<div tal:if="accounts.length == 0" class="noresults">
+			<p tal:if="view == 'All'">There have been no Comments made with OpenID Accounts yet.</p>
+			<p tal:if="view == 'Whitelist'">There are no Whitelisted OpenID Accounts.</p>
+			<p tal:if="view == 'Pending'">There are no OpenID Accounts Pending Whitelist.</p>
+		</div>
+	</div>
+</div>
