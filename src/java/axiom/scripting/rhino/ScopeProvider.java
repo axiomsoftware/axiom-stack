@@ -34,7 +34,7 @@
  * file under either the NPL or the GPL.
  */
 
-package axiom.scripting.rhino.debug;
+package axiom.scripting.rhino;
 
 import org.mozilla.javascript.Scriptable;
 

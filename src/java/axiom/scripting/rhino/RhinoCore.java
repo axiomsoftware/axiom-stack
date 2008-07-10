@@ -27,8 +27,6 @@ import axiom.objectmodel.*;
 import axiom.objectmodel.db.DbMapping;
 import axiom.objectmodel.db.DbSource;
 import axiom.scripting.*;
-import axiom.scripting.rhino.debug.HelmaDebugger;
-import axiom.scripting.rhino.debug.ScopeProvider;
 import axiom.scripting.rhino.extensions.*;
 import axiom.scripting.rhino.extensions.activex.ActiveX;
 import axiom.util.CacheMap;
