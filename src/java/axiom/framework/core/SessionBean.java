@@ -16,17 +16,15 @@
 
 package axiom.framework.core;
 
-
 import java.io.Serializable;
 import java.util.Date;
-
-import org.mozilla.javascript.Scriptable;
 
 import axiom.objectmodel.INode;
 
 /**
  * The SessionBean wraps a <code>Session</code> object and
  * exposes it to the scripting framework.
+ * 
  * @jsinstance session
  */
 public class SessionBean implements Serializable {
@@ -36,184 +34,25 @@ public class SessionBean implements Serializable {
     /**
      * Creates a new SessionBean around a Session object.
      *
-     * @param session ...
+     * @param {Session} session
      */
     public SessionBean(Session session) {
         this.session = session;
     }
 
-    /**
-     *
-     *
-     * @return ...
-     */
-    public String toString() {
-        return session.toString();
+    public void addDraftId(Object id) {
+        session.addDraftId(id, null);
     }
 
     /**
-     * Attempts to log in a user with the given username/password credentials.
-     * If username and password match, the user node is associated with the session
-     * and bound to the session.user property.
-     *
-     * @param username the username
-     * @param password the password
-     *
-     * @return true if the user exists and the password matches the user's password property.
-     */
-    /*public boolean login(String username, String password) {
-        return session.login(username, password);
-    }*/
-
-    /**
-     * Directly associates the session with a user object without requiring
-     * a username/password pair. This is for applications that use their own
-     * authentication mechanism.
-     *
-     * @param userNode the AxiomObject node representing the user.
-     */
-    public void login(INode userNode) {
-        session.login(userNode);
-    }
-
-    /**
-     * Disassociate this session from any user object it may have been associated with.
-     */
-    public void logout() {
-        session.logout();
-    }
-    
-    public void reset() {
-        session.reset();
-    }
-
-    /**
-     * Touching the session marks it as active, avoiding session timeout.
-     * Usually, sessions are touched when the user associated with it sends
-     * a request. This method may be used to artificially keep a session alive.
-     */
-    public void touch() {
-        session.touch();
-    }
-
-    /**
-     * Returns the time this session was last touched.
-     *
-     * @return ...
-     */
-    public Date lastActive() {
-        return new Date(session.lastTouched());
-    }
-
-    /**
-     * Returns the time this session was created.
-     *
-     * @return ...
-     */
-    public Date onSince() {
-        return new Date(session.onSince());
-    }
-
-    // property-related methods:
-
-    /**
-     * Get the cache/data node for this session. This object may be used
-     * to store transient per-session data. It is reflected to the scripting
-     * environment as session.data.
-     */
-    public INode getData() {
-        return session.getCacheNode();
-    }
-    
-    /** 
-     * Get the debug object for this session
-     */
-    public Object getDebug() {
-    	return session.getDebugObject();
-    }
-
-    /**
-     * Gets the user object for this session. This method returns null unless
-     * one of the session.login methods was previously invoked.
-     *
-     * @return ...
-     */
-    public INode getUser() {
-        return session.getUserNode();
-    }
-
-    /**
-     * Returns the unique identifier for a session object (session cookie).
-     *
-     * @return ...
-     */
-    public String get_id() {
-        return session.getSessionId();
-    }
-
-    /**
-     * Returns the unique identifier for a session object (session cookie).
-     *
-     * @return ...
-     */
-    public String getCookie() {
-        return session.getSessionId();
-    }
-
-    /**
-     * Returns the time this session was last touched.
-     *
-     * @return ...
-     */
-    public Date getLastActive() {
-        return new Date(session.lastTouched());
-    }
-
-    /**
-     * Returns a date object representing the time a user's session was started.
-     *
-     * @return ...
-     */
-    public Date getOnSince() {
-        return new Date(session.onSince());
-    }
-
-    /**
-     * Gets the date at which the session was created or a login or
-     * logout was performed the last time.
-     *
-     * @return ...
-     */
-    public Date getLastModified() {
-        return new Date(session.lastModified());
-    }
-
-    /**
-     * Set's the http_referer on the session
      * 
-     * @param httpRef
+     * @param {String} id The AxiomObject id to add to  
+     * @param {Number} [layer] The 
      */
-    
-    public void setHttpReferer(String httpRef){
-    	session.setHttpReferer(httpRef);
-    }
-    
-    /**
-     * Returns the http_referer on the session
-     * 
-     */
-    public String getHttpReferer(){
-    	return session.getHttpReferer();
-    }
-    
-    public void setDraftIds(Object arr) {
-    	session.setDraftIds(arr, null);
+    public void addDraftId(Object id, Object layer) {
+        session.addDraftId(id, layer);
     }
 
-    public void setDraftIds(Object arr, Object layer) {
-        session.setDraftIds(arr, layer);
-    }
-    
     public void clearDraftIds() {
     	session.clearDraftIds(null);
     }
@@ -221,21 +60,166 @@ public class SessionBean implements Serializable {
     public void clearDraftIds(Object layer) {
     	session.clearDraftIds(layer);
     }
-    
-    public void addDraftId(Object id) {
-        session.addDraftId(id, null);
+
+    /**
+     * The unique identifier for a session object (session cookie).
+     * @type String
+     */
+    public String get_id() {
+        return session.getSessionId();
     }
-    
-    public void addDraftId(Object id, Object layer) {
-        session.addDraftId(id, layer);
+
+    /**
+     * The cache/data node for this session. This object may be used
+     * to store transient per-session data. 
+     * @type Object
+     */
+    public INode getData() {
+        return session.getCacheNode();
+    }
+
+    /** 
+     * The <code>Debug</code> object for this session, only applicable if in Rhino debug
+     * mode (i.e. rhino.debugger = true in app.properties)
+     * @type Debug
+     */
+    public Object getDebug() {
+    	return session.getDebugObject();
     }
     
     public Object getDraftIds() {
         return session.getDraftIds(null);
     }
-    
+
+    /**
+     * 
+     * @jsfunction
+     * @param {String|Number} [layer] 
+     * @return {Array} The AxiomObject ids that have object layering turned on in layer
+     */
     public Object getDraftIds(Object layer) {
         return session.getDraftIds(layer);
+    }
+
+    /**
+     * The http_referer that is used for determing where the user should be
+     * redirected to when logging in successfully after trying to view unauthorized
+     * material
+     * @type String
+     */
+    public String getHttpReferer(){
+    	return session.getHttpReferer();
+    }
+
+    /**
+     * The time this session was last touched.
+     * @type Date
+     */
+    public Date getLastActive() {
+        return new Date(session.lastTouched());
+    }
+
+    /**
+     * The date at which the session was created or a login or
+     * logout was performed the last time.
+     * @type Date
+     */
+    public Date getLastModified() {
+        return new Date(session.lastModified());
+    }
+
+    /**
+     * The date at which a user's session was started.
+     * @type Date
+     */
+    public Date getOnSince() {
+        return new Date(session.onSince());
+    }
+
+    /**
+     * The user object for this session. Value is null unless 
+     * the session.login method was previously invoked.
+     * @type Object
+     */
+    public INode getUser() {
+        return session.getUserNode();
+    }
+
+    /**
+     * Associates the current session with the user object.
+     *
+     * @jsfunction
+     * @param {AxiomObject} userNode The AxiomObject node representing the user.
+     */
+    public void login(INode userNode) {
+        session.login(userNode);
+    }
+    
+    /**
+     * Disassociate this session from any user object it may have been associated with.
+     * 
+     * @jsfunction
+     */
+    public void logout() {
+        session.logout();
+    }
+
+    /**
+     * Same as logout(), and also clears the data object (session.data) 
+     * and Debug object associated with this session.
+     * 
+     * @jsfunction
+     */
+    public void reset() {
+        session.reset();
+    }
+    
+    public void setDraftIds(Object arr) {
+    	session.setDraftIds(arr, null);
+    }
+    
+    /**
+     * 
+     * @param {Array} arr An array of AxiomObject ids on which object layering should be 
+     *                    turned on for the given layer
+     * @param {String|Number} [layer] The layer on which to turn object layering on for the
+     *                                input objects. A String 
+     */
+    public void setDraftIds(Object arr, Object layer) {
+        session.setDraftIds(arr, layer);
+    }
+    
+    /**
+     * Set the http_referer on to the session.  Http_referer refers to the
+     * URL the user reuqested and was unauthorized for.  When the user authenticates,
+     * the url can be retreived to redirect the user to their original request.
+     * 
+     * @jsfunction
+     * @param {String} httpRef The http_referer
+     */
+    public void setHttpReferer(String httpRef){
+    	session.setHttpReferer(httpRef);
+    }
+    
+    /**
+     * session's toString() method
+     *
+     * @jsfunction
+     * @returns {String} A string representation of the session
+     */
+    public String toString() {
+        return session.toString();
+    }
+    
+    /**
+     * Touching the session marks it as active, avoiding session timeout.
+     * Usually, sessions are touched when the user associated with it sends
+     * a request. This method may be used to artificially keep a session alive.
+     * 
+     * @jsfunction
+     */
+    public void touch() {
+        session.touch();
     }
     
 }

@@ -16,14 +16,16 @@
 
 package axiom.framework;
 
+import java.io.Serializable;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.mozilla.javascript.Scriptable;
 
-import java.io.Serializable;
-import java.util.Map;
-
 /**
+ * The RequestBean wraps a <code>RequestTrans</code> object and
+ * exposes it to the scripting framework.
+ * 
  * @jsinstance req
  */
 public class RequestBean implements Serializable {
@@ -32,146 +34,163 @@ public class RequestBean implements Serializable {
     /**
      * Creates a new RequestBean object.
      *
-     * @param req ...
+     * @param {RequestTrans} req
      */
     public RequestBean(RequestTrans req) {
         this.req = req;
     }
 
     /**
+     * Get the value for a given request parameter
      *
-     *
-     * @param name ...
-     *
-     * @return ...
+     * @jsfunction
+     * @param {String} name The name of the request parameter
+     * @returns {Object} The value for the input request parameter
      */
     public Object get(String name) {
         return req.get(name);
     }
 
-
     /**
-     * Return the method of the request. This may either be a HTTP method or
-     * one of the Helma pseudo methods defined in RequestTrans.
+     * The request's action
+     * @type String
      */
-    public String getMethod() {
-        return req.getMethod();
-    }
-
-    /**
-     *
-     *
-     * @return ...
-     */
-    public boolean isGet() {
-        return req.isGet();
-    }
-
-    /**
-     *
-     *
-     * @return ...
-     */
-    public boolean isPost() {
-        return req.isPost();
-    }
-
-    /**
-     * Returns the Servlet request represented by this RequestTrans instance.
-     * Returns null for internal and XML-RPC requests.
-     */
-    public HttpServletRequest getServletRequest() {
-        return req.getServletRequest();
-    }
-
-    /**
-     *
-     *
-     * @return ...
-     */
-    public String toString() {
-        return "[Request]";
-    }
-
-    // property related methods:
     public String getAction() {
         return req.getAction();
     }
 
     /**
-     *
-     *
-     * @return ...
+     * The request's content type
+     * @type String
      */
-    public Scriptable getData() {
-        return req.getRequestData();
-    }
-    
-    public Object getPostBody() {
-        return req.getPostBody();
-    }
-    
-    /**
-     *
-     *
-     * @return ...
-     */
-    public long getRuntime() {
-        return (System.currentTimeMillis() - req.getStartTime());
-    }
-
-    /**
-     *
-     *
-     * @return ...
-     */
-    public String getPath() {
-        return req.getPath();
-    }
-
-    /* Helma 1.6 Changes */
-    
-    /**
-     * @return the req.queryParams map containing parameters parsed from the query string
-     */
-    public Scriptable getQueryParams() {
-        return req.getQueryParams();
-    }
-
-    /**
-     * @return the req.postParams map containing params parsed from post data
-     */
-    public Scriptable getPostParams() {
-        return req.getPostParams();
-    }
-    
     public String getContentType() {
     	return this.req.getContentType();
     }
-    
+
     /**
-     * @return the req.cookies map containing cookies parsed from post data
+     * The cookies map containing cookies parsed from post data
+     * @type Object
      */
     public Scriptable getCookies() {
         return req.getCookies();
     }
 
     /**
-     * Proxy to HttpServletRequest.getHeaders(), returns header values as string array.
-     * @param name the header name
-     * @return the header values as string array
+     * The request data
+     * @type Object
+     */
+    public Scriptable getData() {
+        return req.getRequestData();
+    }
+
+    /**
+     * Proxy to HttpServletRequest.getHeader().
+     * 
+     * @jsfunction
+     * @param {String} name The header name
+     * @returns {String} The header value, or null
+     */
+    public String getHeader(String name) {
+        return req.getHeader(name);        
+    }
+
+    /**
+     * Proxy to HttpServletRequest.getHeaders(), returns header values as an array
+     * 
+     * @jsfunction
+     * @param {String} name The header name
+     * @return {Array} The header values as string array
      */
     public String[] getHeaders(String name) {
         return req.getHeaders(name);
     }
+
+    /**
+     * The method of the request. This may either be a HTTP method or
+     * one of the Axiom pseudo methods defined in RequestTrans.
+     * @type String
+     */
+    public String getMethod() {
+        return req.getMethod();
+    }
     
     /**
-     * Proxy to HttpServletRequest.getHeader().
-     * @param name the header name
-     * @return the header value, or null
+     * The request's path
+     * @type String
      */
-    public String getHeader(String name) {
-        return req.getHeader(name);        
+    public String getPath() {
+        return req.getPath();
+    }
+    
+    /**
+     * The body of the request's post
+     * @type Object
+     */
+    public Object getPostBody() {
+        return req.getPostBody();
+    }
+
+    /**
+     * The request parameters parsed from post data
+     * @type Object
+     */
+    public Scriptable getPostParams() {
+        return req.getPostParams();
+    }
+
+    /**
+     * The request parameters parsed from the query string
+     * @type Object
+     */
+    public Scriptable getQueryParams() {
+        return req.getQueryParams();
+    }
+
+    /**
+     * The amount of time the request has been running for (in milliseconds).
+     * @type Number
+     */
+    public long getRuntime() {
+        return (System.currentTimeMillis() - req.getStartTime());
+    }
+    
+    /**
+     * Returns the Servlet request represented by this RequestTrans instance.
+     * Returns null for internal and XML-RPC requests.
+     * @type javax.servlet.http.HttpServletRequest
+     */
+    public HttpServletRequest getServletRequest() {
+        return req.getServletRequest();
+    }
+    
+    /**
+     * Returns whether the request is of type HTTP GET
+     *
+     * @jsfunction
+     * @return {Boolean} 
+     */
+    public boolean isGet() {
+        return req.isGet();
+    }
+
+    /**
+     * Returns whether the request is of type HTTP POST
+     *
+     * @jsfunction
+     * @return {Boolean} 
+     */
+    public boolean isPost() {
+        return req.isPost();
+    }
+    
+    /**
+     * request's toString() method
+     *
+     * @jsfunction
+     * @returns {String} A string representation of the request
+     */
+    public String toString() {
+        return "[Request]";
     }
 
 }

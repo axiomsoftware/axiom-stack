@@ -16,7 +16,6 @@
 
 package axiom.framework.core;
 
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -46,9 +45,14 @@ import axiom.util.CronJob;
 import axiom.util.WrappedMap;
 
 /**
+ * The ApplicationBean class exposes many application level functions and utilities at
+ * the scripting framework level.
+ * 
  * @jsinstance app
  */
+
 public class ApplicationBean implements Serializable {
+	
     Application app;
     WrappedMap properties = null;
     Object cachedRewriteRules = null;
@@ -56,92 +60,38 @@ public class ApplicationBean implements Serializable {
     /**
      * Creates a new ApplicationBean object.
      *
-     * @param app ...
+     * @param Application app
      */
     public ApplicationBean(Application app) {
         this.app = app;
     }
 
-    /**
-     * Clear the application cache.
-     */
-    public void clearCache() {
-        app.clearCache();
+    public void addCronJob(String functionName) {
+        CronJob job = new CronJob(functionName);
+
+        job.setFunction(functionName);
+        app.customCronJobs.put(functionName, job);
     }
 
     /**
-     * Get the app's event logger. This is a Log with the
-     * category helma.[appname].event.
+     * Adds a global function to the list of scheduled tasks that are called at 
+     * the defined interval.
      *
-     * @return the app logger.
+     * @jsfunction
+     * @param {String} functionName Name of the global function to be called.
+     * @param {String} [year] Year (yyyy)
+     * @param {String} [month] Month (1-12)
+     * @param {String} [day] Day (0-31)
+     * @param {String} [weekday] Day of week (0-6, with 0 being Sunday)
+     * @param {String} [hour] Hour (0-23)
+     * @param {String} [minute] (0-59)
      */
-    public Log getLogger() {
-        return app.getEventLog();
-    }
+    public void addCronJob(String functionName, String year, String month, String day,
+                           String weekday, String hour, String minute) {
+        CronJob job = CronJob.newJob(functionName, year, month, 
+        								day, weekday, hour, minute);
 
-    /**
-     * Get the app logger. This is a commons-logging Log with the
-     * category <code>logname</code>.
-     *
-     * @return a logger for the given log name.
-     */
-    public Log getLogger(String logname) {
-        return  LogFactory.getLog(logname);
-    }
-
-    /**
-     * Log a INFO message to the app log.
-     *
-     * @param msg the log message
-     */
-    public void log(Object msg) {
-    	if (msg != null) {
-    		getLogger().info(msg);
-    	}
-    }
-
-    /**
-     * Log a INFO message to the log defined by logname.
-     *
-     * @param logname the name (category) of the log
-     * @param msg the log message
-     */
-    public void log(String logname, Object msg) {
-        getLogger(logname).info(msg);
-    }
-
-    /**
-     * Log a DEBUG message to the app log if debug is set to true in
-     * app.properties.
-     *
-     * @param msg the log message
-     */
-    public void debug(Object msg) {
-        if (app.debug()) {
-            getLogger().debug(msg);
-        }
-    }
-
-    /**
-     * Log a DEBUG message to the log defined by logname
-     * if debug is set to true in app.properties.
-     *
-     * @param logname the name (category) of the log
-     * @param msg the log message
-     */
-    public void debug(String logname, Object msg) {
-        if (app.debug()) {
-            getLogger(logname).debug(msg);
-        }
-    }
-
-    /**
-     * Returns the app's repository list.
-     *
-     * @return the an array containing this app's repositories
-     */
-    public Object[] getRepositories() {
-        return app.getRepositories().toArray();
+        app.customCronJobs.put(functionName, job);
     }
 
     /**
@@ -149,7 +99,8 @@ public class ApplicationBean implements Serializable {
      * is automatically added, if the original library path does not
      * point to an existing file or directory.
      *
-     * @param obj the repository, relative or absolute path to the library.
+     * @jsfunction
+     * @param {Object} repository The repository, relative or absolute path to the library.
      */
     public void addRepository(Object obj) {
         Repository rep = null;
@@ -172,7 +123,8 @@ public class ApplicationBean implements Serializable {
                     rep = new ZipRepository(file);
                 } 
             } else {
-                throw new RuntimeException("Unrecognized file type in addRepository: " + obj);
+                throw new RuntimeException("Unrecognized file type in addRepository: " 
+                		+ obj);
             }
         } else if (obj instanceof Repository) {
             rep = (Repository) obj;
@@ -185,279 +137,82 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * The app's classloader
-     * @type ClassLoader
+     * Clear the application cache.
+     * 
+     * @jsfunction
      */
-    public ClassLoader getClassLoader() {
-        return app.getClassLoader();
+    public void clearCache() {
+        app.clearCache();
     }
 
     /**
-     *
-     *
-     * @return ...
+     * @jsfunction
+     * @returns {Number} Number of currently active sessions in this application
      */
     public int countSessions() {
         return app.countSessions();
     }
 
-    /**
-     *
-     *
-     * @param sessionID ...
-     *
-     * @return ...
-     */
-    public SessionBean getSession(String sessionID) {
-        if (sessionID == null) {
-            return null;
-        }
-
-        Session session = app.getSession(sessionID.trim());
-
-        if (session == null) {
-            return null;
-        }
-
-        return new SessionBean(session);
-    }
-
-    /**
-     *
-     *
-     * @return ...
-     */
-    public SessionBean[] getSessions() {
-        Map sessions = app.getSessions();
-        SessionBean[] array = new SessionBean[sessions.size()];
-        int i = 0;
-
-        Iterator it = sessions.values().iterator();
-        while (it.hasNext()) {
-            array[i++] = new SessionBean((Session) it.next());
-        }
-
-        return array;
-    }
-
-    /**
-     * Array of currently authenticated users associated with an active session. 
-     * @type AxiomObject[]
-     */
-    public INode[] getActiveUsers() {
-        List activeUsers = app.getActiveUsers();
-
-        return (INode[]) activeUsers.toArray(new INode[0]);
-    }
-
-    /**
-     *
-     *
-     * @param usernode ...
-     *
-     * @return ...
-     */
-    public SessionBean[] getSessionsForUser(INode usernode) {
-        if (usernode == null) {
-            return new SessionBean[0];
-        } else {
-            return getSessionsForUser(usernode.getName());
+    public void debug(Object msg) {
+        if (app.debug()) {
+            getLogger().debug(msg);
         }
     }
 
     /**
+     * Log a DEBUG message to the log defined by logname
+     * if debug is set to true in app.properties.
      *
-     *
-     * @param username ...
-     *
-     * @return ...
+     * @jsfunction
+     * @param {String} [logname] The name (category) of the log. Defaults to the app log.
+     * @param {Object} msg The log message
      */
-    public SessionBean[] getSessionsForUser(String username) {
-        if ((username == null) || "".equals(username.trim())) {
-            return new SessionBean[0];
+    public void debug(String logname, Object msg) {
+        if (app.debug()) {
+            getLogger(logname).debug(msg);
         }
+    }
 
-        List userSessions = app.getSessionsForUsername(username);
-
-        return (SessionBean[]) userSessions.toArray(new SessionBean[0]);
+    public void deleteDraft(Object obj) throws Exception {
+    	this.deleteDraft(obj, null);
     }
 
     /**
+     * Delete an object in the system at the specified layer.
      *
-     *
-     * @param functionName ...
+     * @jsfunction
+     * @param {AxiomObject} object The object to be deleted at the specified layer.
+     * @param {Number} [layer] The layer on which to delete the object.  
+     *                         If no layer is specified, default to the layer above the 
+     *                         one on which the input AxiomObject resides.
+     * @throws Exception
      */
-    public void addCronJob(String functionName) {
-        CronJob job = new CronJob(functionName);
-
-        job.setFunction(functionName);
-        app.customCronJobs.put(functionName, job);
+    public void deleteDraft(Object obj, Object layer) throws Exception {
+    	Node node = null;
+    	if (obj instanceof AxiomObject) {
+    		node = (Node) ((AxiomObject) obj).getNode();
+    	} else if (obj instanceof Node) {
+    		node = (Node) obj;
+    	}
+    	
+    	if (node == null) {
+    		throw new Exception("Input parameter " + obj + " is not a valid object.");
+    	}
+    	
+    	DbKey key = (DbKey) node.getKey();
+    	int mode = key.getLayer() + 1;
+    	if (layer != null && layer != Undefined.instance) {
+    		mode = getLayer(layer);
+    	}
+    	
+    	this.app.getNodeManager().deleteNodeInLayer(node, mode);
     }
 
     /**
-     * Adds a global function to the list of scheduled tasks that are called at the defined interval.
-     *
-     * @param {String} functionName Name of the global function to be called.
-     * @param {String} [year] Year (yyyy)
-     * @param {String} [month] Month (1-12)
-     * @param {String} [day] Day (0-31)
-     * @param {String} [weekday] Day of week (0-6, with 0 being Sunday)
-     * @param {String} [hour] Hour (0-23)
-     * @param {String} [minute] (0-59)
-     */
-    public void addCronJob(String functionName, String year, String month, String day,
-                           String weekday, String hour, String minute) {
-        CronJob job = CronJob.newJob(functionName, year, month, day, weekday, hour, minute);
-
-        app.customCronJobs.put(functionName, job);
-    }
-
-    /**
-     *
-     *
-     * @param functionName ...
-     */
-    public void removeCronJob(String functionName) {
-        app.customCronJobs.remove(functionName);
-    }
-
-    /**
-     * Read-only map of the axiom cron jobs registered with the app.
-     * @type Map
-     */
-    public Map getCronJobs() {
-        return new WrappedMap(app.customCronJobs, true);
-    }
-
-    /**
-     * Number of elements in the NodeManager's cache
-     * @type Number
-     */
-    public int getCacheusage() {
-        return app.getCacheUsage();
-    }
-
-    /**
-     * Cache used to store global application specific data during runtime.
-     * @type Object
-     */
-    public INode getData() {
-        return app.getCacheNode();
-    }
-
-    /**
-     * Returns the absolute path of the app dir. When using repositories this
-     * equals the first file based repository.
-     *
-     * @return the app dir
-     */
-    public String getDir() {
-        return app.getAppDir().getAbsolutePath();
-    }
-    
-    /**
-     * The domain accepted for sessions.  Set in app.properties.
-     * @type String
-     */
-    public String getCookieDomain(){
-    	return app.getCookieDomain();
-    }
-
-    /**
-     * @return the app name
-     */
-    public String getName() {
-        return app.getName();
-    }
-
-    /**
-     * @return the application start time
-     */
-    public Date getUpSince() {
-        return new Date(app.starttime);
-    }
-
-    /**
-     * @return the number of requests processed by this app
-     */
-    public long getRequestCount() {
-        return app.getRequestCount();
-    }
-
-    /**
-     * Number of unhandled exceptions thrown by the current application. 
-     * @type Number
-     */
-    public long getErrorCount() {
-        return app.getErrorCount();
-    }
-
-    /**
-     * @return the wrapped axiom.framework.core.Application object
+     * @type the wrapped axiom.framework.core.Application object
      */
     public Application get__app__() {
         return app;
-    }
-
-    /**
-     * Get a wrapper around the app's properties
-     *
-     * @return a readonly wrapper around the application's app properties
-     */
-    public Map getProperties() {
-        if (properties == null) {
-            properties = new WrappedMap(app.getProperties(), true);
-        }
-        return properties;
-    }
-
-    /**
-     * Wrapper around the app's db properties- map of name/value pairs in the db.properties file.	
-     * @type Map
-     */
-    public Map getDbProperties() {
-        return new WrappedMap(app.getDbProperties(), true);
-    }
-    
-    /**
-     * Return a DbSource object for a given name.
-     * @jsfunction
-     */
-    public DbSource getDbSource(String name) {
-        return app.getDbSource(name);
-    }
-
-    /**
-     * Get an array of this app's prototypes
-     *
-     * @return an array containing the app's prototypes
-     */
-    public String[] getPrototypes() {
-        return app.getPrototypeNames();
-    }
-
-    /**
-     * Get a prototype's list of resources
-     *
-     * @param name the prototype name
-     * @return the list of resources
-     */
-    public Scriptable getPrototypeResources(String name) {
-        Resource[] rsrcs = app.getPrototypeByName(name).getResources();
-        ArrayList list = new ArrayList();
-        Scriptable global = ((RhinoEngine) this.app.getCurrentRequestEvaluator().getScriptingEngine()).getGlobal();
-        for (int i = 0; i < rsrcs.length; i++) {
-        	list.add(Context.toObject(rsrcs[i], global));
-        }
-        return Context.getCurrentContext().newArray(global, list.toArray());
-    }
-
-    /**
-     * Number of free threads for this application.
-     * @type Number
-     */
-    public int getFreeThreads() {
-        return app.countFreeEvaluators();
     }
 
     /**
@@ -469,37 +224,68 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     *
-     *
-     * @return ...
+     * Array of currently authenticated users associated with an active session. 
+     * @type Array
      */
-    public int getMaxThreads() {
-        return app.countEvaluators();
+    public Object getActiveUsers() {
+        List activeUsers = app.getActiveUsers();
+        return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+        							.newArray(activeUsers.toArray());
     }
 
     /**
-     *
-     *
-     * @param n ...
+     * Current version number of Axiom.
+     * @type String
      */
-    public void setMaxThreads(int n) {
-        // add one to the number to compensate for the internal scheduler.
-        app.setNumberOfEvaluators(n + 1);
+    public String getAxiomVersion() {
+        return Server.version;
     }
 
     /**
-     *
-     *
-     * @return ...
+     * The absolute path to the directory where Axiom stores binary blobs for 
+     * File and Image objects.
+     * @type String 
      */
-    public String getServerDir() {
-        File f = app.getServerDir();
+    public String getBlobDir() {
+        return this.app.getBlobDir();
+    }
 
-        if (f == null) {
-            return app.getAppDir().getAbsolutePath();
-        }
+    /**
+     * Fetch an AxiomObject by its canonical path.
+     * 
+     * @jsfunction
+     * @param {String} path
+     * @returns {AxiomObject} AxiomObject at the given path
+     */
+    public Object getByPath(Object path) {
+    	if (path == null || path == Undefined.instance) {
+    		return null;
+    	}
+    	
+    	String spath = null;
+    	if (path instanceof String) {
+    		spath = (String) path;
+    	} else if (path instanceof Scriptable) {
+    		spath = ScriptRuntime.toString(path);
+    	} else {
+    		spath = path.toString();
+    	}
+    	
+    	Object node = AxiomObject.traverse(spath, this.app);
+    	
+    	if (node != null) {
+    		return Context.toObject(node, RhinoEngine.getRhinoCore(this.app).getScope());
+    	}
+    	
+    	return null;
+    }
 
-        return f.getAbsolutePath();
+    /**
+     * Number of AxiomObjects stored in cache
+     * @type Number
+     */
+    public int getCacheusage() {
+        return app.getCacheUsage();
     }
 
     /**
@@ -511,53 +297,268 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     *
-     *
-     * @return ...
+     * The app's classloader
+     * @type ClassLoader
      */
-    public String toString() {
-        return "[Application " + app.getName() + "]";
+    public ClassLoader getClassLoader() {
+        return app.getClassLoader();
     }
-    
+
     /**
-     * Allow Javascript to update the application's prototype resources.
-     */
-    public void updateResources() {
-        try {
-            this.app.updateResources();
-        } catch (Exception ex) {
-        	this.app.logError(ErrorReporter.errorMsg(this.getClass(), "updateResources"), ex);
-        }
-    }
-    
-    public String getTmpDir() {
-        return app.getTmpDir();
-    }
- 
-    /**
-     * Current version number of Axiom.
+     * The domain accepted for sessions.  Set in app.properties.
      * @type String
      */
-    public String getAxiomVersion() {
-        return Server.version;
+    public String getCookieDomain(){
+    	return app.getCookieDomain();
+    }
+
+    /**
+     * Read-only map of the axiom cron jobs registered with the app.
+     * @type Map
+     */
+    public Map getCronJobs() {
+        return new WrappedMap(app.customCronJobs, true);
+    }
+
+    /**
+     * Cache used to store global application specific data during runtime.
+     * @type Object
+     */
+    public INode getData() {
+        return app.getCacheNode();
+    }
+
+    /**
+     * Wrapper around the app's db properties (name/value pairs in the db.properties file)	
+     * @type Map
+     */
+    public Map getDbProperties() {
+        return new WrappedMap(app.getDbProperties(), true);
+    }
+
+    /**
+     * Return a DbSource object for a given name, DbSource objects are defined 
+     * through the db.properties file.
+     * 
+     * @jsfunction
+     * @param {String} name The name of the db source
+     * @returns {DbSource} The DbSource object
+     */
+    public DbSource getDbSource(String name) {
+        return app.getDbSource(name);
     }
     
+    /**
+     * Returns the absolute path of the app dir. 
+     * @type String
+     */
+    public String getDir() {
+        return app.getAppDir().getAbsolutePath();
+    }
+
+    /**
+     * Get the domains set as draftHosts for the specified layer.
+     * @jsfunction
+     * @param {Number} [layer] The layer for which to get the corresponding domains, 
+     * 						   defaults to the live layer if non specified.
+     * @returns {Array} Array of domains matched. 
+     */
+    public Object getDomains(Object layer) {
+    	int mode = DbKey.LIVE_LAYER;
+    	if (layer != null && layer != Undefined.instance) {
+    		mode = getLayer(layer);
+    	}
+    	
+    	Object[] domains = this.app.getDomainsForLayer(mode);
+    	return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+								.newArray(domains);
+    }
+
+    public Object getDraft(Object obj) throws Exception {
+    	return this.getDraft(obj, null);
+    }
+
+    /**
+     * Get the draft copy of obj residing at layer, creating one if none currently exists.
+     * @jsfunction
+     * @param {AxiomObject} obj
+     * @param {Number} [layer] The layer on which to delete the object. If no layer is 
+     *                         specified, default to the layer above the one on which
+     *                         the AxiomObject resides.
+     * @returns {AxiomObject} draft copy of obj at layer
+     * @throws Exception
+     */
+    public Object getDraft(Object obj, Object layer) throws Exception {
+    	Node node = null;
+    	if (obj instanceof AxiomObject) {
+    		node = (Node) ((AxiomObject) obj).getNode();
+    	} else if (obj instanceof Node) {
+    		node = (Node) obj;
+    	}
+    	
+    	if (node == null) {
+    		throw new Exception("Input parameter " + obj + " is not a valid object.");
+    	}
+    	
+    	int mode = node.getLayerInStorage() + 1;
+    	if (layer != null && layer != Undefined.instance) {
+    		mode = getLayer(layer);
+    	}
+    	
+    	return this.app.getNodeManager().getNodeInLayer(node, mode);
+    }
+
+    /**
+     * Number of unhandled exceptions thrown by the current application. 
+     * @type Number
+     */
+    public long getErrorCount() {
+        return app.getErrorCount();
+    }
+
     public Scriptable getFields(Object field) throws Exception {
         return getQueryBean().fields(field, null, null);
     }
-    
+
     public Scriptable getFields(Object field, Object prototype) throws Exception {
         return getQueryBean().fields(field, prototype, null);
     }
-    
+
     public Scriptable getFields(Object field, Object prototype, Object filter) 
     throws Exception {
         return getQueryBean().fields(field, prototype, filter);
     }
     
-    public Scriptable getFields(Object field, Object prototype, Object filter, Object optional1) 
-    throws Exception {
+    /**
+     * Get an array of field values for the specified fields on all the objects that match the search criteria
+     * 
+     * @jsfunction
+     * @param {String|Array} field The field(s) values to return in the array 
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Array} An array of field values
+     * @throws Exception
+     */
+    public Scriptable getFields(Object field, Object prototype, Object filter, 
+    		Object optional1) throws Exception {
         return getQueryBean().fields(field, prototype, filter, optional1);
+    }
+
+    /**
+     * Number of free threads for this application.
+     * @type Number
+     */
+    public int getFreeThreads() {
+        return app.countFreeEvaluators();
+    }
+
+    public int getHitCount() throws Exception {
+        return getQueryBean().getHitCount(null, null, null);
+    }
+
+    public int getHitCount(Object prototype) throws Exception {
+        return getQueryBean().getHitCount(prototype, null, null);
+    }
+
+    public int getHitCount(Object prototype, Object filter) throws Exception {
+        return getQueryBean().getHitCount(prototype, filter, null);
+    }
+
+    /**
+     * Returns the number of objects that match the search criteria
+     * 
+     * @jsfunction
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     * 							 (sort, max results, etc) 
+     * @returns {Number} The number of objects that match the search criteria
+     * @throws Exception
+     */
+    public int getHitCount(Object prototype, Object filter, Object options) 
+    throws Exception {
+        return getQueryBean().getHitCount(prototype, filter, options);
+    }
+
+    public Object getHits() throws Exception {
+        return getQueryBean().hits(null, null);
+    }
+
+    public Object getHits(Object prototype) throws Exception {
+        return getQueryBean().hits(prototype, null);
+    }
+
+    public Object getHits(Object prototype, Object filter) 
+    throws Exception {
+        return getQueryBean().hits(prototype, filter);
+    }
+
+    /**
+     * Returns a HitsObject that contains the results of the search
+     * 
+     * @jsfunction
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {HitsObject} The results in HitsObject form, so they are not all
+     * 						 loaded at once.
+     * @throws Exception
+     */
+    public Object getHits(Object prototype, Object filter, Object optional1) 
+    throws Exception {
+        return getQueryBean().hits(prototype, filter, optional1);
+    }
+    
+    /**
+     * The host name of the server upon which this application is running
+     * @type String
+     */
+    public Object getHostName() {
+    	try {
+    		return java.net.InetAddress.getLocalHost().getHostName();
+    	} catch (Exception ex) {
+    		this.app.logError(ErrorReporter.errorMsg(this.getClass(), "getHostName"), ex);
+    		return null;
+    	}
+    }
+    
+    public Log getLogger() {
+        return app.getEventLog();
+    }
+ 
+    /**
+     * Get the app logger. This is a commons-logging Log with the
+     * category <code>logname</code>.
+     *
+     * @jsfunction
+     * @param {String} [logname] The name of the log, if none is specified, 
+     *                           defaults to the axiom.[appname].log file
+     * @returns {Log} A logger for the given log name.
+     */
+    public Log getLogger(String logname) {
+        return  LogFactory.getLog(logname);
+    }
+    
+    /**
+     * Maximum number of simultaneous threads allowed by this application.
+     * @type Number
+     */
+    public int getMaxThreads() {
+        return app.countEvaluators();
+    }
+    
+    /**
+     * The name of the application.
+     * @type String
+     */
+    public String getName() {
+        return app.getName();
     }
     
     public Scriptable getObjects() throws Exception {
@@ -573,124 +574,110 @@ public class ApplicationBean implements Serializable {
         return getQueryBean().objects(prototype, filter);
     }
     
-    public Scriptable getObjects(Object prototype, Object filter, Object optional1) 
+    /**
+     * Returns an array of AxiomObjects that match the search criteria.
+     * 
+     * @jsfunction
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Array} An array of AxiomObjects
+     * @throws Exception
+     */
+    public Scriptable getObjects(Object prototype, Object filter, Object options) 
     throws Exception {
-        return getQueryBean().objects(prototype, filter, optional1);
-    }
-    
-    public Object getHits() throws Exception {
-        return getQueryBean().hits(null, null);
-    }
-    
-    public Object getHits(Object prototype) throws Exception {
-        return getQueryBean().hits(prototype, null);
-    }
-    
-    public Object getHits(Object prototype, Object filter) 
-    throws Exception {
-        return getQueryBean().hits(prototype, filter);
+        return getQueryBean().objects(prototype, filter, options);
     }
     
     /**
-     * @jsfunction getHits 
+     * A readonly wrapper around the application's app properties
+     * @type Map 
      */
-    public Object getHits(Object prototype, Object filter, Object optional1) 
-    throws Exception {
-        return getQueryBean().hits(prototype, filter, optional1);
+    public Map getProperties() {
+        if (properties == null) {
+            properties = new WrappedMap(app.getProperties(), true);
+        }
+        return properties;
     }
     
-    public int getHitCount() throws Exception {
-        return getQueryBean().getHitCount(null, null, null);
+    /**
+     * Get a prototype's list of resources
+     *
+     * @jsfunction
+     * @param {String} name The prototype name
+     * @returns {Array} The list of resources
+     */
+    public Scriptable getPrototypeResources(String name) {
+        Resource[] rsrcs = app.getPrototypeByName(name).getResources();
+        ArrayList list = new ArrayList();
+        Scriptable global = ((RhinoEngine) this.app.getCurrentRequestEvaluator()
+        										.getScriptingEngine()).getGlobal();
+        for (int i = 0; i < rsrcs.length; i++) {
+        	list.add(Context.toObject(rsrcs[i], global));
+        }
+        return Context.getCurrentContext().newArray(global, list.toArray());
     }
     
-    public int getHitCount(Object prototype) throws Exception {
-        return getQueryBean().getHitCount(prototype, null, null);
+    /**
+     * An array of this app's prototypes
+     * @type Array
+     */
+    public Object getPrototypes() {
+    	Object[] arr = app.getPrototypeNames();
+    	return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+							.newArray(arr);
     }
     
-    public int getHitCount(Object prototype, Object filter) throws Exception {
-        return getQueryBean().getHitCount(prototype, filter, null);
-    }
-    
-    public int getHitCount(Object prototype, Object filter, Object options) throws Exception {
-        return getQueryBean().getHitCount(prototype, filter, options);
-    }
-    
-    public Object getTargets(Object source) throws Exception {
-        return getQueryBean().targets(source);
-    }
-    
-    public Object getTargets(Object source, Object prototypes) throws Exception {
-        return getQueryBean().targets(source, prototypes);
-    }
-    
-    public Object getTargets(Object source, Object prototypes, Object filter) 
-    throws Exception {
-        return getQueryBean().targets(source, prototypes, filter);
-    }
-    
-    public Object getTargets(Object source, Object prototypes, Object filter, Object options) 
-    throws Exception {
-        return getQueryBean().targets(source, prototypes, filter, options);
-    }
-    
-    public Object getSources(Object target) throws Exception {
-        return getQueryBean().sources(target);
-    }
-    
-    public Object getSources(Object target, Object prototypes) throws Exception {
-        return getQueryBean().sources(target, prototypes);
-    }
-    
-    public Object getSources(Object target, Object prototypes, Object filter) 
-    throws Exception {
-        return getQueryBean().sources(target, prototypes, filter);
-    }
-    
-    public Object getSources(Object target, Object prototypes, Object filter, Object options) 
-    throws Exception {
-        return getQueryBean().sources(target, prototypes, filter, options);
-    }
-    
-    public int getTargetCount(Object source) throws Exception {
-        return getQueryBean().targetCount(source);
-    }
-    
-    public int getTargetCount(Object source, Object prototypes) throws Exception {
-        return getQueryBean().targetCount(source, prototypes);
-    }
-    
-    public int getTargetCount(Object source, Object prototypes, Object filter) 
-    throws Exception {
-        return getQueryBean().targetCount(source, prototypes, filter);
-    }
-    
-    public int getTargetCount(Object source, Object prototypes, Object filter, Object options) 
-    throws Exception {
-        return getQueryBean().targetCount(source, prototypes, filter, options);
-    }
-    
-    public int getSourceCount(Object target) throws Exception {
-        return getQueryBean().sourceCount(target);
-    }
-    
-    public int getSourceCount(Object target, Object prototypes) throws Exception {
-        return getQueryBean().sourceCount(target, prototypes);
-    }
-    
-    public int getSourceCount(Object target, Object prototypes, Object filter) 
-    throws Exception {
-        return getQueryBean().sourceCount(target, prototypes, filter);
-    }
-    
-    public int getSourceCount(Object target, Object prototypes, Object filter, Object options) 
-    throws Exception {
-        return getQueryBean().sourceCount(target, prototypes, filter, options);
-    }
-
+    /**
+     * Returns an array of Reference objects representing all references in the system 
+     * where source has a reference to target
+     * 
+     * @jsfunction
+     * @param {AxiomObject|String} source An AxiomObject as the source of the reference, 
+     *                                    or a String denoting the AxiomObject's path. 
+     *                                    If a String is specified and the path ends with
+     *                                    '**' (e.g. /path/to/foo/**), then all objects
+     *                                    located under foo will be included in 
+     *                                    retrieving references. 
+     *
+     * @param {AxiomObject|String target An AxiomObject as the target of the reference, 
+     *                                   or a String denoting the AxiomObject's path. 
+     *                                   If a String is specified and the path ends with
+     *                                   '**' (e.g. /path/to/foo/**), then all objects
+     *                                   located under foo will be included in 
+     *                                   retrieving references. 
+     * @return {Array} An array of reference objects
+     * @throws Exception
+     */
     public Scriptable getReferences(Object source, Object target) throws Exception {
         return getQueryBean().references(source, target);    	
     }
     
+    /**
+     * An array containing this app's repositories
+     * @type Array
+     */
+    public Object getRepositories() {
+        Object[] arr = app.getRepositories().toArray();
+        return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+								.newArray(arr);
+    }
+    
+    /**
+     * The total number of requests processed by this app
+     * @type Number
+     */
+    public long getRequestCount() {
+        return app.getRequestCount();
+    }
+    
+    /**
+     * A javascript object containing a mapping of all the rewrite rules 
+     * defined in rewrite.properties
+     * @type Object
+     */
     public Object getRewriteRules() {
         if (this.cachedRewriteRules != null) {
             return this.cachedRewriteRules;
@@ -719,190 +706,20 @@ public class ApplicationBean implements Serializable {
         return ret;
     }
     
-    private QueryBean getQueryBean() {
-        QueryBean qb = this.app.qbean;
-        RequestEvaluator reqev = this.app.getCurrentRequestEvaluator();
-        if (reqev != null) {
-            RhinoEngine re = (RhinoEngine) reqev.scriptingEngine;
-            qb.setRhinoCore(re.getCore());
-        } else {
-            qb.setRhinoCore(null);
-        }
-        return qb;
-    }
-    
-    /**
-     * The absolute path to the directory where Axiom stores binary blobs for File and Image objects.
-     * @type String 
-     */
-    public String getBlobDir() {
-        return this.app.getBlobDir();
-    }
-    
-    public String getStaticMountpoint(){
-    	return this.getStaticMountpoint(null);    	
-    }
-    
-    public String getStaticMountpoint(Object action){
-    	return this.app.getStaticMountpoint(action);
-    }
-    
-    public Object getDraft(Object obj) throws Exception {
-    	return this.getDraft(obj, null);
-    }
-    
-    /**
-     * Get the draft copy of obj residing at layer, creating one if none currently exists.
-     * @jsfunction
-     * @param AxiomObject obj
-     * @param Number layer
-     * @return AxiomObject
-     */
-    public Object getDraft(Object obj, Object layer) throws Exception {
-    	Node node = null;
-    	if (obj instanceof AxiomObject) {
-    		node = (Node) ((AxiomObject) obj).getNode();
-    	} else if (obj instanceof Node) {
-    		node = (Node) obj;
-    	}
-    	
-    	if (node == null) {
-    		throw new Exception("Input parameter " + obj + " is not a valid object.");
-    	}
-    	
-    	int mode = node.getLayerInStorage() + 1;
-    	if (layer != null && layer != Undefined.instance) {
-    		mode = getLayer(layer);
-    	}
-    	
-    	return this.app.getNodeManager().getNodeInLayer(node, mode);
-    }
-    
-    public void deleteDraft(Object obj) throws Exception {
-    	this.deleteDraft(obj, null);
-    }
-    
-    public void deleteDraft(Object obj, Object layer) throws Exception {
-    	Node node = null;
-    	if (obj instanceof AxiomObject) {
-    		node = (Node) ((AxiomObject) obj).getNode();
-    	} else if (obj instanceof Node) {
-    		node = (Node) obj;
-    	}
-    	
-    	if (node == null) {
-    		throw new Exception("Input parameter " + obj + " is not a valid object.");
-    	}
-    	
-    	DbKey key = (DbKey) node.getKey();
-    	int mode = key.getLayer() + 1;
-    	if (layer != null && layer != Undefined.instance) {
-    		mode = getLayer(layer);
-    	}
-    	
-    	this.app.getNodeManager().deleteNodeInLayer(node, mode);
-    }
-    
-    public void saveDraft(Object obj) throws Exception {
-    	this.saveDraft(obj, null);
-    }
-    
-    public void saveDraft(Object obj, Object layer) throws Exception {
-    	Node node = null;
-    	if (obj instanceof AxiomObject) {
-    		node = (Node) ((AxiomObject) obj).getNode();
-    	} else if (obj instanceof Node) {
-    		node = (Node) obj;
-    	}
-    	
-    	if (node == null) {
-    		throw new Exception("Input parameter " + obj + " is not a valid object.");
-    	}
-    	
-    	DbKey key = (DbKey) node.getKey();
-    	int mode = key.getLayer() - 1;
-    	if (mode < 0) {
-    		this.app.logEvent(ErrorReporter.warningMsg(this.getClass(), "saveDraft") 
-    				+ "Called on " + obj + ", which is in the LIVE layer. No operation performed.");
-    		return;
-    	}
-    	
-    	if (layer != null && layer != Undefined.instance) {
-    		mode = getLayer(layer);
-    	}
-    	
-    	this.app.getNodeManager().saveNodeInLayer(node, mode);
-    }
-
-    /**
-     * Get the domains set as draftHosts for the specified layer.
-     * @jsfunction
-     * @param Number layer
-     * @return String[] Array of domains matched. 
-     */
-    public Object getDomains(Object layer) {
-    	int mode = DbKey.LIVE_LAYER;
-    	if (layer != null && layer != Undefined.instance) {
-    		mode = getLayer(layer);
-    	}
-    	
-    	Object[] domains = this.app.getDomainsForLayer(mode);
-    	Context cx = Context.getCurrentContext();
-    	return cx.newArray(new ImporterTopLevel(cx), domains);
-    }
-    
-    private int getLayer(Object layer) {
-    	int mode = DbKey.LIVE_LAYER;
-    	if (layer == null || layer == Undefined.instance) {
-    		return mode;
-    	}
-    	if (layer instanceof Number) {
-			mode = ((Number) layer).intValue();
-		} else if (layer instanceof String) {
-			mode = this.app.getLayer((String) layer);
-		} else if (layer instanceof Scriptable) {
-			String classname = ((Scriptable) layer).getClassName();
-			if ("Number".equals(classname)) {
-				mode = ScriptRuntime.toInt32(layer);
-			} else if ("String".equals(classname)) {
-				mode = this.app.getLayer(ScriptRuntime.toString(layer));
-			}
-		} 
-    	return mode;
-    }
-    
-    /**
-     * Fetch an AxiomObject by its canonical path.
-     * @param String path
-     * @jsfunction
-     * @return AxiomObject AxiomObject at path
-     */
-    public Object getByPath(Object path) {
-    	if (path == null || path == Undefined.instance) {
-    		return null;
-    	}
-    	
-    	String spath = null;
-    	if (path instanceof String) {
-    		spath = (String) path;
-    	} else if (path instanceof Scriptable) {
-    		spath = ScriptRuntime.toString(path);
-    	} else {
-    		spath = path.toString();
-    	}
-    	
-    	Object node = AxiomObject.traverse(spath, this.app);
-    	
-    	if (node != null) {
-    		return Context.toObject(node, RhinoEngine.getRhinoCore(this.app).getScope());
-    	}
-    	
-    	return null;
-    }
-    
     public Scriptable getSchema(Object proto) {
     	return this.getSchema(proto, null);
     }
+    
+    /**
+     * Get the schema (defined in prototype.properties) for a particular prototype
+     * 
+     * @jsfunction
+     * @param String prototype The prototype to get the schema for
+     * @param Boolean [ignoreInternalProperties] True to ignore the internal properties 
+     *                                           (those starting with an underscore), 
+     *                                           false to include them. Defaults to true.
+     * @returns Object Javascript hash of the schema for the prototype
+     */
     
     public Scriptable getSchema(Object proto, Object arg) {
     	if (proto == null || proto == Undefined.instance) {
@@ -925,17 +742,413 @@ public class ApplicationBean implements Serializable {
     	return null;
     }
     
-    public Object getHostName() {
-    	try {
-    		return java.net.InetAddress.getLocalHost().getHostName();
-    	} catch (Exception ex) {
-    		this.app.logError(ErrorReporter.errorMsg(this.getClass(), "getHostName"), ex);
-    		return null;
-    	}
+    /**
+     * The directory of the Axiom server
+     * @type String
+     */
+    public String getServerDir() {
+        File f = app.getServerDir();
+
+        if (f == null) {
+            return app.getAppDir().getAbsolutePath();
+        }
+
+        return f.getAbsolutePath();
+    }
+    
+    /**
+     * Return a <code>SessionBean</code> object associated with the given Axiom session ID
+     *
+     * @jsfunction
+     * @param {String} sessionID The Axiom session ID
+     * @returns {SessionBean} A SessionBean object associated with the session ID
+     */
+    public SessionBean getSession(String sessionID) {
+        if (sessionID == null) {
+            return null;
+        }
+
+        Session session = app.getSession(sessionID.trim());
+
+        if (session == null) {
+            return null;
+        }
+
+        return new SessionBean(session);
+    }
+    
+    /**
+     * An array of all the active sessions in this application.
+     * @type Array
+     */
+    public Object getSessions() {
+        Map sessions = app.getSessions();
+        Object[] array = new Object[sessions.size()];
+        int i = 0;
+
+        Iterator it = sessions.values().iterator();
+        while (it.hasNext()) {
+            array[i++] = new SessionBean((Session) it.next());
+        }
+
+        return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+						.newArray(array);
+    }
+    
+    public Object getSessionsForUser(INode usernode) {
+        if (usernode == null) {
+            return getSessionsForUser("");
+        } else {
+            return getSessionsForUser(usernode.getName());
+        }
+    }
+    
+    /**
+     * Return an array of <code>SessionBean</code> objects currently associated
+	 * with a given Axiom user.
+     *
+     * @jsfunction
+     * @param {AxiomObject|String} user Either an AxiomObject specifying the user 
+     *                             or a String specifying the username of the user.
+     * @returns {Array} An array of SessionBean objects
+     */
+    public Object getSessionsForUser(String username) {
+    	Scriptable global = ((RhinoEngine) this.app.getCurrentRequestEvaluator()
+    			.getScriptingEngine()).getGlobal();
+        if ((username == null) || "".equals(username.trim())) {
+        	return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+								.newArray(new Object[0]);
+        }
+
+        List userSessions = app.getSessionsForUsername(username);
+
+        return this.app.getCurrentRequestEvaluator().getScriptingEngine()
+							.newArray(userSessions.toArray());
+    }
+    
+    public int getSourceCount(Object target) throws Exception {
+        return getQueryBean().sourceCount(target);
+    }
+    
+    public int getSourceCount(Object target, Object prototypes) throws Exception {
+        return getQueryBean().sourceCount(target, prototypes);
+    }
+    
+    public int getSourceCount(Object target, Object prototypes, Object filter) 
+    throws Exception {
+        return getQueryBean().sourceCount(target, prototypes, filter);
+    }
+    
+    /**
+     * The number of AxiomObjects in the array that an equivalent getSources() call
+     * would return
+     * 
+     * @jsfunction
+     * @param {AxiomObject|String} target An AxiomObject as the target, or a String 
+     * 									  denoting the AxiomObject's path. 
+     *                                    If a String is specified and the path ends with
+     *                                    '**' (e.g. /path/to/foo/**), then all objects
+     *                                    located under foo will be included in 
+     *                                    retrieving objects with references to target.
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Number} The number of AxiomObjects 
+     * @throws Exception
+     */
+    public int getSourceCount(Object target, Object prototypes, Object filter, 
+    		Object options) throws Exception {
+        return getQueryBean().sourceCount(target, prototypes, filter, options);
+    }
+    
+    public Object getSources(Object target) throws Exception {
+        return getQueryBean().sources(target);
+    }
+    
+    public Object getSources(Object target, Object prototypes) throws Exception {
+        return getQueryBean().sources(target, prototypes);
+    }
+    
+    public Object getSources(Object target, Object prototypes, Object filter) 
+    throws Exception {
+        return getQueryBean().sources(target, prototypes, filter);
+    }
+    
+    /**
+     * Returns an array of AxiomObjects which have references to target and
+     * match the search criteria.
+     * 
+     * @jsfunction
+     * @param {AxiomObject|String} target An AxiomObject as the target, or a String 
+     * 									  denoting the AxiomObject's path. 
+     *                                    If a String is specified and the path ends with
+     *                                    '**' (e.g. /path/to/foo/**), then all objects
+     *                                    located under foo will be included in 
+     *                                    retrieving objects with references to target.
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Array} An array of AxiomObjects
+     * @throws Exception
+     */
+    public Object getSources(Object target, Object prototypes, Object filter, 
+    		Object options) throws Exception {
+        return getQueryBean().sources(target, prototypes, filter, options);
+    }
+    
+    public String getStaticMountpoint(){
+    	return this.getStaticMountpoint(null);    	
+    }
+    
+    /**
+     * Get this application's static mountpoint, where those files specified in the application's static repositories are mounted.
+     * 
+     * @jsfunction
+     * @param {String} [action] Optional action to append to the static mountpoint
+     * @returns {String} The static mountpoint
+     */
+    public String getStaticMountpoint(Object action){
+    	return this.app.getStaticMountpoint(action);
+    }
+    
+    public int getTargetCount(Object source) throws Exception {
+        return getQueryBean().targetCount(source);
+    }
+    
+    public int getTargetCount(Object source, Object prototypes) throws Exception {
+        return getQueryBean().targetCount(source, prototypes);
     }
 
-    public Scriptable getVersionFields(Object obj, Object fields, Object prototypes, Object filter, Object options) throws Exception{
+    public int getTargetCount(Object source, Object prototypes, Object filter) 
+    throws Exception {
+        return getQueryBean().targetCount(source, prototypes, filter);
+    }
+
+    /**
+     * The number of AxiomObjects in the array that an equivalent getTargets() call
+     * would return
+     * 
+     * @jsfunction
+     * @param {AxiomObject|String} source An AxiomObject as the source, or a String 
+     * 									  denoting the AxiomObject's path. 
+     *                                    If a String is specified and the path ends with
+     *                                    '**' (e.g. /path/to/foo/**), then all objects
+     *                                    located under foo will be included in 
+     *                                    retrieving objects with references 
+     *                                    originating from source.
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Number} The number of AxiomObjects
+     * @throws Exception
+     */
+    public int getTargetCount(Object source, Object prototypes, Object filter, 
+    		Object options) throws Exception {
+        return getQueryBean().targetCount(source, prototypes, filter, options);
+    }
+    
+    public Object getTargets(Object source) throws Exception {
+        return getQueryBean().targets(source);
+    }
+    
+    public Object getTargets(Object source, Object prototypes) throws Exception {
+        return getQueryBean().targets(source, prototypes);
+    }
+    
+    public Object getTargets(Object source, Object prototypes, Object filter) 
+    throws Exception {
+        return getQueryBean().targets(source, prototypes, filter);
+    }
+    
+    /**
+     * Returns an array of AxiomObjects which have references originating from source 
+     * and match the search criteria.
+     * 
+     * @jsfunction
+     * @param {AxiomObject|String} source An AxiomObject as the source, or a String 
+     * 									  denoting the AxiomObject's path. 
+     *                                    If a String is specified and the path ends with
+     *                                    '**' (e.g. /path/to/foo/**), then all objects
+     *                                    located under foo will be included in 
+     *                                    retrieving objects with references 
+     *                                    originating from source.
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional arguments to pass in to the search 
+     *                           (sort, max results, etc) 
+     * @returns {Array} An array of AxiomObjects
+     * @throws Exception
+     */
+    public Object getTargets(Object source, Object prototypes, Object filter, 
+    		Object options) throws Exception {
+        return getQueryBean().targets(source, prototypes, filter, options);
+    }
+    
+    /**
+     * This application's tmp directory, either set through java System property "tmpdir"
+     * or "java.io.tmpdir"
+     * @type String
+     */
+    public String getTmpDir() {
+        return app.getTmpDir();
+    }
+    
+    /**
+     * The application start time
+     * @type Date
+     */
+    public Date getUpSince() {
+        return new Date(app.starttime);
+    }
+    
+    public Scriptable getVersionFields(Object obj, Object fields, Object prototypes, 
+    		Object filter, Object options) throws Exception {
         return getQueryBean().getVersionFields(obj, fields, prototypes, filter, options);
+    }
+    
+    public void log(Object msg) {
+    	if (msg != null) {
+    		getLogger().info(msg);
+    	}
+    }
+    
+    /**
+     * Log a INFO message to the log defined by logname.
+     *
+     * @jsfunction
+     * @param {String} [logname] The name (category) of the log, defaults to the app log 
+     *                           (axiom.[appname].log)
+     * @param {String} msg The log message
+     */
+    public void log(String logname, Object msg) {
+        getLogger(logname).info(msg);
+    }
+    
+    /**
+     * Remove a cron job from this application's cron runner.
+     *
+     * @jsfunction
+     * @param {String} functionName The name of the cron function to remove
+     */
+    public void removeCronJob(String functionName) {
+        app.customCronJobs.remove(functionName);
+    }
+    
+    public void saveDraft(Object obj) throws Exception {
+    	this.saveDraft(obj, null);
+    }
+
+    /**
+     * Save an object in the system at the specified layer.
+     *
+     * @jsfunction
+     * @param {AxiomObject} object The object to be saved at the specified layer.
+     * @param {Number} [layer] The layer on which to save the object.  If no layer is 
+     *                         specified, default to the layer below the one on which the 
+     *                         input AxiomObject resides.
+     * @throws Exception
+     */
+    public void saveDraft(Object obj, Object layer) throws Exception {
+    	Node node = null;
+    	if (obj instanceof AxiomObject) {
+    		node = (Node) ((AxiomObject) obj).getNode();
+    	} else if (obj instanceof Node) {
+    		node = (Node) obj;
+    	}
+    	
+    	if (node == null) {
+    		throw new Exception("Input parameter " + obj + " is not a valid object.");
+    	}
+    	
+    	DbKey key = (DbKey) node.getKey();
+    	int mode = key.getLayer() - 1;
+    	if (mode < 0) {
+    		this.app.logEvent(ErrorReporter.warningMsg(this.getClass(), "saveDraft") 
+    				+ "Called on " + obj + ", which is in the LIVE layer. " +
+    						"No operation performed.");
+    		return;
+    	}
+    	
+    	if (layer != null && layer != Undefined.instance) {
+    		mode = getLayer(layer);
+    	}
+    	
+    	this.app.getNodeManager().saveNodeInLayer(node, mode);
+    }
+    
+    /**
+     * Set the maximum number of simultaneous threads (i.e. requests) 
+     * allowed by this application
+     *
+     * @jsfunction
+     * @param {Number} n The maximum number of simultaneous threads allowed
+     */
+    public void setMaxThreads(int n) {
+        // add one to the number to compensate for the internal scheduler.
+        app.setNumberOfEvaluators(n + 1);
+    }
+    
+    /**
+     * app's toString() method, returns [Application appname]
+     *
+     * @jsfunction
+     * @returns {String} '[Application appname]'
+     */
+    public String toString() {
+        return "[Application " + app.getName() + "]";
+    }
+    
+    /**
+     * Allow Javascript to update the application's prototype resources.
+     * 
+     * @jsfunction
+     */
+    public void updateResources() {
+        try {
+            this.app.updateResources();
+        } catch (Exception ex) {
+        	this.app.logError(ErrorReporter.errorMsg(this.getClass(), "updateResources"), 
+        			ex);
+        }
+    }
+    
+    private int getLayer(Object layer) {
+    	int mode = DbKey.LIVE_LAYER;
+    	if (layer == null || layer == Undefined.instance) {
+    		return mode;
+    	}
+    	if (layer instanceof Number) {
+			mode = ((Number) layer).intValue();
+		} else if (layer instanceof String) {
+			mode = this.app.getLayer((String) layer);
+		} else if (layer instanceof Scriptable) {
+			String classname = ((Scriptable) layer).getClassName();
+			if ("Number".equals(classname)) {
+				mode = ScriptRuntime.toInt32(layer);
+			} else if ("String".equals(classname)) {
+				mode = this.app.getLayer(ScriptRuntime.toString(layer));
+			}
+		} 
+    	return mode;
+    }
+    
+    private QueryBean getQueryBean() {
+        QueryBean qb = this.app.qbean;
+        RequestEvaluator reqev = this.app.getCurrentRequestEvaluator();
+        if (reqev != null) {
+            RhinoEngine re = (RhinoEngine) reqev.scriptingEngine;
+            qb.setRhinoCore(re.getCore());
+        } else {
+            qb.setRhinoCore(null);
+        }
+        return qb;
     }
    
 }
