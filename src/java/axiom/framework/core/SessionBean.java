@@ -108,6 +108,10 @@ public class SessionBean implements Serializable {
     	return session.getDebugObject();
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getDraftIds() {
         return session.getDraftIds(null);
     }
