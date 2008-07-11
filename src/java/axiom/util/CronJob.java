@@ -163,7 +163,7 @@ public class CronJob {
 
 
   public static CronJob newJob (String functionName, String year, String month,
-        String day, String weekday, String hour, String minute) {
+        String day, String weekday, String hour, String minute, Number timeout) {
     CronJob job = new CronJob (functionName);
     job.setFunction (functionName);
     if (year != null)
@@ -178,6 +178,9 @@ public class CronJob {
         job.parseHour (hour);
     if (minute != null)
         job.parseMinute (minute);
+    if (timeout != null) {
+    	job.setTimeout(timeout.longValue() * 1000);
+    }
     return job;
   }
 

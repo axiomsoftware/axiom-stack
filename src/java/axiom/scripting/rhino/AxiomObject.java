@@ -30,20 +30,16 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
-import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.PropertyException;
 import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.ScriptRuntimeWrapper;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
@@ -58,9 +54,6 @@ import axiom.framework.core.ActionSecurityManager;
 import axiom.framework.core.Application;
 import axiom.framework.core.ApplicationBean;
 import axiom.framework.core.Prototype;
-import axiom.framework.core.RequestEvaluator;
-import axiom.framework.core.Session;
-import axiom.framework.repository.Resource;
 import axiom.objectmodel.INode;
 import axiom.objectmodel.IProperty;
 import axiom.objectmodel.db.DbKey;
@@ -69,7 +62,6 @@ import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.Node;
 import axiom.objectmodel.db.NodeHandle;
 import axiom.objectmodel.db.Relation;
-import axiom.objectmodel.db.SubnodeList;
 import axiom.objectmodel.dom.LuceneManager;
 import axiom.scripting.rhino.extensions.DOMParser;
 import axiom.util.CacheMap;
@@ -79,6 +71,8 @@ import axiom.util.WeakCacheMap;
 
 
 /**
+ * This class wraps an Axiom object for accessibility on the Rhino scripting layer.
+ * 
  * @jsconstructor
  */
 public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRecorder {
@@ -87,13 +81,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	protected INode node;
 	protected RhinoCore core;
 	
-	// Added by Axiom: Adding a Hashmap to store the properties
 	static HashMap dependencies = new HashMap();
 	long dependenciesLastModified;
-	//Date Formats
-	SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y");
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y");
 	private static final String DEPENDSALL = "#DEPENDSALL#";
-	// end added by Axiom
 
 	// fields to implement PropertyRecorder
 	private boolean isRecording = false;
@@ -482,9 +473,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *
-	 *
-	 * @return ...
+	 * The number of child objects
+	 * @type Number
 	 */
 	public int jsGet_length() {
 		if (node == null) {
