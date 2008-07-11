@@ -11,7 +11,7 @@
 	<property name="src.dir" value="${home.dir}/src"/>
 	<property name="apps.dir" value="${home.dir}/apps"/>
 	<property name="modules.dir" value="${home.dir}/modules"/>
-	<property name="jsdoc.dir" value="${home.dir}/jsdoc"/>
+	<property name="jsdoc.dir" value="${home.dir}/doc"/>
 	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
 	<property name="utils.dir" value="${home.dir}/utils"/>
 	<property name="java.version.default" value="1.6"/>
@@ -58,6 +58,7 @@
 			<param name="version" value="${java_version}"/>
 		</antcall>		
 
+		<antcall target="jsdoc"/>
 	</target>
 
 	<target name="compile" depends="init">
@@ -160,7 +161,7 @@
 		</javadoc>
 
 		<java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
-			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=doc alldoc.js ${src.dir}/js/Global"/>
+			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${jsdoc.dir} alldoc.js ${src.dir}/js/Global"/>
 		</java>
 		
 		<delete file="alldoc.js"/>
