@@ -731,9 +731,13 @@ public class ApplicationBean implements Serializable {
      * @type Array
      */
     public Object getPrototypes() {
-    	Object[] arr = app.getPrototypeNames();
+    	String[] arr = app.getPrototypeNames();
+    	Object[] oarr = new Object[arr.length];
+    	for (int i = 0; i < arr.length; i++) {
+    		oarr[i] = arr[i];
+    	}
     	return this.app.getCurrentRequestEvaluator().getScriptingEngine()
-							.newArray(arr);
+							.newArray(oarr);
     }
     
     /**
