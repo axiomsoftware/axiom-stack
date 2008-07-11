@@ -43,6 +43,8 @@
 		<delete file="${lib.dir}/${axiom-jar.name}"/>
 		<delete file="${lib.dir}/${js-jar.name}"/>
 		<delete dir="${build.dir}"/>
+		<delete dir="${jsdoc.dir}"/>
+		<delete dir="${javadoc.dir}"/>
 	</target>
 
 	<target name="build" depends="clean, init">
@@ -59,6 +61,7 @@
 		</antcall>		
 
 		<antcall target="jsdoc"/>
+		<antcall target="javadoc"/>
 	</target>
 
 	<target name="compile" depends="init">
