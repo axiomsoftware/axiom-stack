@@ -43,7 +43,8 @@ public class JSDoclet extends Doclet {
 					String name = method.name();
 					Tag[] jsfunctionTags = method.tags("@jsfunction");
 					Tag[] jspropertyTags = method.tags("@jsproperty");
-					if(jspropertyTags.length > 0 || (isInstance && name.startsWith("get") && jsfunctionTags.length == 0 && name.length() > 4)){
+					Tag[] jsomitTags = method.tags("@jsomit");
+					if(jspropertyTags.length > 0 || (isInstance && name.startsWith("get") && jsfunctionTags.length == 0 && jsomitTags.length == 0 && name.length() > 4)){
 						if(jspropertyTags.length > 0){
 							name = jspropertyTags[0].text();
 						} else{

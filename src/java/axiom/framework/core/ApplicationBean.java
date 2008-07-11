@@ -374,6 +374,10 @@ public class ApplicationBean implements Serializable {
 								.newArray(domains);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getDraft(Object obj) throws Exception {
     	return this.getDraft(obj, null);
     }
@@ -416,14 +420,26 @@ public class ApplicationBean implements Serializable {
         return app.getErrorCount();
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getFields(Object field) throws Exception {
         return getQueryBean().fields(field, null, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getFields(Object field, Object prototype) throws Exception {
         return getQueryBean().fields(field, prototype, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getFields(Object field, Object prototype, Object filter) 
     throws Exception {
         return getQueryBean().fields(field, prototype, filter);
@@ -437,8 +453,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Array} An array of field values
      * @throws Exception
      */
@@ -455,14 +483,26 @@ public class ApplicationBean implements Serializable {
         return app.countFreeEvaluators();
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getHitCount() throws Exception {
         return getQueryBean().getHitCount(null, null, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getHitCount(Object prototype) throws Exception {
         return getQueryBean().getHitCount(prototype, null, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getHitCount(Object prototype, Object filter) throws Exception {
         return getQueryBean().getHitCount(prototype, filter, null);
     }
@@ -474,8 +514,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     * 							 (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Number} The number of objects that match the search criteria
      * @throws Exception
      */
@@ -484,14 +536,26 @@ public class ApplicationBean implements Serializable {
         return getQueryBean().getHitCount(prototype, filter, options);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getHits() throws Exception {
         return getQueryBean().hits(null, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getHits(Object prototype) throws Exception {
         return getQueryBean().hits(prototype, null);
     }
 
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getHits(Object prototype, Object filter) 
     throws Exception {
         return getQueryBean().hits(prototype, filter);
@@ -504,8 +568,21 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
+     *            
      * @returns {HitsObject} The results in HitsObject form, so they are not all
      * 						 loaded at once.
      * @throws Exception
@@ -528,6 +605,10 @@ public class ApplicationBean implements Serializable {
     	}
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Log getLogger() {
         return app.getEventLog();
     }
@@ -561,14 +642,26 @@ public class ApplicationBean implements Serializable {
         return app.getName();
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getObjects() throws Exception {
         return getQueryBean().objects(null, null);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getObjects(Object prototype) throws Exception {
         return getQueryBean().objects(prototype, null);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getObjects(Object prototype, Object filter) 
     throws Exception {
         return getQueryBean().objects(prototype, filter);
@@ -581,8 +674,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
      */
@@ -642,7 +747,7 @@ public class ApplicationBean implements Serializable {
      *                                    located under foo will be included in 
      *                                    retrieving references. 
      *
-     * @param {AxiomObject|String target An AxiomObject as the target of the reference, 
+     * @param {AxiomObject|String} target An AxiomObject as the target of the reference, 
      *                                   or a String denoting the AxiomObject's path. 
      *                                   If a String is specified and the path ends with
      *                                   '**' (e.g. /path/to/foo/**), then all objects
@@ -706,6 +811,10 @@ public class ApplicationBean implements Serializable {
         return ret;
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getSchema(Object proto) {
     	return this.getSchema(proto, null);
     }
@@ -714,11 +823,11 @@ public class ApplicationBean implements Serializable {
      * Get the schema (defined in prototype.properties) for a particular prototype
      * 
      * @jsfunction
-     * @param String prototype The prototype to get the schema for
-     * @param Boolean [ignoreInternalProperties] True to ignore the internal properties 
+     * @param {String} prototype The prototype to get the schema for
+     * @param {Boolean} [ignoreInternalProperties] True to ignore the internal properties 
      *                                           (those starting with an underscore), 
      *                                           false to include them. Defaults to true.
-     * @returns Object Javascript hash of the schema for the prototype
+     * @returns {Object} Javascript hash of the schema for the prototype
      */
     
     public Scriptable getSchema(Object proto, Object arg) {
@@ -795,6 +904,10 @@ public class ApplicationBean implements Serializable {
 						.newArray(array);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getSessionsForUser(INode usernode) {
         if (usernode == null) {
             return getSessionsForUser("");
@@ -826,14 +939,26 @@ public class ApplicationBean implements Serializable {
 							.newArray(userSessions.toArray());
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getSourceCount(Object target) throws Exception {
         return getQueryBean().sourceCount(target);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getSourceCount(Object target, Object prototypes) throws Exception {
         return getQueryBean().sourceCount(target, prototypes);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getSourceCount(Object target, Object prototypes, Object filter) 
     throws Exception {
         return getQueryBean().sourceCount(target, prototypes, filter);
@@ -853,8 +978,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Number} The number of AxiomObjects 
      * @throws Exception
      */
@@ -863,14 +1000,26 @@ public class ApplicationBean implements Serializable {
         return getQueryBean().sourceCount(target, prototypes, filter, options);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getSources(Object target) throws Exception {
         return getQueryBean().sources(target);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getSources(Object target, Object prototypes) throws Exception {
         return getQueryBean().sources(target, prototypes);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getSources(Object target, Object prototypes, Object filter) 
     throws Exception {
         return getQueryBean().sources(target, prototypes, filter);
@@ -890,8 +1039,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
      */
@@ -900,6 +1061,10 @@ public class ApplicationBean implements Serializable {
         return getQueryBean().sources(target, prototypes, filter, options);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public String getStaticMountpoint(){
     	return this.getStaticMountpoint(null);    	
     }
@@ -915,14 +1080,26 @@ public class ApplicationBean implements Serializable {
     	return this.app.getStaticMountpoint(action);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getTargetCount(Object source) throws Exception {
         return getQueryBean().targetCount(source);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getTargetCount(Object source, Object prototypes) throws Exception {
         return getQueryBean().targetCount(source, prototypes);
     }
-
+    
+    /**
+     * @jsomit
+     * See below.
+     */
     public int getTargetCount(Object source, Object prototypes, Object filter) 
     throws Exception {
         return getQueryBean().targetCount(source, prototypes, filter);
@@ -943,8 +1120,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Number} The number of AxiomObjects
      * @throws Exception
      */
@@ -953,14 +1142,26 @@ public class ApplicationBean implements Serializable {
         return getQueryBean().targetCount(source, prototypes, filter, options);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getTargets(Object source) throws Exception {
         return getQueryBean().targets(source);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getTargets(Object source, Object prototypes) throws Exception {
         return getQueryBean().targets(source, prototypes);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Object getTargets(Object source, Object prototypes, Object filter) 
     throws Exception {
         return getQueryBean().targets(source, prototypes, filter);
@@ -981,8 +1182,20 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {FilterObject} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional arguments to pass in to the search 
-     *                           (sort, max results, etc) 
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
      */
@@ -1008,11 +1221,19 @@ public class ApplicationBean implements Serializable {
         return new Date(app.starttime);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public Scriptable getVersionFields(Object obj, Object fields, Object prototypes, 
     		Object filter, Object options) throws Exception {
         return getQueryBean().getVersionFields(obj, fields, prototypes, filter, options);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public void log(Object msg) {
     	if (msg != null) {
     		getLogger().info(msg);
@@ -1041,6 +1262,10 @@ public class ApplicationBean implements Serializable {
         app.customCronJobs.remove(functionName);
     }
     
+    /**
+     * @jsomit
+     * See below.
+     */
     public void saveDraft(Object obj) throws Exception {
     	this.saveDraft(obj, null);
     }
