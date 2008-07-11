@@ -85,11 +85,12 @@ public class ApplicationBean implements Serializable {
      * @param {String} [weekday] Day of week (0-6, with 0 being Sunday)
      * @param {String} [hour] Hour (0-23)
      * @param {String} [minute] (0-59)
+     * @param {Number} [timeout] In seconds
      */
     public void addCronJob(String functionName, String year, String month, String day,
-                           String weekday, String hour, String minute) {
+                           String weekday, String hour, String minute, Number timeout) {
         CronJob job = CronJob.newJob(functionName, year, month, 
-        								day, weekday, hour, minute);
+        								day, weekday, hour, minute, timeout);
 
         app.customCronJobs.put(functionName, job);
     }

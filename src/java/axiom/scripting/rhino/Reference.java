@@ -17,6 +17,8 @@ import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.WrappedNodeManager;
 
 /**
+ * The class that encapsulates the behaviors of the Axiom Reference type
+ * 
  * @jsconstructor
  */
 public class Reference extends ScriptableObject implements IProperty, Serializable {

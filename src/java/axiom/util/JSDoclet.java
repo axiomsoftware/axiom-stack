@@ -6,6 +6,8 @@ import java.util.*;
 
 public class JSDoclet extends Doclet {
 	static StringBuffer buffer = new StringBuffer();
+	static final String JSFUNCTION = "jsFunction_";
+	static final String JSPROPERTY = "jsGet_";
 	
 	public static boolean start(RootDoc root){
 		for(ClassDoc clazz : root.classes()){
@@ -44,9 +46,12 @@ public class JSDoclet extends Doclet {
 					Tag[] jsfunctionTags = method.tags("@jsfunction");
 					Tag[] jspropertyTags = method.tags("@jsproperty");
 					Tag[] jsomitTags = method.tags("@jsomit");
-					if(jspropertyTags.length > 0 || (isInstance && name.startsWith("get") && jsfunctionTags.length == 0 && jsomitTags.length == 0 && name.length() > 4)){
+					if(jspropertyTags.length > 0 || (name.startsWith(JSPROPERTY) && jsomitTags.length == 0) 
+							|| (isInstance && name.startsWith("get") && jsfunctionTags.length == 0 && jsomitTags.length == 0 && name.length() > 4)){
 						if(jspropertyTags.length > 0){
 							name = jspropertyTags[0].text();
+						} else if (name.startsWith(JSPROPERTY)) { 
+							name = name.substring(JSPROPERTY.length());
 						} else{
 							name = (name.charAt(3)+"").toLowerCase() + name.substring(4);
 						}
@@ -56,8 +61,8 @@ public class JSDoclet extends Doclet {
 						if(jsfunctionTags.length > 0 && jsfunctionTags[0].text().length() > 0){
 							name = jsfunctionTags[0].text();
 						} else if(!isInstance){
-							if(name.startsWith("jsFunction_")){
-								name = (name.charAt(11)+"").toLowerCase() + name.substring(12);
+							if(name.startsWith(JSFUNCTION)){
+								name = name.substring(JSFUNCTION.length());
 							} else{
 								continue;
 							}
