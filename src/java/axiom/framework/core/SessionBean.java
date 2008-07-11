@@ -45,9 +45,19 @@ public class SessionBean implements Serializable {
     }
 
     /**
+     * Turn on object layering for the AxiomObject id specified in arr on given layer.
+     * This method adds to the current list of draft ids, and does not replace any of the
+     * previously set draft ids. 
      * 
-     * @param {String} id The AxiomObject id to add to  
-     * @param {Number} [layer] The 
+     * @jsfunction
+     * @param {String} id The AxiomObject id on which object layering should be 
+     *                    turned on for the given layer
+     * @param {String|Number} [layer] The layer on which to turn object layering on for the
+     *                                input objects. A String indicates a domain that maps 
+     *                                to a layer through the draftHost property in 
+     *                                app.properties. A Number is a direction specification
+     *                                of the layer. If no layer is specified, defaults to
+     *                                the layer on which the call is being executed.
      */
     public void addDraftId(Object id, Object layer) {
         session.addDraftId(id, layer);
@@ -57,6 +67,17 @@ public class SessionBean implements Serializable {
     	session.clearDraftIds(null);
     }
     
+    /**
+     * Clear the AxiomObject ids that have layering set at the given layer.
+     * 
+     * @jsfunction
+     * @param {String|Number} [layer] The layer on which to turn object layering on for the
+     *                                input objects. A String indicates a domain that maps 
+     *                                to a layer through the draftHost property in 
+     *                                app.properties. A Number is a direction specification
+     *                                of the layer. If no layer is specified, defaults to
+     *                                the layer on which the call is being executed.
+     */
     public void clearDraftIds(Object layer) {
     	session.clearDraftIds(layer);
     }
@@ -92,10 +113,17 @@ public class SessionBean implements Serializable {
     }
 
     /**
+     * Returns the AxiomObject ids for which layering is turned on at the given layer
      * 
      * @jsfunction
-     * @param {String|Number} [layer] 
-     * @return {Array} The AxiomObject ids that have object layering turned on in layer
+     * @param {String|Number} [layer] The layer on which to get the AxiomObject ids for 
+     *                                which object layering is turned on. 
+     *                                A String indicates a domain that maps 
+     *                                to a layer through the draftHost property in 
+     *                                app.properties. A Number is a direction specification
+     *                                of the layer. If no layer is specified, defaults to
+     *                                the layer on which the call is being executed.
+     * @returns {Array} A list of AxiomObject ids
      */
     public Object getDraftIds(Object layer) {
         return session.getDraftIds(layer);
@@ -179,11 +207,17 @@ public class SessionBean implements Serializable {
     }
     
     /**
+     * Turn on object layering for the AxiomObject ids specified in arr on given layer.
      * 
+     * @jsfunction
      * @param {Array} arr An array of AxiomObject ids on which object layering should be 
      *                    turned on for the given layer
      * @param {String|Number} [layer] The layer on which to turn object layering on for the
-     *                                input objects. A String 
+     *                                input objects. A String indicates a domain that maps 
+     *                                to a layer through the draftHost property in 
+     *                                app.properties. A Number is a direction specification
+     *                                of the layer. If no layer is specified, defaults to
+     *                                the layer on which the call is being executed.
      */
     public void setDraftIds(Object arr, Object layer) {
         session.setDraftIds(arr, layer);
