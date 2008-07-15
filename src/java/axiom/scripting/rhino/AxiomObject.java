@@ -695,10 +695,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
         return success;
 	}
 
-	/**
-	 *  Remove a child node from this node's collection without deleting
-	 *  it from the database.
-	 */
 	public boolean removeChild(Object child) { 
 
 		checkNode();
@@ -1354,6 +1350,15 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return name.toString();
 	}
 
+	/**
+	 * Returns the property on this object that acts as an accessname from its parent.
+	 * That is, the property on this object whose value is used by this object's parent
+	 * to retrieve this object in the parent object's get() call.  The default is the _id
+	 * unless the parent object's prototype.properties defines _children.accessname, 
+	 * in which case it is the value of _children.accessname.
+	 * 
+	 * @returns {String} The accessname
+	 */
 	public String jsFunction_accessname() {
 		String accessName = null;
 		AxiomObject parent = (AxiomObject) this.getInternalProperty("_parent");
@@ -1383,14 +1388,18 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return accessName;
 	}
 
+	/**
+	 * @deprecated replaced by jsFunction_accessvalue()
+	 */
 	public Object jsFunction_getAccessValue() {
-	    String accessname = this.jsFunction_accessname();
-	    if (accessname != null) {
-	        return this.get(accessname, this);
-	    }
-	    return null;
+		return this.jsFunction_accessvalue();
 	}
-
+	/**
+	 * Returns the value of the property that serves as the accessname on this object.
+	 * That is, it returns the value of <code>this[this.accessvalue()]</code>
+	 * 
+	 * @returns {String} The value of the accessname property
+	 */
 	public Object jsFunction_accessvalue() {
 	    String accessname = this.jsFunction_accessname();
 	    if (accessname != null) {
@@ -1399,6 +1408,18 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	    return null;
 	}
 
+	/**
+	 * Another way of doing property assignment on objects.  Calling 
+	 * <br><code> this.edit({prop1:prop1_value,prop2:prop2_value})</code><br> 
+	 * is the equivalent of doing: <br>
+	 * <code>this.prop1 = prop1_value; </code><br>
+	 * <code>this.prop2 = prop2_value; </code><br>
+	 * 
+	 * @param {Object} input_data A JavaScript object of name/value pairs for assignment
+	 *                            on this object.
+	 * @returns {Object} A JavaScript hash of the errors encountered executing this function
+	 * @throws Exception
+	 */
 	public Scriptable jsFunction_edit(Object input_data) throws Exception {
 		RequestTrans req = core.app.getCurrentRequestEvaluator().getRequest();
 		ResourceProperties props = this.getResourceProperties(node.getPrototype());
@@ -2058,6 +2079,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	    return false;
 	}
 
+	/**
+	 * Returns an array of the property names assigned on this object.
+	 * 
+	 * @returns {Array} An array of the property names assigned on this object.
+	 */
 	public Scriptable jsFunction_getPropertyNames() {
 		ArrayList a = new ArrayList();
 
@@ -2076,6 +2102,21 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return Context.getCurrentContext().newArray(core.global, a.toArray());
 	}
 
+	/**
+	 * Return the first AxiomObject in this object's ancestoral hierarchy that matches
+	 * the given prototype.  For example, if <code>this._parent = foo</code> and 
+	 * <code>foo._parent = bar</code> and <code>foo</code> is of prototype X and 
+	 * <code>bar</code> is of prototype Y, then <code>this.getAncestor("Y")</code> will
+	 * return <code>bar</code>.
+	 * 
+	 * @param {String} [prototype] The prototype to look for on the ancestor heirarchy,
+	 *                             if not specified, it just returns the 
+	 *                             <code>_parent</code> of this object.
+	 * @param {Boolean} [includeThis] Whether to include this object in the ancestor
+	 *                                hierarchy search, defaults to <code>false</code>.
+	 * @return {AxiomObject} The first AxiomObject in the hierarchy of this object matching
+	 *                       the given object prototype.
+	 */
 	public Object jsFunction_getAncestor(String prototype, Object includeThis) {
 		if (node != null) {
 			checkNode();
@@ -2108,21 +2149,29 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return null;
 	}
 
-	/*
-	 * Get any property value directory from the type resource properties.
+	/**
+	 * Get the value of a property in this object's prototype.properties.  
+	 * 
+	 * @param {String} name The name of the property (e.g. date_prop.type)
+	 * @returns {String} The value of the property (e.g. Date)
 	 */
 	 public Object jsFunction_getTypePropertyValue(Object name) {
 		ResourceProperties props = this.getResourceProperties(this.getClassName());
 		return props.getProperty((String)name, null);
 	}
 
-	/*
-	 * Returns a json object of the object's prototype schema, including all parents up
-	 * the hierarchy tree
+	/**
+	 * Returns a JavaScript object of the object's prototype schema, 
+	 * including prototypes from which it extends.
+	 * 
+	 * @param {Boolean} [ignoreInternalProps] Whether to ignore internal properties 
+	 *                  (properties starting with an underscore) when returning the 
+	 *                  schema, defaults to <code>true</code>.
+	 * @returns {Object} A JavaScript object containing the prototype's schema.
 	 */
-	 public Scriptable jsFunction_getSchema(Object arg) throws Exception {
+	 public Scriptable jsFunction_getSchema(Object ignoreInternalProps) throws Exception {
 		 if (this.node != null) {
-			 return getSchema(this.node.getPrototype(), arg, this.core);
+			 return getSchema(this.node.getPrototype(), ignoreInternalProps, this.core);
 		 }
 		 
 		 return null;
@@ -2251,6 +2300,19 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 }
 	 }
 
+	 /**
+	  * Returns a new AxiomObject with all the properties of this object copied onto the 
+	  * new AxiomObject.
+	  * 
+	  * @param {String} [propname] Optional property name whose value should be replaced
+	  *                 with propvalue
+	  * @param {Object} [propvalue] The property value to set for propname
+	  * @param {Boolean} [deep] Whether to do a deep copy of the object or not, that is,
+	  *                  cloning and copying all child nodes as well.
+	  * @returns {AxiomObject} The newly created copy of this object.
+	  * @throws UnsupportedEncodingException
+	  * @throws IOException
+	  */
 	 public Object jsFunction_copy(Object propname, Object propvalue, Object deep) 
 	 throws UnsupportedEncodingException, IOException {
 		 if (node == null) {
@@ -2313,6 +2375,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 return this.node.getPrototype() + "/" + this.node.getID();
 	 }
 
+	 /**
+	  * Returns the path of this object's parent.
+	  * 
+	  * @returns {String} The path of <code>this._parent</code>
+	  * @throws UnsupportedEncodingException
+	  * @throws IOException
+	  */
 	 public String jsFunction_getParentPath() throws UnsupportedEncodingException, IOException {
 	     INode parent = this.node.getParent();
 	     if (parent == null) {
@@ -2324,6 +2393,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	     return "";
 	 }
 
+	 /**
+	  * @deprecated replaced with jsFunction_getParentPath()
+	  */
 	 public String jsFunction_parentPath() throws UnsupportedEncodingException, IOException {
 	     INode parent = this.node.getParent();
 	     if (parent == null) {
@@ -2334,7 +2406,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	     }
 	     return "";
 	 }
-        
 
 	 // used by path and parentPath()
 	 public static String getPath(INode n, String cName, Application app) 
@@ -2357,7 +2428,18 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 return href.substring(a);
 	 }
 
-	 //get the path in the primary store (lucene)
+	 /**
+	  * Get this object's path.  Since all objects in Axiom have a single location in 
+	  * an object hierarchy, all based off of root (at path '/'), 
+	  * the path is determined by parent/child relationships and the accessnames 
+	  * in the parent/child relationships.  
+	  * For example, if <code>root.get('foo').get('bar')</code> returns <code> this </code> 
+	  * then <code>this.getPath()</code> would return '/foo/bar'.
+	  *
+	  * @returns {String} This object's path.
+	  * @throws UnsupportedEncodingException
+	  * @throws IOException
+	  */
 	 public String jsFunction_getPath() throws UnsupportedEncodingException, IOException {
 	     if (node == null) { 
 	         return null; 
@@ -2366,6 +2448,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	     return getPath(node, className, this.core.app);
 	 }
 
+	 /**
+	  * @deprecated replaced by jsFunction_getPath()
+	  */
 	 public String jsFunction_path()
 	 throws UnsupportedEncodingException, IOException {
 	     if (node == null) { return null; }
@@ -2395,18 +2480,40 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 }
 
 	 /**
-	  * Returns true if the current node has children.
-	  * @return
+	  * Returns true if this object has any children.
+	  * 
+	  * @returns {Boolean} Whether or not this object has any children.
 	  */
 	 public boolean jsFunction_hasChildren() {
 		 checkNode();
 		 return node.getSubnodes().hasMoreElements();
 	 }
 
-	 /*
-	  * Axiom remove() method, does what removeChild() would do, but we changed its name
-	  * in the APIs to remove() to keep the symmetry with add()
-	  */    
+	 /**
+	  * Remove a child object from this object's children collection.  Note that this 
+	  * function behaves differently in the two cases:<br><br>
+	  * 
+	  * If this function is called on an object that is stored in the primary storage, and
+	  * the child object is not inserted as a child anywhere else before the transaction is
+	  * completed in Axiom, then the child object automatically gets deleted from the 
+	  * database. For example,<br>
+	  * 
+	  * <code>this.remove(child) // deletes child from the database unless it is added
+	  *                          // somewhere else in the same transaction </code><br><br>
+	  * 
+	  * If this function is called on an object that is stored in a relational database,
+	  * then this function behaves like a delete method.  That is, it must be called with
+	  * no arguments, and this object itself is marked for deletion.  At the end of the
+	  * transaction, it is deleted from the relational database in which it is stored.
+	  * For example,<br>
+	  * 
+	  * <code> this.remove() // deletes this object from the relational database its stored
+	  *                      // in, you can only call remove() with no arguments if it is
+	  *                      // a relationally backed object</code><br><br>
+	  *                      
+	  * @param {AxiomObject} [child] The child object to remove from this object's children
+	  * @returns {Boolean} Whether the operation was a success or not.
+	  */ 
 	 public boolean jsFunction_remove(Object child) throws Exception{
 		 if(child == null || child == Undefined.instance){
 			 return this.remove();
@@ -2427,6 +2534,103 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 		 return success;
 	 } 
+	 
+	 /**
+	  * Check to see if the user security roles match any of the input roles.
+	  * 
+	  * @param {Array} roles A JavaScript array of roles to check if the user is a part of
+      * @returns {Boolean} Whether the user has any matching roles with the input list 
+	  * @throws SecurityException
+	  */
+	 public boolean jsFunction_checkRoles(Object roles) throws SecurityException {
+		 ArrayList r = new ArrayList();
+		 NativeArray ra = (NativeArray)roles;
+		 for (int i = 0; i < ra.getLength();i++) {
+			 r.add(ra.get(i, ra));
+		 }
+		 return ActionSecurityManager.checkRoles(this.core.app, r.toArray());
+	 }
+	 
+	 /**
+	  * Checks to see if the currently logged in user is allowed to make a URL request
+	  * that maps to the input action on this object.
+	  * 
+	  * @param {String} action The action on this object to check if the current session
+	  *                        user is allowed to make a URL request for.
+	  * @param {Array} [roles] Optional list of roles to pass in.  Defaults to retrieving
+	  *                        the user roles from the current session user and checking
+	  *                        against those roles.  Only pass in roles if you want to 
+	  *                        override the current session user's default roles.
+	  * @returns {Boolean} Whether the action is allowed by the current session user or not
+	  */
+	 public boolean jsFunction_isAllowed(String action, Scriptable roles) {
+		 return this.isAllowedDefault(action, null, roles);
+	 }
+
+	 /**
+	  * Used only if you are overriding the default behavior of isAllowed(), and you
+	  * want to invoke the default isAllowed() behavior in your overriding function.
+	  * 
+	  * @param {String} action The action on this object to check if the current session
+	  *                        user is allowed to make a URL request for.
+	  * @param {Object} data A JavaScript object that contains name/value pairs to override
+	  *                      any of the name/value pairs in security.properties 
+	  * @returns {Boolean} Whether the action is allowed by the current session user or not
+	  */
+	 public boolean jsFunction_isAllowedDefault(String action, Object data) {
+		 if (data == null || data == Undefined.instance) {
+			 return this.isAllowedDefault(action, null, null);
+		 } else if (data instanceof Scriptable) {
+			 return this.isAllowedDefault(action, (Scriptable) data, null);
+		 } 
+		 return false;
+	 }
+	 
+	 /**
+	  * If cache.properties specifies that the results of a specific set of functions 
+	  * on an object may be cached (for optimized performance), then this function is
+	  * invoked to invalidate those results and reexecute the function call the next time
+	  * it is invoked.
+	  * 
+	  * @param {String} [func] The name of the function whose cached result should be
+	  *                        invalidated.  If no function name is specified, then ALL
+	  *                        cached function results for this object will be invalidated.
+	  */
+	 public void jsFunction_invalidateResultsCache(Object func) {
+	     if (this.node == null || this.node.getState() == INode.TRANSIENT) {
+	         return;
+	     }
+
+	     checkNode();
+
+	     String function = null;
+	     if (func != null) {
+	         if (func instanceof Wrapper) {
+	             function = ((Wrapper) func).unwrap().toString();
+	         } else if (!(func instanceof Undefined)) {
+	             function = func.toString();
+	         }
+	     }
+
+	     ExecutionCache appcache = this.core.app.getExecutionCache();
+	     ExecutionCache talcache = this.core.app.getTALCache();
+
+	     if (appcache != null) {
+	         if (function != null) {
+	             appcache.invalidate(this, function);
+	         } else {
+	             appcache.invalidateAll(this);
+	         }
+	     }
+
+	     if (talcache != null) {
+	         if (function != null) {
+	             talcache.invalidate(this, function);
+	         } else {
+	             talcache.invalidateAll(this);
+	         }
+	     }
+	 }
 
 	 public boolean remove() throws Exception{
 		 if(!this.node.getDbMapping().isRelational()){
@@ -2649,20 +2853,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 }
 
 	 /**
-	  * Check roles.
-	  * Throws security exception on failure.
-	  * @param roles
-	  */
-	 public boolean jsFunction_checkRoles(Object roles) {
-		 ArrayList r = new ArrayList();
-		 NativeArray ra = (NativeArray)roles;
-		 for (int i = 0; i < ra.getLength();i++) {
-			 r.add(ra.get(i, ra));
-		 }
-		 return ActionSecurityManager.checkRoles(this.core.app, r.toArray());
-	 }
-
-	 /**
 	  * Create a new AxiomObject of type protoname.
 	  * @param protoname
 	  * @return
@@ -2685,19 +2875,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();    	
 		 Scriptable proto = core.getPrototype(protoname);
 		 return new AxiomObject(protoname, core, node, proto);
-	 }
-
-	 public boolean jsFunction_isAllowed(String action, Scriptable roles) {
-		 return this.isAllowedDefault(action, null, roles);
-	 }
-
-	 public boolean jsFunction_isAllowedDefault(String action, Object data) {
-		 if (data == null || data == Undefined.instance) {
-			 return this.isAllowedDefault(action, null, null);
-		 } else if (data instanceof Scriptable) {
-			 return this.isAllowedDefault(action, (Scriptable) data, null);
-		 } 
-		 return false;
 	 }
 
 	 public boolean isAllowedDefault(String action, Scriptable data, 
@@ -2799,6 +2976,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 return doc;
 	 }
 
+	 /**
+	  * Get an XML object representation of the specified TAL file on this object.
+	  * 
+	  * @param {String} tal The name of the TAL file
+	  * @returns {XML} A JavaScript XML object representing the TAL file
+	  * @throws Exception
+	  */
 	 public Object jsFunction_getTALXml(Object tal) 
 	 throws Exception {
 		 Context cx = Context.getCurrentContext();
@@ -2810,24 +2994,17 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	     return (result != null) ? cx.evaluateString(core.getScope(), result.toString(), "", 1, null) : null;
 	 }
 
-	 private static Object getTALDoc(String proto, String name) 
-	 throws Exception {
-		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();
-		 Prototype prototype = core.app.getPrototypeByName(proto);
-		 while (prototype != null) {
-			 // separate prototype name and template name by :. this will be used again in TemplateLoader
-			 String curr = new StringBuffer().append(prototype.getName())
-			 .append(':').append(name).toString();
-			 Object d = core.retrieveDocument(core.app, curr);
-			 if (d != null) {
-				 return d;
-			 }
-			 prototype = prototype.getParentPrototype();
-		 }
-		 return null;
-	 }
-
-	 public Object jsFunction_renderTAL(Object tal, Scriptable data, Object res) 
+	 /**
+	  * Evaluate a TAL file on this object and return the rendered TAL as an XML object.
+	  * 
+	  * @param {String} tal The name of the TAL file
+	  * @param {Object} [data] A JavaScript object encapsulating the data scope 
+	  * 					   passed to the TAL evaluation engine.  Defaults to an empty
+	  * 					   JavaScript object.
+	  * @returns {XML} A JavaScript XML object representing the rendered TAL
+	  * @throws Exception
+	  */
+	 public Object jsFunction_renderTAL(Object tal, Scriptable data) 
 	 throws Exception {
 		 Object result = null;
 		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();
@@ -2888,43 +3065,24 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 } 	
 
 		 return result;
-	 }  
+	 } 
 
-	 public void jsFunction_invalidateResultsCache(Object func) {
-	     if (this.node == null || this.node.getState() == INode.TRANSIENT) {
-	         return;
-	     }
-
-	     checkNode();
-
-	     String function = null;
-	     if (func != null) {
-	         if (func instanceof Wrapper) {
-	             function = ((Wrapper) func).unwrap().toString();
-	         } else if (!(func instanceof Undefined)) {
-	             function = func.toString();
-	         }
-	     }
-
-	     ExecutionCache appcache = this.core.app.getExecutionCache();
-	     ExecutionCache talcache = this.core.app.getTALCache();
-
-	     if (appcache != null) {
-	         if (function != null) {
-	             appcache.invalidate(this, function);
-	         } else {
-	             appcache.invalidateAll(this);
-	         }
-	     }
-
-	     if (talcache != null) {
-	         if (function != null) {
-	             talcache.invalidate(this, function);
-	         } else {
-	             talcache.invalidateAll(this);
-	         }
-	     }
-	 }
+	 private static Object getTALDoc(String proto, String name) 
+	 throws Exception {
+		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();
+		 Prototype prototype = core.app.getPrototypeByName(proto);
+		 while (prototype != null) {
+			 // separate prototype name and template name by :. this will be used again in TemplateLoader
+			 String curr = new StringBuffer().append(prototype.getName())
+			 .append(':').append(name).toString();
+			 Object d = core.retrieveDocument(core.app, curr);
+			 if (d != null) {
+				 return d;
+			 }
+			 prototype = prototype.getParentPrototype();
+		 }
+		 return null;
+	 } 
 
 	 public static final String getModeStr(Key k) {
 	     if (k instanceof DbKey) {

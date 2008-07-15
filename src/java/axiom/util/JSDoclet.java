@@ -61,7 +61,8 @@ public class JSDoclet extends Doclet {
 						if(jsfunctionTags.length > 0 && jsfunctionTags[0].text().length() > 0){
 							name = jsfunctionTags[0].text();
 						} else if(!isInstance){
-							if(name.startsWith(JSFUNCTION)){
+							Tag[] deprecatedTags = method.tags("@deprecated");
+							if(name.startsWith(JSFUNCTION) && deprecatedTags.length == 0){
 								name = name.substring(JSFUNCTION.length());
 							} else{
 								continue;
