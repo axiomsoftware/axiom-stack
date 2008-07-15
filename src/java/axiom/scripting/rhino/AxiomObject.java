@@ -290,9 +290,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *  Return the INode wrapped by this AxiomObject.
+	 * Return the INode wrapped by this AxiomObject.
 	 *
-	 * @return the wrapped INode instance
+	 * @returns the wrapped INode instance
 	 */
 	public INode getNode() {
 		if (node != null) {
@@ -333,18 +333,16 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		}
 	}
 
-     /**
-     * Get the href (URL path) of this object within the application.
-     *
-     * @param action the action name, or null/undefined for the "main" action.
-     *
-     * @return ...
-     */
-    
-    public String jsFunction_getURI(Object action) 
-    throws UnsupportedEncodingException, IOException {
+	/**
+	 * Get the URL of this object within the application.
+	 *
+	 * @param {String} [action] the action name, or null/undefined for the "main" action.
+	 * @returns {String} url
+	 */
+	public String jsFunction_getURI(Object action) 
+	throws UnsupportedEncodingException, IOException {
 
-        if (node == null) {
+		if (node == null) {
             return null;
         }
 
@@ -370,6 +368,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
         return href;
     }
     
+	/**
+	 * Get the absolute URL of this object, appending the 
+	 * protocol and host name to the url to make it fully qualified.
+	 *
+	 * @param {String} [action] the action name, or null/undefined for the "main" action.
+	 * @returns {String} absolute url
+	 */
     public String jsFunction_getAbsoluteURI(Object action) throws Exception {
     	String trailuri = this.jsFunction_getURI(action);
     	StringBuffer uri = new StringBuffer();
@@ -410,11 +415,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
     }
 
 	/**
-	 * Get a childObject by name/id or index
+	 * Get a child object by accessname/id or index
 	 *
-	 * @param id The name/id or index, depending if the argument is a String or Number.
-	 *
-	 * @return ...
+	 * @param {String|Number} id The accessname/id or index, 
+	 * 							 depending if the argument is a String or Number.
+	 * @returns {AxiomObject} The requested child object
 	 */
 	public Object jsFunction_get(Object id) {
 		if ((node == null) || (id == null)) {
@@ -428,9 +433,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		if (id instanceof Number) {
 			n = node.getSubnodeAt(((Number) id).intValue());
 		} else {
-			/* Axiom code:  If this is a path, then return
-			 * the result of it.
-			 */
+			// If this is a path, then return the result of it.
 			String idstr = id.toString();
 			if (idstr.indexOf("/") > -1) {
 				n = traverse(idstr, this.core.app);
@@ -449,9 +452,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	/**
 	 * Get a child object by ID
 	 *
-	 * @param id the child id.
-	 *
-	 * @return ...
+	 * @param {String} id the child id.
+	 * @returns {AxiomObject} The requested object.
 	 */
 	public Object jsFunction_getById(Object id) {
 		if ((node == null) || (id == null) || id == Undefined.instance) {
@@ -463,13 +465,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		String idString = (id instanceof Double) ?
 				Long.toString(((Double) id).longValue()) :
 					id.toString();
-				Object n = node.getSubnode(idString);
+		Object n = node.getSubnode(idString);
 
-				if (n == null) {
-					return null;
-				} else {
-					return Context.toObject(n, core.global);
-				}
+		if (n == null) {
+			return null;
+		} else {
+			return Context.toObject(n, core.global);
+		}
 	}
 
 	/**
@@ -487,7 +489,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *  Prefetch child objects from (relational) database.
+	 * Prefetch child objects from (relational) database.  This function is invoked to 
+	 * perform optimizations in having child objects from relational storage prefetched
+	 * for use by Axiom prior to their being needed.  Each application's logic will 
+	 * determine if invoking this function is useful for optimization or not.
+	 *  
+	 * @param {Number} [start] The starting index for prefetching children, defaults to 0
+	 * @param {Number} [length] The number of child objects to prefetch, defaults to 1000
 	 */
 	public void jsFunction_prefetchChildren(Object startArg, Object lengthArg) {
 		// check if we were called with no arguments
@@ -518,7 +526,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * Return the full list of child objects in a JavaScript Array.
 	 * This is called by jsFunction_getChildren() if called with no arguments.
 	 *
-	 * @return A JavaScript Array containing all child objects
+	 * @returns A JavaScript Array containing all child objects
 	 */
 	private Scriptable list() {
 		checkNode();
@@ -540,9 +548,27 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *  Return a JS array of child objects with the given start and length.
+	 * Return an array of child objects of this object, filtering the child objects
+	 * returned by the below specified parameters, if applicable.
 	 *
-	 * @return A JavaScript Array containing the specified child objects
+	 * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
+	 * @returns {Array} A JavaScript Array containing the specified child objects
 	 */
 	public Scriptable jsFunction_getChildren(Object prototype, Object filter, Object optional) {
 
@@ -575,9 +601,26 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 	
 	/**
-	 *  Return the count of children objects, with optional prototype and filter passing.
+	 * The number of objects that the equivalent call to getChildren() would return.
 	 *
-	 * @return The child count
+	 * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Object} [options] The optional parameters to pass in to the search. 
+     *                           These are all specified in name/value pairs in a 
+     *                           javascript object.
+     *                           
+	 * 		<br><br>Possible values for the optional parameters are:
+     * 		   <ul>
+     * 	   	   <li>'sort' - A <code>SortObject</code> dictating the sort order of the results
+     * 		   <li>'maxlength' - A Number indicating the maximum number of results to return
+     *         <li>'layer' - A number indicating the layer to execute the query on, if this
+     *                   is not specified, execute the query on the layer on which this
+     *                   function is being invoked.
+     * 		   </ul>
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *            
+	 * @returns {Number} The number of child objects.
 	 */
 	public int jsFunction_getChildCount(Object prototype, Object filter, Object optional) {
 
@@ -609,11 +652,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 
 	/**
+	 * Add the input object to this object's children.  The input object will be 
+	 * located under this object and it will be accessible by accessname/id.
 	 *
-	 *
-	 * @param child ...
-	 *
-	 * @return ...
+	 * @param {AxiomObject} child The object to add to this object's children
+	 * @returns {Boolean} Whether the operation was a success or not. 
 	 */
 	public boolean jsFunction_add(Object child) {
         if ((node == null) || (child == null)) {
@@ -655,7 +698,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	/**
 	 *  Remove a child node from this node's collection without deleting
 	 *  it from the database.
-	 *  Axiom: No longer exposed as jsFunction_removeChild
 	 */
 	public boolean removeChild(Object child) { 
 
@@ -676,7 +718,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *  Invalidate the node itself 
+	 * Invalidate the node itself, evicting it from the object cache and causing it to 
+	 * be refetched from the database.
+	 *  
+	 * @returns {Boolean} Whether the operation was a success or not.  
 	 */
 	public boolean jsFunction_invalidate() {
 		if (node instanceof axiom.objectmodel.db.Node) {
@@ -692,7 +737,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 	
 	/**
-	 *  Check if node is contained in subnodes
+	 * Check if the input object is a child of this object.
+	 * 
+	 * @param {AxiomObject} object The object to check 
+	 * @returns {Boolean} If the input object is a child of this object.
 	 */
 	public boolean jsFunction_isChild(Object obj) {
 
@@ -710,7 +758,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 * Set a property in this AxiomObject
+	 * Set a property in this AxiomObject, implements the JavaScript assignment operation
 	 *
 	 * @param name property name
 	 * @param start
@@ -883,8 +931,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *
-	 *
+	 * Implements the JavaScript delete operation
+	 * 
 	 * @param name ...
 	 */
 	public void delete(String name) {
@@ -897,7 +945,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *
+	 * Implements JavaScript level value retrieval
 	 *
 	 * @param name ...
 	 * @param start ...
@@ -1158,8 +1206,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *
-	 *
+	 * Implements Scriptable.getIds()
+	 * 
 	 * @return ...
 	 */
 	public Object[] getIds() {
@@ -1183,7 +1231,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 	/**
 	 *
-	 *
 	 * @param idx ...
 	 * @param start ...
 	 *
@@ -1200,7 +1247,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 *
 	 *
 	 * @param idx ...
 	 * @param start ...
@@ -1262,7 +1308,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		changedProperties = null;
 	}
 
-	/*
+	/**
 	 * Get the Object's prototype name
 	 */
 	public Object prototype() {
@@ -1273,34 +1319,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		}
 
 		return "AxiomObject"; // the default prototype
-	}
-
-	/*
-	 * Convenience method to get the object's created date 
-	 * Note: could also use getInternalProperty("__created__")
-	 */
-	public Object jsFunction_created() {
-		if (node != null) {
-			checkNode();
-
-			return this.getInternalProperty("__created__");
-		}
-
-		return NOT_FOUND;
-	}
-
-	/*
-	 * Convenience method to get the object's last modified date 
-	 * Note: Could also use getInternalProperty("__lastmodified__")
-	 */
-	public Object jsFunction_lastmodified() {
-		if (node != null) {
-			checkNode();
-
-			return this.getInternalProperty("__lastmodified__");
-		}
-
-		return NOT_FOUND;
 	}
 
 	private ArrayList getTypePropertyIds(String prototype) {
@@ -1318,6 +1336,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		ids.addAll(props.keySet());
 	}
 
+	/**
+	 * Default getUserName() method for any AxiomObject attempting to be used as a 
+	 * User to authenticate into Axiom with.
+	 * 
+	 * @return {String} the user name, or "Anonymous" if there is no user name on this object
+	 */
 	public String getUserName() {
 		INode n = core.app.getCurrentRequestEvaluator().getSession().getUserNode();
 		if (n == null) { 
