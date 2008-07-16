@@ -11,7 +11,7 @@ import axiom.framework.repository.Resource;
 import axiom.scripting.rhino.RhinoEngine;
 
 /**
- * @jsinstance session.debug
+ * @jsconstructor session.debug
  */
 public class Debug extends ScriptableObject {
 

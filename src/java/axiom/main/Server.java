@@ -599,7 +599,8 @@ public class Server implements IPathElement, Runnable {
                 handlers.setHandlers(new Handler[]{contexts, new AxiomHandler(), requestLogHandler});
                 http.setHandler(handlers);
                 
-                if(Boolean.parseBoolean(this.sysProps.getProperty("enableRequestLog"))){
+                if(this.sysProps.getProperty("enableRequestLog") == null 
+                		|| Boolean.parseBoolean(this.sysProps.getProperty("enableRequestLog"))){
 	                NCSARequestLog requestLog = new NCSARequestLog("log/server" + ".request.log");
 	                requestLog.setRetainDays(90);
 	                requestLog.setAppend(true);

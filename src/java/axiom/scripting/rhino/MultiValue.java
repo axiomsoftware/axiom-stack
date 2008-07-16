@@ -10,6 +10,8 @@ import axiom.objectmodel.INode;
 import axiom.objectmodel.IProperty;
 
 /**
+ * The class that encapsulates the behaviors of the Axiom MultiValue type
+ * 
  * @jsconstructor
  */
 public class MultiValue extends ScriptableObject implements Serializable {

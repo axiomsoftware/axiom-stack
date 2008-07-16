@@ -408,7 +408,8 @@ public class ApplicationManager implements XmlRpcHandler {
                     	ch.setVirtualHosts(domains);
                     }
                     
-                    if(Boolean.parseBoolean(app.getProperty("enableRequestLog"))){
+                    if(this.app.getProperty("enableRequestLog") == null 
+                    		|| Boolean.parseBoolean(app.getProperty("enableRequestLog"))){
 	                    RequestLogHandler requestLogHandler = new RequestLogHandler();
 	                    NCSARequestLog requestLog = new NCSARequestLog("log/axiom." + app.getName() + ".request.log");
 	                    requestLog.setRetainDays(1);
