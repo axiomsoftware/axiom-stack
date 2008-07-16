@@ -386,6 +386,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
     	return uri.toString();
     }
     
+    /**
+     * @deprecated replaced by getURI()
+     */
     public Object jsFunction_href(Object action) throws UnsupportedEncodingException,
                                                         IOException {
         if (node == null) {
@@ -1389,7 +1392,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 * @deprecated replaced by jsFunction_accessvalue()
+	 * @deprecated replaced by accessvalue()
 	 */
 	public Object jsFunction_getAccessValue() {
 		return this.jsFunction_accessvalue();
@@ -2394,7 +2397,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 }
 
 	 /**
-	  * @deprecated replaced with jsFunction_getParentPath()
+	  * @deprecated replaced with getParentPath()
 	  */
 	 public String jsFunction_parentPath() throws UnsupportedEncodingException, IOException {
 	     INode parent = this.node.getParent();
@@ -2449,7 +2452,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 }
 
 	 /**
-	  * @deprecated replaced by jsFunction_getPath()
+	  * @deprecated replaced by getPath()
 	  */
 	 public String jsFunction_path()
 	 throws UnsupportedEncodingException, IOException {
@@ -2496,20 +2499,20 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * If this function is called on an object that is stored in the primary storage, and
 	  * the child object is not inserted as a child anywhere else before the transaction is
 	  * completed in Axiom, then the child object automatically gets deleted from the 
-	  * database. For example,<br>
+	  * database. For example,<br><br>
 	  * 
-	  * <code>this.remove(child) // deletes child from the database unless it is added
-	  *                          // somewhere else in the same transaction </code><br><br>
+	  * <code>this.remove(child)</code> // deletes child from the database unless it is 
+	  * 								   added somewhere else in the same transaction <br><br>
 	  * 
 	  * If this function is called on an object that is stored in a relational database,
 	  * then this function behaves like a delete method.  That is, it must be called with
 	  * no arguments, and this object itself is marked for deletion.  At the end of the
 	  * transaction, it is deleted from the relational database in which it is stored.
-	  * For example,<br>
+	  * For example,<br><br>
 	  * 
-	  * <code> this.remove() // deletes this object from the relational database its stored
-	  *                      // in, you can only call remove() with no arguments if it is
-	  *                      // a relationally backed object</code><br><br>
+	  * <code>this.remove()</code> // deletes this object from the relational database 
+	  * 						      its stored in, you can only call remove() with no 
+	  * 							  arguments if it is a relationally backed object<br><br>
 	  *                      
 	  * @param {AxiomObject} [child] The child object to remove from this object's children
 	  * @returns {Boolean} Whether the operation was a success or not.

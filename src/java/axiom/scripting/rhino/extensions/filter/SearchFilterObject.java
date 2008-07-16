@@ -134,8 +134,10 @@ public class SearchFilterObject extends ScriptableObject implements IFilter {
     		String fields = sprops.getProperty(param + ".fields");
 
     		this.profile = new SearchProfile();
-    		this.profile.filter = sprops.getProperty(param + ".filter").trim();
-    		this.profile.operator = sprops.getProperty(param + ".filter.operator").trim();
+    		if (sprops.getProperty(param + ".filter") != null && sprops.getProperty(param + ".filter.operator") != null) {
+    			this.profile.filter = sprops.getProperty(param + ".filter").trim();
+        		this.profile.operator = sprops.getProperty(param + ".filter.operator").trim();
+    		}
     		
     		if (fields != null && filter instanceof String) {
     			StringBuffer sb = new StringBuffer(fields);

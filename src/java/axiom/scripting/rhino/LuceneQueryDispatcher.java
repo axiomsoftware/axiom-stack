@@ -931,16 +931,22 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
                     }
     			}
     	    	
-    	    	String profileFilter = profile.filter.trim();
-    	    	if(profileFilter.startsWith("{") && profileFilter.endsWith("}")){
+    	    	String profileFilter = profile.filter;
+    	    	if(profileFilter != null && profileFilter.startsWith("{") && profileFilter.endsWith("}")){
     	    		profileFilter = "new Filter(" + profileFilter + ")";
     	    	}
     	    	
     			Context cx = Context.getCurrentContext();
-    			Object result = cx.evaluateString(RhinoEngine.getRhinoCore(app).getGlobal(),
+    			Object result = null;
+    			if (profileFilter != null) { 
+    				result = cx.evaluateString(RhinoEngine.getRhinoCore(app).getGlobal(),
     					profileFilter, "eval", 1, null);
+    			}
     			
-    			IFilter spfilter = QueryBean.getFilterFromObject(result);
+    			IFilter spfilter = null;
+    			if (result != null) {
+    				spfilter = QueryBean.getFilterFromObject(result);
+    			}
 
     			Query q = null; 
                 if (spfilter instanceof FilterObject) {

@@ -30,8 +30,8 @@ public class JSDoclet extends Doclet {
 					commentTags.add(t.name()+ " " +t.text());
 				}
 				emitComment(commentTags.toArray());
-
 				emit("function "+className+"(){}");
+
 				for(MethodDoc method: clazz.methods()){
 					ArrayList<String> methodTags = new ArrayList<String>();
 					methodTags.add(method.commentText());

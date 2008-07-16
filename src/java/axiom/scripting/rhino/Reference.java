@@ -110,23 +110,58 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
         return "[Reference]";
     }
     
+    /**
+     * @deprecated replaced by ref.target
+     */
     public Object jsFunction_getTarget() {
         return getTarget();
     }
     
+    /**
+     * The target object which this reference is referring to.
+     * @type {AxiomObject} 
+     */
+    public Object jsGet_target() {
+        return getTarget();
+    }
+    
+    /**
+     * @deprecated replaced by ref.source
+     */
     public Object jsFunction_getSource() {
         return getSource();
     }
+ 
+    /**
+     * The source object of this reference
+     * @type {AxiomObject}
+     */
+    public Object jsGet_source() {
+    	return getSource();
+    }
     
+    /**
+     * The _id of the target object of the reference.  Equivalent to <code> ref.target._id </code>
+     * @type {String}
+     */
     public String jsGet_targetId() {
         return targetKey.getID();
     }
     
+    /**
+     * 
+     * @return
+     * @throws UnsupportedEncodingException
+     */
     public String jsGet_targetPath() throws UnsupportedEncodingException {
         axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) getObject(targetKey, false);
         return core.app.getNodeHref(n, null, true);
     }
     
+    /**
+     * The _id of the source object of the reference.  Equivalent to <code> ref.source._id </code>
+     * @type {String}
+     */
     public String jsGet_sourceId() {
         return getSourceKey().getID();
     }
