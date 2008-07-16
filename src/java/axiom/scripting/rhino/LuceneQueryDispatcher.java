@@ -890,7 +890,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     	String qstr = filter instanceof String ? (String)filter : new String();
 
     	BooleanClause.Occur OCCUR = BooleanClause.Occur.MUST;
-        if(profile.operator.equalsIgnoreCase("and")){
+        if (profile.operator == null) {
+        	OCCUR = BooleanClause.Occur.MUST;
+        } else if(profile.operator.equalsIgnoreCase("and")){
             OCCUR = BooleanClause.Occur.MUST;
         } else if(profile.operator.equalsIgnoreCase("or")) {
             OCCUR = BooleanClause.Occur.SHOULD;

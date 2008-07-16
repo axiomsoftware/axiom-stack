@@ -141,7 +141,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     }
     
     /**
-     * The _id of the target object of the reference.  Equivalent to <code> ref.target._id </code>
+     * The _id of the target object of the reference.  Equivalent to <code> ref.target._id </code>.
      * @type {String}
      */
     public String jsGet_targetId() {
@@ -149,28 +149,44 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     }
     
     /**
-     * 
-     * @return
-     * @throws UnsupportedEncodingException
+     * The path of the target object in this reference.  Equivalent to <code> ref.target.getPath() </code>.
+     * @type {String}
      */
-    public String jsGet_targetPath() throws UnsupportedEncodingException {
-        axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) getObject(targetKey, false);
-        return core.app.getNodeHref(n, null, true);
+    public String jsGet_targetPath() {
+    	try {
+    		axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) getObject(targetKey, false);
+    		return core.app.getNodeHref(n, null, true);
+    	} catch (UnsupportedEncodingException x) {
+    		return null;
+    	}
     }
     
     /**
-     * The _id of the source object of the reference.  Equivalent to <code> ref.source._id </code>
+     * The _id of the source object of the reference.  Equivalent to <code> ref.source._id </code>.
      * @type {String}
      */
     public String jsGet_sourceId() {
         return getSourceKey().getID();
     }
     
-    public String jsGet_sourcePath() throws UnsupportedEncodingException {
-        axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) getObject(getSourceKey(), false);
-        return core.app.getNodeHref(n, null, true);
+    /**
+     * The path of the source object in this reference.  Equivalent to <code> ref.source.getPath() </code>.
+     * @type {String}
+     */
+    public String jsGet_sourcePath() {
+        try {
+        	axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) getObject(getSourceKey(), false);
+            return core.app.getNodeHref(n, null, true);
+        } catch (UnsupportedEncodingException x) {
+        	return null;
+        }
     }
     
+    /**
+     * The name of the property on the source object that is this reference.  That is,
+     * if <code> src.prop = ref </code>, then <code> ref.sourceProperty = prop </code>.
+     * @type {String}
+     */
     public String jsGet_sourceProperty() {
         return this.sourceProperty;
     }
