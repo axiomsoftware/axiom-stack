@@ -1489,7 +1489,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 							mode));
 					relobj.setSourceProperty(values[1]);
 					if (values.length > 2) {
-						relobj.setSourceIndex(values[2]);
+						relobj.setSourceIndex(Integer.parseInt(values[2]));
 						if (values.length > 3) {
 							relobj.setSourceXPath(values[3]);
 						}
