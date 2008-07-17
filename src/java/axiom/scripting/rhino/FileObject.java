@@ -10,10 +10,13 @@ import axiom.framework.ErrorReporter;
 import axiom.framework.ResponseTrans;
 import axiom.framework.core.RequestEvaluator;
 import axiom.objectmodel.INode;
-import axiom.util.MimePart;
-import axiom.util.ResourceProperties;
 
 /**
+ * File is a built-in prototype. It is instantiated by passing either 
+ * a MimePart Object (as submitted via a multipart/formdata form post) or File System path 
+ * into the constructor.  The binary contents of the File object are stored
+ * in the application's blob directory. 
+ * 
  * @jsconstructor File
  */
 public class FileObject extends AxiomObject {
@@ -97,6 +100,11 @@ public class FileObject extends AxiomObject {
         return proto;
     } 
     
+    /**
+     * Returns the size of the file in bytes.
+     * 
+     * @returns {Number} The file size in bytes
+     */
     public int jsFunction_getFileSize() {
         Object ret = this.get(FILE_SIZE, this);
         int size = 0;
@@ -120,10 +128,26 @@ public class FileObject extends AxiomObject {
         return size;
     }
     
-    public String jsFunction_replaceFile(Object mimepart){
-    	return FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app);
+    /**
+     * Replace the binary file contents represented in this File object with the input 
+     * MimePart object (as submitted via a multipart/formdata form post) or the input
+     * file system path.
+     * 
+     * @param {MimePart|String} file The MimePart object or the path on the file system to
+     *                               replace the binary contents of this File object with.
+     */
+    public void jsFunction_replaceFile(Object mimepart){
+    	FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app);
     }
     
+    /**
+     * Get the URL of this object within the application.
+	 *
+	 * @param {String} [action] the action name, or null/undefined for the "main" action.
+	 * @returns {String} url
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+     */
     public String jsFunction_getURI(Object action) throws UnsupportedEncodingException, IOException{
     	String result = super.jsFunction_getURI(action);
     	if (result.endsWith("/")) {
@@ -132,6 +156,11 @@ public class FileObject extends AxiomObject {
     	return result;
     }
     
+    /**
+     * Get the content type of this File object (text, xml, doc, jpg, etc)
+     * 
+     * @returns {String} The content type
+     */
     public String jsFunction_getContentType() {
         Object ret = this.get(CONTENT_TYPE, this);
         if (ret != null) {
@@ -141,6 +170,12 @@ public class FileObject extends AxiomObject {
         }
     }
     
+    /**
+     * Get the extracted textual content from this File.  For example, the text contained
+     * in an MS Word document.
+     * 
+     * @returns {String} The text in the file
+     */
     public String jsFunction_getContent() {
         Object ret = this.get(CONTENT, this);
         if (ret != null) {
@@ -150,6 +185,11 @@ public class FileObject extends AxiomObject {
         }
     }
     
+    /**
+     * Get the name of the file (e.g. foo.txt)
+     * 
+     * @returns {String} The name of the file
+     */
     public String jsFunction_getFileName() {
         Object ret = this.get(FILE_NAME, this);
         if (ret != null) {
@@ -159,28 +199,21 @@ public class FileObject extends AxiomObject {
         }
     }
     
-    /*public String jsFunction_fileHref() {
-        if (node != null) {
-            String fileName;
-            if ((fileName = node.getString(FILE_NAME)) != null) {
-                StringBuffer href = new StringBuffer(this.core.app.getStaticMountpoint());
-                return href.append(fileName).toString();
-            } else {
-                String href = null;
-                try {
-                    href = (String) super.jsFunction_href(null);
-                } catch (Exception ex) {
-                    href = null;
-                }
-                return href;
-            }
-        }
-        
-        return null;
-    }*/
-    
+    /**
+     * @deprecated replaced by getPath()
+     */
     public String jsFunction_path() {
-        if (node != null) {
+        return this.jsFunction_getPath();
+    }
+    
+    /**
+     * Get the File's path, that is, the location of the binary content of 
+     * this File object on the file system.
+     * 
+     * @returns {String} The File's path
+     */
+    public String jsFunction_getPath() {
+    	if (node != null) {
             checkNode();
             
             String path = this.core.app.getBlobDir();
@@ -196,12 +229,6 @@ public class FileObject extends AxiomObject {
         return null;
     }
     
-    public void jsFunction_setRendered(boolean rendered) {
-        String r = rendered ? "true" : "false";
-        checkNode();
-        this.node.setString(RENDERED_CONTENT, r);
-    }
-    
     public String getTmpPath() {
         return this.tmpPath;
     }
@@ -211,7 +238,7 @@ public class FileObject extends AxiomObject {
     }
     
     /**  
-     * Default main method for serving static binary content from Axiom
+     * Invoked to serve the static binary content of this File from inside Axiom
      */
     public void jsFunction_main() throws Exception {
         final String path = this.jsFunction_path();
