@@ -2,7 +2,6 @@ package axiom.scripting.rhino;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderableImage;
@@ -15,12 +14,12 @@ import org.mozilla.javascript.*;
 
 import axiom.framework.ErrorReporter;
 import axiom.objectmodel.INode;
-import axiom.util.ResourceProperties;
 
 /**
  * Image is a built-in prototype that extends File. It is instantiated by passing either 
  * a MimePart Object (as submitted via a multipart/formdata form post) or File System path 
- * into the constructor. 
+ * into the constructor.  The binary contents of the Image object are stored
+ * in the application's blob directory.
  * 
  * @jsconstructor Image
  */
@@ -80,10 +79,20 @@ public class ImageObject extends FileObject {
         return "[ImageObject]";
     }
     
+    /**
+     * Returns the width of the image represented by this Image object.
+     * 
+     * @returns {Number} The width
+     */
     public int jsFunction_getWidth() {
         return getDimension(WIDTH);
     }
     
+    /**
+     * Returns the height of the image represented by this Image object.
+     * 
+     * @returns {Number} The height
+     */
     public int jsFunction_getHeight() {
         return getDimension(HEIGHT);
     }
@@ -111,6 +120,20 @@ public class ImageObject extends FileObject {
         return v;
     }
 
+    /**
+     * Adds another Image object as a thumbnail (child) of this Image object, which can be 
+     * retrieved using <code> getThumbnail(accessname) </code>.
+     * 
+     * @param {Image} child The Image object to add as a child of this Image object 
+     * @param {String} [accessname] The accessname by which the child Image object may be
+     *                              retrieved by calling getThumbnail(accessname).  If 
+     *                              this argument is left unspecified, defaults to a String
+     *                              "[width]x[height]". So if the width is 200 and the 
+     *                              height is 100, the default accessname will be 200x100.
+     * @returns {Boolean} Whether the operation was a success or not.  If there is already
+     *                    an Image object with the same name as accessname located as a
+     *                    child of this Image object, then it will fail and return <code> false </code>
+     */
     public boolean jsFunction_addThumbnail(Object child, Object accessname) {
         if (child instanceof ImageObject) {
             ImageObject th = (ImageObject) child;
@@ -130,14 +153,39 @@ public class ImageObject extends FileObject {
         return false;
     }
     
-    public Object jsFunction_getThumbnail(Object id) {
-        return super.jsFunction_get(id);
+    /**
+     * Retrieves the thumbnail (child) from this Image object's thumbnail collection.
+     * Thumbnails are added using <code> addThumbnail(child, accessname) </code>.
+     * 
+     * @param {String} accessname The accessname with which the desired Image object was stored.
+     * @returns {Image} The requested thumbnail Image object.
+     */
+    public Object jsFunction_getThumbnail(Object accessname) {
+        return super.jsFunction_get(accessname);
     }
     
+    /**
+     * Remove the specified thumbnail (child) from this Image object's children.
+     * 
+     * @param {Image} child The Image object to remove
+     * @returns {Boolean} Whether the removal was a success or not
+     * @throws Exception
+     */
     public boolean jsFunction_removeThumbnail(Object child) throws Exception{
         return super.jsFunction_remove(child);
     }
     
+    /**
+     * Creates and returns a new Image object that is a rendering of this Image object.
+     * The input object defines the rendering parameters of the new Image object.  
+     * Imagemagick's convert program is used to create a scaled bounding box of 
+     * this Image with the given dimensions.
+     * 
+     * @param {Object} input A JavaScript object specifying the rendering parameters.
+     *                       For example, <code> {maxWidth:200, maxHeight:100} </code>
+     * @returns {Image} The rendered Image object.
+     * @throws Exception
+     */
     public ImageObject jsFunction_render(Object input) throws Exception {
         if (input == null || !(input instanceof Scriptable)) {
             throw new RuntimeException("The first argument to render() must be a scriptable object.");
@@ -405,9 +453,29 @@ public class ImageObject extends FileObject {
 	    return dims;
 	}
 
-    public String jsFunction_replaceFile(Object mimepart){
+	/**
+     * Replace the binary image contents represented in this Image object with the input 
+     * MimePart object (as submitted via a multipart/formdata form post) or the input
+     * file system path.
+     * 
+     * @param {MimePart|String} file The MimePart object or the path on the file system to
+     *                               replace the binary contents of this Image object with.
+     */
+    public void jsFunction_replaceFile(Object mimepart){
     	String path = FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app);
         ImageObjectCtor.imageGen(this, getNode(), path, core);
-        return path;
     }
+    
+    /**
+     * Sets whether this Image object was rendered from another Image object or not,
+     * that is, if it was the result of invoking <code> Image.render() </code>
+     * 
+     * @param {Boolean} rendered <code> true </code> if it was rendered, <code> false </code> false otherwise
+     */
+    public void jsFunction_setRendered(boolean rendered) {
+        String r = rendered ? "true" : "false";
+        checkNode();
+        this.node.setString(RENDERED_CONTENT, r);
+    }
+    
 }

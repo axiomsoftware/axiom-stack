@@ -338,6 +338,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 *
 	 * @param {String} [action] the action name, or null/undefined for the "main" action.
 	 * @returns {String} url
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
 	 */
 	public String jsFunction_getURI(Object action) 
 	throws UnsupportedEncodingException, IOException {

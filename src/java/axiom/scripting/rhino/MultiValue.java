@@ -153,7 +153,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
     /**
      * Returns a String representation of the type of objects contained in this MultiValue.
      
-     * @return {String} The type of objects contained in this MultiValue
+     * @returns {String} The type of objects contained in this MultiValue
      */
     public String jsFunction_type() {
         switch (valueType) {
@@ -346,7 +346,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * 		<code> obj.mv = obj.mv.remove(x); </code>
      * 
      * @param {Object|MultiValue} obj The object to remove from the MultiValue
-     * @return {MultiValue} The new MultiValue
+     * @returns {MultiValue} The new MultiValue
      */
     public MultiValue jsFunction_remove(Object o) {
     	Object[] newArr = null;
@@ -379,7 +379,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * seperated by the input String parameter
      * 
      * @param {String} on The String that acts as the delimeter
-     * @return {String} The result of the join
+     * @returns {String} The result of the join
      */
     public Object jsFunction_join(Object on) {
     	StringBuffer joined = new StringBuffer();
@@ -398,7 +398,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * 
      * @param {Number} start The start index
      * @param {Number} [end] The end index, defaults to the length of this MultiValue
-     * @return {MultiValue} The sliced MultiValue
+     * @returns {MultiValue} The sliced MultiValue
      */
     public Object jsFunction_slice(Object start, Object end) {
         Object[] values = getValues();
@@ -445,7 +445,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * @param {Number} howmany The number of elements that should be removed
      * @param {Object|MultiValue} [arg] Optional object or MultiValue whose elements should 
      * 								inserted in the place where the spliced elements are removed
-     * @return {MultiValue} The spliced MultiValue
+     * @returns {MultiValue} The spliced MultiValue
      */
     public Object jsFunction_splice(Object start, Object howmany, Object arg) {
         if (start == null || start == Undefined.instance) {
@@ -576,7 +576,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
     /**
      * The MultiValue object's toSource() method.
      * 
-     * @return {String} The object's toSource()
+     * @returns {String} The object's toSource()
      */
     public String jsFunction_toSource() {
         StringBuffer src = new StringBuffer();
