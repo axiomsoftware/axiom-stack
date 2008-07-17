@@ -622,7 +622,7 @@ public final class Property implements IProperty, Serializable, Cloneable, Compa
                 	r.setSourceNode(this.node);
                 }
                 r.setSourceProperty(propname);
-                r.setSourceIndex(Integer.toString(i));
+                r.setSourceIndex(i);
             }
             if (invalid) {
                 mv.setValues(list);

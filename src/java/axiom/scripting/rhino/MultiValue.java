@@ -150,6 +150,11 @@ public class MultiValue extends ScriptableObject implements Serializable {
         this.valueType = type;
     }
     
+    /**
+     * Returns a String representation of the type of objects contained in this MultiValue.
+     
+     * @return {String} The type of objects contained in this MultiValue
+     */
     public String jsFunction_type() {
         switch (valueType) {
         case IProperty.BOOLEAN: return "Boolean";
@@ -163,10 +168,23 @@ public class MultiValue extends ScriptableObject implements Serializable {
         }
     }
     
+    /**
+     * The number of objects in this MultiValue.
+     * @type {Number}
+     */
     public int jsGet_length() {
         return this.length;
     }
     
+    /**
+     * Returns <code> true </code> if the input object is contained in this MultiValue, 
+     * returns <code> false </code> otherwise.  An object <code> foo </code> is contained 
+     * in a MultiValue if there exists an object <code> bar </code> in the MultiValue 
+     * such that <code> foo.equals(bar) </code> is <code> true </code>.
+     * 
+     * @param {Object} obj The object to check if it is contained in this MultiValue
+     * @returns {Boolean} Whether the input object is contained in this MultiValue
+     */
     public boolean jsFunction_contains(final Object o) {
         return this.contains(o) > -1;
     }
@@ -220,6 +238,23 @@ public class MultiValue extends ScriptableObject implements Serializable {
         return -1;
     }
     
+    /**
+     * Concatenates the input object or MultiValue with this MultiValue and 
+     * returns a new MultiValue.  
+     * That is, if the input object or MultiValue are of the same type as the elements in 
+     * this MultiValue, then the object or the elements of the input MultiValue 
+     * are added to the elements of this MultiValue, and a new MultiValue of the
+     * concatenation is returned.
+     * 
+     * Note: If this function is called on a MultiValue that is a property of an object,
+     * then in order for the change to reflect on the object property, reassignment must
+     * occur.  For example,<br><br>
+     * 
+     * 		<code> obj.mv = obj.mv.concat(other_mv); </code>
+     * 
+     * @param {Object|MultiValue} obj The Object or MultiValue to concatenate
+     * @returns {MultiValue} The new MultiValue
+     */
     public MultiValue jsFunction_concat(Object o) {
         MultiValue mv = null;
         int objType = IProperty.STRING;
@@ -299,6 +334,20 @@ public class MultiValue extends ScriptableObject implements Serializable {
         return this;
     }
     
+    /**
+     * Remove the input object from the list of elements in this MultiValue and return a
+     * new MultiValue with all the elements in this MultiValue minus the input object (if
+     * it exists in this MultiValue).
+ 	 *
+     * Note: If this function is called on a MultiValue that is a property of an object,
+     * then in order for the change to reflect on the object property, reassignment must
+     * occur.  For example,<br><br>
+     * 
+     * 		<code> obj.mv = obj.mv.remove(x); </code>
+     * 
+     * @param {Object|MultiValue} obj The object to remove from the MultiValue
+     * @return {MultiValue} The new MultiValue
+     */
     public MultiValue jsFunction_remove(Object o) {
     	Object[] newArr = null;
     	int idx;
@@ -325,6 +374,13 @@ public class MultiValue extends ScriptableObject implements Serializable {
     	return this;
     }
     
+    /**
+     * A string representation of the elements in this MultiValue, with each element 
+     * seperated by the input String parameter
+     * 
+     * @param {String} on The String that acts as the delimeter
+     * @return {String} The result of the join
+     */
     public Object jsFunction_join(Object on) {
     	StringBuffer joined = new StringBuffer();
     	Object[] values = getValues();
@@ -336,6 +392,14 @@ public class MultiValue extends ScriptableObject implements Serializable {
     	return joined.toString();
     }
     
+    /**
+     * Returns a new MultiValue that contains the elements in this MultiValue at index
+     * start up to (but not including) index end
+     * 
+     * @param {Number} start The start index
+     * @param {Number} [end] The end index, defaults to the length of this MultiValue
+     * @return {MultiValue} The sliced MultiValue
+     */
     public Object jsFunction_slice(Object start, Object end) {
         Object[] values = getValues();
         final int len = values.length;
@@ -361,6 +425,28 @@ public class MultiValue extends ScriptableObject implements Serializable {
         return null;
     }    
     
+    /**
+     * Returns a new MultiValue that removes all the elements of this MultiValue starting at
+     * the <code> start </code> index, removing <code>howmany </code> elements, replacing
+     * those elements with an optional object or the elements of another MultiValue, 
+     * if specified.
+     * 
+     * For example, the following code: 
+     * 
+     * <br><br> <code>
+     * var foo = new MultiValue('1','2','3','4','5');
+     * var replacement = new MultiValue('a','b');
+     * var bar = foo.splice(2, 2, replacement);
+     * </code> <br><br>
+     * 
+     * Will result in <code> bar </code> having the contents <code> ['1','2','a','b','5'] </code>
+     *
+     * @param {Number} start The start index to do the element removal from
+     * @param {Number} howmany The number of elements that should be removed
+     * @param {Object|MultiValue} [arg] Optional object or MultiValue whose elements should 
+     * 								inserted in the place where the spliced elements are removed
+     * @return {MultiValue} The spliced MultiValue
+     */
     public Object jsFunction_splice(Object start, Object howmany, Object arg) {
         if (start == null || start == Undefined.instance) {
             return this;
@@ -407,10 +493,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
                     ((Scriptable) arg).getClassName().equals("undefined")); 
             splice = new Object[newlen + (arg_undefined ? 0 : 1)];
             int count = 0;
-            System.out.println("s = " + s + ", hw = " + hm);
             for (int i = 0; i < s; i++) {
                 splice[count++] = values[i];
-                System.out.println("Assigned " + values[i] + " for " + i + ", count = " + count);
             }
             if (!arg_undefined) {
                 splice[count++] = arg;
@@ -418,7 +502,6 @@ public class MultiValue extends ScriptableObject implements Serializable {
             s += hm;
             for (int i = s; i < len; i++) {
                 splice[count++] = values[i];
-                System.out.println("Assigned " + values[i] + " for " + i+ ", count = " + count);
             }	
         }
         
@@ -490,6 +573,11 @@ public class MultiValue extends ScriptableObject implements Serializable {
         return mv;
     }
     
+    /**
+     * The MultiValue object's toSource() method.
+     * 
+     * @return {String} The object's toSource()
+     */
     public String jsFunction_toSource() {
         StringBuffer src = new StringBuffer();
         if (this.valueType == IProperty.REFERENCE) {

@@ -26,7 +26,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     private Key targetKey = null;
     private Key sourceKey = null;
     private String sourceProperty = null;
-    private String sourceIndex = "";
+    private int sourceIndex = 0;
     private String sourceXPath = null;
     private RhinoCore core = null;
     private WrappedNodeManager wnmgr = null;
@@ -191,11 +191,16 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
         return this.sourceProperty;
     }
     
-    public String jsGet_sourceIndex() {
+    /**
+     * The position that this Reference object holds inside a MultiValue, if it is part of
+     * a MultiValue.  If it is not, its just 0.
+     * @type {Number}
+     */
+    public int jsGet_sourceIndex() {
         return this.sourceIndex;
     }
     
-    public String getSourceIndex() {
+    public int getSourceIndex() {
         return this.sourceIndex;
     }
     
@@ -211,7 +216,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
         this.sourceProperty = name;
     }
     
-    public void setSourceIndex(String index) {
+    public void setSourceIndex(int index) {
         this.sourceIndex = index;
     }
     
@@ -348,6 +353,11 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
         return ref;
     }
     
+    /**
+     * The Reference object's toSource() method.
+     * 
+     * @return {String} The object's toSource()
+     */
     public String jsFunction_toSource() {
         StringBuffer src = new StringBuffer();
         try {

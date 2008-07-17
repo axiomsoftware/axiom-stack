@@ -1089,7 +1089,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 										Reference relobj = (Reference) o;
 										relobj.setSourceKey(((axiom.objectmodel.db.Node) this.node).getKey());
 										relobj.setSourceProperty(name);
-										relobj.setSourceIndex(Integer.toString(i));
+										relobj.setSourceIndex(i);
 										referenceCache.put(key, o);
 									} catch (Exception ex) {
 										this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "getFromNode"), ex);
