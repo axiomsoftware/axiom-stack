@@ -1205,6 +1205,20 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 		return NOT_FOUND;
 	}
+	
+	/**
+	 * @deprecated replaced by <code> obj._created </code>
+	 */
+	public Object jsFunction_created() {
+		return this.getInternalProperty("_created");
+	}
+	
+	/**
+	 * @deprecated replaced by <code> obj._lastmodified </code>
+	 */
+	public Object jsFunction_lastmodified() {
+		return this.getInternalProperty("_lastmodified");
+	}
 
 	/**
 	 * Implements Scriptable.getIds()
