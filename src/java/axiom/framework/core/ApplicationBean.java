@@ -73,6 +73,14 @@ public class ApplicationBean implements Serializable {
         app.customCronJobs.put(functionName, job);
     }
 
+    public void addCronJob(String functionName, String year, String month, String day,
+    		String weekday, String hour, String minute) {
+    	CronJob job = CronJob.newJob(functionName, year, month, 
+    			day, weekday, hour, minute, null);
+
+    	app.customCronJobs.put(functionName, job);
+    }
+    
     /**
      * Adds a global function to the list of scheduled tasks that are called at 
      * the defined interval.
