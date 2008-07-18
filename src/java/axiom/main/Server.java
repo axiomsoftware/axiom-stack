@@ -620,7 +620,7 @@ public class Server implements IPathElement, Runnable {
             throw new RuntimeException("Error setting up Server", x);
         }
         // set the security manager.
-        // the default implementation is axiom.main.HelmaSecurityManager.
+        // the default implementation is axiom.main.AxiomSecurityManager.
         try {
             String secManClass = sysProps.getProperty("securityManager");
 
