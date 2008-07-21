@@ -259,7 +259,7 @@ TAL.expr = function (data, value) {
         if(string) {
             return TAL.stringExpr(data, term);
         } else if(javascript) {
-            return (new Function('path','return ' + term)).call(data['this'],function (path){return TAL.getPathExpr(data, TAL.stringExpr(data, path))[1]});
+			return (new Function('path','data','return ' + term)).call(data['this'],function (path){ return TAL.getPathExpr(data, TAL.stringExpr(data, path))[1]; }, data);
         }
         result = TAL.getPathExpr(data, TAL.stringExpr(data, term));
         if(!result[1] && i+1 < terms.length ){
