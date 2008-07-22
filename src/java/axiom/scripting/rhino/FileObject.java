@@ -137,7 +137,7 @@ public class FileObject extends AxiomObject {
      *                               replace the binary contents of this File object with.
      */
     public void jsFunction_replaceFile(Object mimepart){
-    	FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app);
+    	FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app, true);
     }
     
     /**

@@ -69,7 +69,7 @@ public class ImageObjectCtor extends FunctionObject {
             }
             if (obj instanceof MimePart || obj instanceof String) {
                 iobj = new ImageObject("Image", core, node, proto, false);
-                ImageObjectCtor.imageGen(iobj, node, FileObjectCtor.setup(iobj, node, args, core.app), core);
+                ImageObjectCtor.imageGen(iobj, node, FileObjectCtor.setup(iobj, node, args, core.app, false), core);
                 iobj.setupDefaultProperties();
             } else if (args[0] instanceof Scriptable) {
                 Scriptable data = (Scriptable) args[0];

@@ -462,7 +462,7 @@ public class ImageObject extends FileObject {
      *                               replace the binary contents of this Image object with.
      */
     public void jsFunction_replaceFile(Object mimepart){
-    	String path = FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app);
+    	String path = FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app, false);
         ImageObjectCtor.imageGen(this, getNode(), path, core);
     }
     
