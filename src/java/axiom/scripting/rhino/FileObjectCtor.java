@@ -70,7 +70,7 @@ public class FileObjectCtor extends FunctionObject {
             }
             if (obj instanceof MimePart || obj instanceof String) {
                 fobj = new FileObject("File", core, node, proto, true);
-                FileObjectCtor.setup(fobj, node, args, core.app);
+                FileObjectCtor.setup(fobj, node, args, core.app, true);
             } else if (args[0] instanceof Scriptable) {
                 Scriptable data = (Scriptable) args[0];
                 fobj = new FileObject("File", core, node, proto, data);
@@ -83,7 +83,8 @@ public class FileObjectCtor extends FunctionObject {
         return fobj;
     }
     
-    protected static String setup(FileObject fobj, INode node, Object[] args, Application app) {
+    protected static String setup(FileObject fobj, INode node, Object[] args, 
+    								Application app, boolean extractContent) {
         String ret = null;        
         
         if (args != null && args.length > 0) {
@@ -116,7 +117,7 @@ public class FileObjectCtor extends FunctionObject {
                 node.setJavaObject(FileObject.SELF, fobj);
                 node.setString(FileObject.FILE_UPLOAD, "true");
                 
-                String text = extractText(fobj.tmpPath, app);
+                String text = extractContent ? extractText(fobj.tmpPath, app) : null;
                 if (text != null) {
                     node.setString(FileObject.CONTENT, text);
                 }
@@ -142,7 +143,7 @@ public class FileObjectCtor extends FunctionObject {
                 node.setJavaObject(FileObject.SELF, fobj);
                 node.setString(FileObject.FILE_UPLOAD, "false");
                 
-                String text = extractText(fobj.tmpPath, app);
+                String text = extractContent ? extractText(fobj.tmpPath, app) : null;
                 if (text != null) {
                     node.setString(FileObject.CONTENT, text);
                 }
