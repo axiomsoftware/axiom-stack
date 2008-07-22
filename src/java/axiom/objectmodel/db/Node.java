@@ -345,6 +345,10 @@ public class Node implements INode, Serializable {
             return;
         }
 
+        if (s == MODIFIED && this.getLayer() > this.getLayerInStorage()) {
+        	s = NEW;
+        }
+        
         state = s;
 
         if (Thread.currentThread() instanceof Transactor) {
