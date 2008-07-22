@@ -1057,6 +1057,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 				if (ptype == IProperty.MULTI_VALUE
 						&& p instanceof axiom.objectmodel.db.Property) {
+					
 					axiom.objectmodel.db.Property property = (axiom.objectmodel.db.Property) p;
 					MultiValue mv = property.getMultiValue();
 
@@ -1082,6 +1083,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 								Key key = r.getTargetKey();
 								Object cached = referenceCache.get(key);
+
 								if (cached != null) {
 									o = cached;
 								} else {

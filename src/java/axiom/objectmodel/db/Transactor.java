@@ -94,6 +94,8 @@ public class Transactor extends Thread {
     
     private QueryBean qbean;
     
+    private HashSet<Key> keysToEvict;
+    
     /**
      * Creates a new Transactor object.
      *
@@ -109,6 +111,7 @@ public class Transactor extends Thread {
         cleanNodes = new HashMap();
         txnNodes = new ConcurrentHashMap();
         parentNodes = new HashSet();
+        keysToEvict = new HashSet<Key>();
         
         txns = new HashMap<IDatabase,ITransaction>();
 
@@ -188,6 +191,12 @@ public class Transactor extends Thread {
                 txnNodes.put(key, node);
             }
         }
+    }
+    
+    public void evictAtTxnCompletion(Key key) {
+    	if (key != null) {
+    		this.keysToEvict.add(key);
+    	}
     }
 
     /**
@@ -286,6 +295,7 @@ public class Transactor extends Thread {
         txnNodes.clear();
         parentNodes.clear();
         txns.clear();
+        keysToEvict.clear();
         
         tmgr.clearTransactionUnits();
         tmgr.startTransaction();
@@ -505,6 +515,9 @@ public class Transactor extends Thread {
                     nmgr.insertNode(db, txn, node);
                     dirtyDbMappings.add(node.getDbMapping());
                     node.setState(Node.CLEAN);
+                    if (node.getLayer() > node.getLayerInStorage()) {
+                    	node.setLayerInStorage(node.getLayer());
+                    }
 
                     // register node with nodemanager cache
                     nmgr.registerNode(node);
@@ -655,12 +668,15 @@ public class Transactor extends Thread {
                            this.nmgr.app.countActiveEvaluators() + "," +
                            this.nmgr.app.countFreeEvaluators());
 
+        this.nmgr.evictKeys(this.keysToEvict);
+        
         // clear the node collections
         dirtyNodes.clear();
         cleanNodes.clear();
         txnNodes.clear();
         parentNodes.clear();
         testedConnections.clear();
+        keysToEvict.clear();
         
         // unset transaction name
         tname = null;

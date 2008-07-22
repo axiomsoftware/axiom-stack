@@ -2599,6 +2599,7 @@ public final class NodeManager {
     	DbKey dkey = new DbKey(node.dbmap, node.getID(), mode);
     	node.setKey(dkey);
     	tx.visitCleanNode(dkey, node);
+    	tx.evictAtTxnCompletion(dkey);
 
 		Node dbNode = null;
     	try {
@@ -2674,6 +2675,15 @@ public final class NodeManager {
     
     public ArrayList<IDatabase> getDatabases() {
     	return new ArrayList<IDatabase>(this.dbs.values());
+    }
+    
+    public void evictKeys(HashSet<Key> keyset) {
+    	synchronized (cache) {
+    		Iterator<Key> keys = keyset.iterator();
+        	while (keys.hasNext()) {
+        		this.evictNodeByKey(keys.next());
+        	}
+    	}
     }
     
 } 

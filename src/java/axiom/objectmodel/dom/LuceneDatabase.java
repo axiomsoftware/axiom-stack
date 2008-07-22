@@ -272,15 +272,18 @@ public final class LuceneDatabase implements IDatabase {
     
     public INode getNode(ITransaction transaction, String key, int mode)
     throws IOException, ObjectNotFoundException {
-        return lmgr.retrieveFromLuceneIndex(key, mode);
+        Node n = lmgr.retrieveFromLuceneIndex(key, mode);
+        return n;
     }
     
     public INode getNode(ITransaction transaction, String key, int mode, boolean tryOtherModes)
     throws IOException, ObjectNotFoundException {
         if (tryOtherModes) {
-        	return lmgr.retrieveFromLuceneIndex(key, mode);
+        	Node n = lmgr.retrieveFromLuceneIndex(key, mode);
+        	return n;
         } else {
-        	return lmgr.retrieveFromIndexFixedMode(key, mode);
+        	Node n = lmgr.retrieveFromIndexFixedMode(key, mode);
+        	return n;
         }
     }
 
