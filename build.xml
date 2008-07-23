@@ -14,6 +14,7 @@
 	<property name="jsdoc.dir" value="${home.dir}/doc"/>
 	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
 	<property name="utils.dir" value="${home.dir}/utils"/>
+	<property name="examples.dir" value="${home.dir}/examples"/>
 	<property name="java.version.default" value="1.6"/>
 	<property name="axiom-jar.name" value="axiom.jar"/>
 	<property name="launcher-jar.name" value="launcher.jar"/>
