@@ -15,6 +15,7 @@ import axiom.framework.core.Prototype;
 import axiom.framework.core.TypeManager;
 import axiom.objectmodel.db.DbColumn;
 import axiom.objectmodel.db.DbMapping;
+import axiom.objectmodel.db.DbSource;
 import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.Node;
 import axiom.objectmodel.db.NodeManager;
@@ -91,9 +92,23 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				if (!con.isReadOnly())
 					con.setReadOnly(true);
 
+				int dbtype = DbSource.UNKNOWN;
+				DbSource dbsource = dbm.getDbSource();
+				if (dbsource != null) {
+					dbtype = dbsource.getDbType();
+				}
+
+				final int maxResults = getMaxResults(options);
+				
 				DbColumn[] columns = dbm.getColumns();
 				Relation[] joins = dbm.getJoins();
-				StringBuffer b = dbm.getSelect(null);
+				String selectPrefix = (dbtype == DbSource.SQL_SERVER && maxResults != -1) 
+										? "TOP " + maxResults : null;
+				StringBuffer b = dbm.getSelect(null, selectPrefix);
+				
+				if (dbtype == DbSource.UNKNOWN && maxResults != -1) {
+					b.insert(0, "SET ROWCOUNT " + maxResults + " ");
+				}
 
 				ArrayList filterObjs = new ArrayList();
 				StringBuffer filterClause = new StringBuffer();
@@ -115,6 +130,10 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				dbm.addJoinConstraints(b, prefix);
 
 				b.append(dbm.getTableJoinClause(whereAdded ? 0 : 1));
+				
+				if (maxResults != -1 && dbtype == DbSource.ORACLE) {
+					b.append(" ").append(whereAdded ? "WHERE " : "AND ").append("ROWNUM <= ").append(maxResults);
+				}
 
 				if (sort != null) {
 					String sortQuery = getRelationalSortQuery(sort, dbm);
@@ -122,7 +141,11 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 						b.append(" ").append(sortQuery);
 					}
 				}
-
+				
+				if (maxResults != -1 && dbtype == DbSource.MYSQL) {
+					b.append(" ").append("LIMIT ").append(maxResults);
+				}
+				
 				query = b.toString();
 
 				pstmt = con.prepareStatement(query);
@@ -146,8 +169,7 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 						}
 
 						if (columnType == -1) {
-							this.app
-									.logError("QueryBean.executeRelationalQuery(): Could not find a db column for the property "
+							this.app.logError("QueryBean.executeRelationalQuery(): Could not find a db column for the property "
 											+ key);
 							continue;
 						}
@@ -192,7 +214,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 					} else {
 						results.add(node);
 					}
-					int maxResults = getMaxResults(options);
 					if (maxResults != -1 && results.size() >= maxResults) {
 						return results;
 					}

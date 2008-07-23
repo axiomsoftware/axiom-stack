@@ -40,6 +40,12 @@ public class DbSource {
     private boolean isOracle;
     private long lastRead = 0L;
     private Hashtable dbmappings = new Hashtable();
+    private int dbtype = -1;
+    
+    public static final int UNKNOWN = -1;
+    public static final int ORACLE = 1;
+    public static final int SQL_SERVER = 2;
+    public static final int MYSQL = 3;
 
     /**
      * Creates a new DbSource object.
@@ -129,6 +135,7 @@ public class DbSource {
 	        if (driver == null) {
 	            throw new NullPointerException(name+".driver class not defined in db.properties");
 	        }
+	        this.dbtype = this.determineDbType(this.driver);
 	        // test if this is an Oracle driver
 	        isOracle = driver.startsWith("oracle.jdbc.driver");
 	        // test if driver class is available
@@ -236,6 +243,22 @@ public class DbSource {
     
     public String getProperty(String key, String defaultValue) {
     	return this.props.getProperty(this.name + "." + key, defaultValue);
+    }
+    
+    public int getDbType() {
+    	return this.dbtype;
+    }
+    
+    private int determineDbType(String driver) {
+    	if (driver.startsWith("oracle.jdbc.driver")) {
+    		return ORACLE;
+    	} else if (driver.equalsIgnoreCase("net.sourceforge.jtds.jdbc.Driver")) {
+    		return SQL_SERVER;
+    	} else if (driver.equalsIgnoreCase("org.gjt.mm.mysql.Driver")) {
+    		return MYSQL;
+    	}
+    	
+    	return UNKNOWN;
     }
     
 }
