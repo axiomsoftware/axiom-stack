@@ -1,0 +1,136 @@
+#################
+# prototype.properties for Embedded Database Objects 
+#
+# An Axiom application will generally contain several prototypes, represented by a separate folder under apps/app_name. So if there is a prototype
+# called "HomePage", there will be a folder in the Axiom instance apps/app_name/HomePage. Inside every prototype’s folder in an Axiom application, 
+# there should be a prototype.properties file. The purpose of this file is to describe the properties and children that can be assigned to any object 
+# of a particular prototype. 
+#
+# An object in the Axiom system can have both properties and child objects. Properties can be one of several types, which will be detailed below. 
+# If the prototype maps to storage in a relational database table (instead of the embedded Lucene database), then the prototype.properties file will 
+# describe the property name to table column mappings for the relational storage. The prototype.properties file is a regular text file with specific 
+# formatting. The contents of the prototype.properties file consists of an entry describing the children of the prototype and an entry for each of 
+# the properties in the prototype. Each entry can have subentries, denoted by a ".". All system defined properties start with an underscore ("_"). 
+# A thing to also keep in mind is that only certain, system level, properties which start with an underscore get persisted. All others are not. 
+#
+#################
+# Subproperties
+#
+# .type 
+# .type is a subproperty that specifies the type of the property it is a subproperty for. Possible values are: 
+#
+#	1. String 
+#	2. Number (encompasses both integers and floats) 
+#	3. Date 
+#	4. Time 
+#	5. Timestamp 
+#	6. Boolean 
+#	7. Reference 
+#	8. MultiValue(Type) 
+#	9. XML 
+#	10. XHTML 
+#	11. Object(Prototype) 
+#	12. Collection(Prototype) 
+#
+# Image and File are special prototypes in the Axiom system. Therefore, specifying Object(Image) or Object(File) specifies an object of the built-in 
+# Image and File prototypes, respectively. A MultiValue may contain objects of any of the above types. 
+#
+# .accessname 
+# A subproperty for a collection type that specifies by what property the objects in the collection are accessed (by url traversal and object.get()). 
+#
+# collection_prop
+# collection_prop.type = Collection(AxiomObject)
+# collection_prop.accessname = id
+#
+# .valid.min, .valid.max
+# Subproperties which can specify a valid upper and lower bound range on the valid values for a property. If the property is assigned a value that is 
+# not met by those bounds, then an exception is thrown by the stack. If valid.min and valid.max are not specified, then no bounds are considered on 
+# assignment. 
+#
+# int_prop
+# int_prop.type = Number
+# int_prop.valid.min = 0
+# int_prop.valid.max = 100
+#
+# .depends, .compute
+# Subproperties that allow for a property to be a computed (as opposed to assigned) property. The .compute subproperty specifies the code that is 
+# executed to assign the property its value. It can be a small snippet of javascript code or a call to a function on the prototype. The .depends 
+# subproperty specifies when the assignment of this computed property is triggered. It can be a comma separated list of properties on the object. 
+# Whenever any property in the .depends list of a computed property changes, the computed property’s .compute is executed and the result assigned 
+# to the computed property. If no .depends subproperty is specified, then the .compute is executed on EVERY property assignment of objects of this
+# prototype. For example, date_prop above does not have a .depends subproperty, so it is recomputed everytime a property is changed on the object. 
+#
+# num_changes
+# num_changes.type = Number
+# num_changes.depends = int_prop
+# num_changes.compute = num_changes++
+#
+# .default 
+# The .default subproperty allows to specify the default value that property should be assigned upon the creation of any object of this prototype. 
+# For example, anytime a new object of this prototype is created, string_prop will automatically get assigned the value "initial value". 
+#
+# string_prop
+# string_prop.type = String
+# string_prop.default = "initial value"
+#
+# .store 
+# .store has 3 possible values: YES, NO, COMPRESSED. By default, YES is assumed, meaning that lucene will actually store the value of the property 
+# in its database. A value of NO means the property is only indexed, not stored. A value of COMPRESSED means the property is stored, but in a 
+# compressed format. 
+#
+# .index 
+# .index has 3 possible values: NO, TOKENIZED, UNTOKENIZED. By default, TOKENIZED is assumed, which means that the property value’s contents is 
+# tokenized using lucene analysis before it is indexed (for example, stop words are removed, capitalization is removed, etc.). A value of 
+# UNTOKENIZED means that the property is indexed without using an analyzer to tokenize any of the content of the property. A value of NO means 
+# the property is not indexed for search. 
+#
+# .list 
+# .list defines the values for the select or multiselect widget. It must be an array of arrays and can be either hard coded or a function call.
+#
+# search_only_prop
+# search_only_prop.type = String
+# search_only_prop.store = NO
+# search_only_prop.index = TOKENIZED
+#################
+# _extends 
+# 
+# Specifies the prototype that this prototype inherits from. If none is specified, AxiomObject is assumed as the default super type. AxiomObject 
+# is at the top of the inheritance hierarchy (much like Object is at the inheritance hierarchy in Java). A prototype not only inherits all methods 
+# from its supertype, but also takes on all properties from its parent’s prototype.properties file in a recursive manner. A prototype may override 
+# any of its super prototype’s properties in its own prototype.properties file. 
+# 
+# _extends = SuperPrototype
+#################
+# _children
+#
+# This is a special property that specifies what type of objects can be contained in the children of this prototype. If none is specified, .type 
+# is set to Collection(AxiomObject) by default. 
+#
+# _children
+# _children.type = Collection(AxiomObject)
+# _children.accessname = accessname
+#################
+# _parentTypes 
+#
+# This is a special property that specifies what prototypes objects of this type can be attached to (i.e. made children of). 
+# In the example below, objects of this prototype can only have a "HomePage" object or a "Section" object as its parent. 
+#
+# _parentTypes = ["HomePage", "Section"]
+#################
+# Object, Reference, XML and MultiValues
+#
+# image_prop
+# image_prop.type = Object(Image)
+#
+# xml_prop
+# xml_prop.type = XML
+# ref_prop
+# ref_prop.type = Reference
+# 
+# mv_prop
+# mv_prop.type = MultiValue(Reference)
+# mv_prop.widget = referenceOrderedMultiSelectPopUp
+# mv_prop.widget.label = Products & Services
+# mv_prop.targetTypes = ['Channel']
+# mv_prop.controlstring = :
+#################

@@ -1,0 +1,45 @@
+#################
+# prototype.properties for Relational Database Objects 
+#
+# The prototype.properties file for a prototype backed by relational storage is much simpler. All that is required is to specify the database 
+# and the table in that database where to store/retrieve the object, the primary key to set as the internal Axiom id of the object, and a mapping 
+# of properties to column names in the relational table. 
+#
+# Below is an example of the prototype.properties file for an object backed by relational storage (that is, the object’s properties are mapped to, 
+# stored in, and retrieved from a relational database table). We will use this example to explain how to write a prototype.properties file for a 
+# relational database object. 
+#################
+#
+# _db 
+# You must specify the database source where objects of this prototype are stored/retrieved. In the apps/app_name folder of a particular 
+# application, you will create a db.properties file (described in another wiki entry), which specifies all the database connections the application
+# can connect to, and giving each connection an id. In the _db property, you specify the id of the database in the db.properties file where this 
+# prototype’s objects are stored. In this example, the database is identified by myDb in the db.properties file. 
+#
+# _table 
+# You must also specify the table in the database that is responsible for the storage of the objects of this prototype. In this example, the 
+# objects of this prototype are mapped to the Contact_Info table in the myDb database. 
+#
+# _id 
+# You must also specify the primary key in the table so that the Axiom objects may be assigned unique _id values based on the primary key entry 
+# in the database. This enables Axiom to uniquely identify an object of this particular prototype in the relational database. 
+#
+# _cache.timeout 
+# This is an optional value which you would specify if you want Axiom to refetch objects of this prototype on a certain time interval. This is 
+# useful if some external source other than Axiom is modifying the database, so you would want to re-retrieve the objects on a certain time 
+# interval so as to ensure you are working with the latest copy of the object. The above example specifies a timeout value of 30 seconds. 
+#
+# The remainder of the properties in the file specify object properties and which columns in the table to store/retrieve those properties 
+# from. For example, the object contains a property called address, which is retrieved from the column USER_ADDRESS in the Contact_Info table. 
+# When Axiom makes any changes to the address property, those changes are persisted in the USER_ADDRESS column. 
+#
+# _db = myDb
+# _table = Contact_Info
+# _id = ID
+# _cache.timeout = 30
+# 
+# name = USER_NAME
+# address = USER_ADDRESS
+# phone_number = USER_PHONE_NUMBER
+# email = USER_EMAIL
+#################
