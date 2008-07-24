@@ -26,7 +26,7 @@ if (!global.axiom) {
  * constructor function for Zip Objects
  * @param either
  *      - (Object) a File object
- *      - (Object) an instance of Helma.File
+ *      - (Object) an instance of Axiom.File
  *      - (Object) an instance of java.io.File
  *      - (String) the path to the zip file
  * @constructor
@@ -112,8 +112,8 @@ axiom.Zip = function (file) {
 
     /**
      * private function that constructs an instance
-     * of java.io.File based on a JS File or Helma.File object
-     * @param Object either a string or an instance of java.io.File, File or Helma.File
+     * of java.io.File based on a JS File or Axiom.File object
+     * @param Object either a string or an instance of java.io.File, File or Axiom.File
      * @return Object instance of java.io.File
      */
     var evalFile = function(f) {

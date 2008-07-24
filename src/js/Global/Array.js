@@ -1,7 +1,7 @@
 /*
  * Helma License Notice
  *
-k * The contents of this file are subject to the Helma License
+ * The contents of this file are subject to the Helma License
  * Version 2.0 (the "License"). You may not use this file except in
  * compliance with the License. A copy of the License is available at
  * http://adele.helma.org/download/helma/license.txt
