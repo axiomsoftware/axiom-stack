@@ -19,7 +19,7 @@ package axiom.main.launcher;
 import java.lang.reflect.*;
 
 /**
- *  Helma bootstrap class. Figures out Helma home directory, sets up class path and
+ *  Axiom bootstrap class. Figures out Axiom home directory, sets up class path and
  *  lauchnes main class. This class must be invoked from a jar file in order to work.
  *
  *  @author Stefan Pollach
@@ -28,7 +28,7 @@ public class Commandline {
 
     /**
      * boot method for running a request from the command line.
-     * This retrieves the Helma home directory, creates the
+     * This retrieves the Axiom home directory, creates the
      * classpath, get the request properties, creates the app and
      * runs it
      *-
@@ -49,9 +49,9 @@ public class Commandline {
             // and invoke the static main(String, String[]) method
             main.invoke(null, nargs);
         } catch (Exception x) {
-            // unable to get Helma installation dir from launcher jar
+            // unable to get Axiom installation dir from launcher jar
             x.printStackTrace();
-            System.err.println("Unable to get Helma installation directory: ");
+            System.err.println("Unable to get Axiom installation directory: ");
             System.err.println(x.getMessage());
             System.exit(2);
         }

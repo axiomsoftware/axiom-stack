@@ -3,7 +3,7 @@ package axiom.util;
 /**
   * Modifications by Stefan Pollach, 2002-08, 2003-03
   * First, to compile without protomatter-library (we're only interested in the
-  * parsing functions for helma), second to encapsulate a function call and not
+  * parsing functions for axiom), second to encapsulate a function call and not
   * a PASEvent
   */
 

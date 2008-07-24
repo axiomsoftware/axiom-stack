@@ -219,8 +219,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
         	code = n.getPrototype() + "/" + n.getID();
             
             for (int i = 0; i < length; i++) {
-                AxiomObject hobj = (AxiomObject) ((Reference) values[i]).getTarget();
-                INode node = hobj.node;
+                AxiomObject axobj = (AxiomObject) ((Reference) values[i]).getTarget();
+                INode node = axobj.node;
                 String ccode = node.getString("_v_copied_code");
                 String ncode = node.getPrototype() + "/" + node.getID();
                 if (code.equals(ccode) || code.equals(ncode)) {

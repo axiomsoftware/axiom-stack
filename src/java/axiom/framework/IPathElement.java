@@ -18,7 +18,7 @@ package axiom.framework;
 
 
 /**
- * Interface that objects need to implement to build a Helma URL tree. Apart from methods
+ * Interface that objects need to implement to build an Axiom URL tree. Apart from methods
  * to retrieve the identifier and its child and parent elements, this interface defines a method
  * that determines which prototype to use to add scripts and skins to an object. <p>
  *
@@ -46,7 +46,7 @@ public interface IPathElement {
     /**
      * Get the name of the prototype to be used for this object. This will
      * determine which scripts, actions and skins can be called on it
-     * within the Helma scripting and rendering framework.
+     * within the Axiom scripting and rendering framework.
      */
     public String getPrototype();
 }

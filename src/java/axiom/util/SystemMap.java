@@ -20,7 +20,7 @@ package axiom.util;
 import java.util.*;
 
 /**
- * Map class used internally by Helma. We use this class to be able to
+ * Map class used internally by Axiom. We use this class to be able to
  *  wrap maps as native objects within a scripting engine rather
  *  than exposing them through Java reflection. 
  */

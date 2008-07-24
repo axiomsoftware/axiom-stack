@@ -33,7 +33,7 @@ import java.rmi.*;
 import java.util.*;
 
 /**
- * This class is responsible for starting and stopping Helma applications.
+ * This class is responsible for starting and stopping Axiom applications.
  */
 public class ApplicationManager implements XmlRpcHandler {
     private Hashtable descriptors;
@@ -459,9 +459,7 @@ public class ApplicationManager implements XmlRpcHandler {
                     	}
                     }
                 }
-                // register as XML-RPC handler
-                xmlrpcHandlerName = app.getXmlRpcHandlerName();
-                xmlrpcHandlers.put(xmlrpcHandlerName, app);
+                //xmlrpcHandlers.put(xmlrpcHandlerName, app);
             } catch (Exception x) {
                 server.getLogger().error("Couldn't bind app", x);
                 x.printStackTrace();

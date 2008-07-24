@@ -83,14 +83,11 @@ public class Server implements IPathElement, Runnable {
     // our logger
     private Log logger;
     // are we using axiom.util.Logging?
-    private boolean helmaLogging;
+    private boolean axiomLogging;
 
     // server start time
     public final long starttime;
 
-    // if paranoid == true we only accept RMI and XML-RPC connections from
-    // explicitly listed hosts.
-    public boolean paranoid;
     private ApplicationManager appManager;
     private Vector extensions;
     private Thread mainThread;
@@ -193,7 +190,7 @@ public class Server implements IPathElement, Runnable {
 
         Config config = new Config();
 
-        // get possible environment setting for helma home
+        // get possible environment setting for axiom home
         if (System.getProperty("axiom.home")!=null) {
             config.homeDir = new File(System.getProperty("axiom.home"));
         }
@@ -369,17 +366,17 @@ public class Server implements IPathElement, Runnable {
         String logFactory = sysProps.getProperty("loggerFactory",
                                                  "axiom.util.Logging");
 
-        helmaLogging = "axiom.util.Logging".equals(logFactory);
+        axiomLogging = "axiom.util.Logging".equals(logFactory);
         // remove comment below to control Jetty Logging, axiom.util.JettyLogger
         // is an implemention of the Jetty Log class, used for logging Jetty error messages
         System.setProperty("org.mortbay.log.class", "axiom.util.JettyLogger");
 
         System.setProperty("org.apache.commons.logging.LogFactory", logFactory);
 
-        // set the current working directory to the helma home dir.
+        // set the current working directory to the Axiom home dir.
         // note that this is not a real cwd, which is not supported
         // by java. It makes sure relative to absolute path name
-        // conversion is done right, so for Helma code, this should
+        // conversion is done right, so for Axiom code, this should
         // work.
         System.setProperty("user.dir", axiomHome.getPath());
 
@@ -397,13 +394,11 @@ public class Server implements IPathElement, Runnable {
         logger.info("Setting Axiom Home to " + axiomHome);
 
 
-        // read db.properties file in helma home directory
+        // read db.properties file in Axiom home directory
         dbProps = new ResourceProperties();
         dbProps.setIgnoreCase(false);
         dbProps.addResource(new FileResource(new File(axiomHome, "db.properties")));
         DbSource.setDefaultProps(dbProps);
-
-        paranoid = "true".equalsIgnoreCase(sysProps.getProperty("paranoid"));
 
         String language = sysProps.getProperty("language");
         String country = sysProps.getProperty("country");
@@ -505,7 +500,7 @@ public class Server implements IPathElement, Runnable {
             }
         }
 
-        if (helmaLogging) {
+        if (axiomLogging) {
             Logging.shutdown();
         }
         
@@ -521,7 +516,7 @@ public class Server implements IPathElement, Runnable {
         try {
             Runtime.getRuntime().removeShutdownHook(shutdownhook);
             // HACK: running the shutdownhook seems to be necessary in order
-            // to prevent it from blocking garbage collection of helma 
+            // to prevent it from blocking garbage collection of Axiom 
             // classes/classloaders. Since we already set server to null it 
             // won't do anything anyhow.
             shutdownhook.start();
@@ -695,14 +690,14 @@ public class Server implements IPathElement, Runnable {
      */
     public Log getLogger() {
         if (logger == null) {
-            if (helmaLogging) {
+            if (axiomLogging) {
                 // set up system properties for axiom.util.Logging
                 String logDir = sysProps.getProperty("logdir", "log");
 
                 if (!"console".equals(logDir)) {
                     // try to get the absolute logdir path
 
-                    // set up helma.logdir system property
+                    // set up axiom.logdir system property
                     File dir = new File(logDir);
                     if (!dir.isAbsolute()) {
                         dir = new File(axiomHome, logDir);

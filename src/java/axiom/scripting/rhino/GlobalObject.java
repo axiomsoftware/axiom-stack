@@ -35,7 +35,7 @@ import java.text.*;
 import java.io.*;
 
 /**
- * Helma global object defines a number of custom global functions.
+ * Axiom global object defines a number of custom global functions.
  */
 public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     Application app;

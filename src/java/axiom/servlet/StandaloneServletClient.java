@@ -24,7 +24,7 @@ import axiom.framework.repository.FileRepository;
 import axiom.framework.repository.Repository;
 
 /**
- *  Standalone servlet client that runs a Helma application all by itself
+ *  Standalone servlet client that runs a Axiom application all by itself
  *  in embedded mode without relying on a central instance of axiom.main.Server
  *  to start and manage the application.
  *

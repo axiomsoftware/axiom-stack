@@ -47,7 +47,7 @@ public class RequestTrans implements Serializable {
     public final static String OPTIONS = "OPTIONS";
     public final static String PUT = "PUT";
     public final static String TRACE = "TRACE";
-    // Helma pseudo-methods
+    // Axiom pseudo-methods
     public final static String XMLRPC = "XMLRPC";
     public final static String EXTERNAL = "EXTERNAL";
     public final static String INTERNAL = "INTERNAL";
@@ -253,7 +253,7 @@ public class RequestTrans implements Serializable {
 
     /**
      * Return the method of the request. This may either be a HTTP method or
-     * one of the Helma pseudo methods defined in this class.
+     * one of the Axiom pseudo methods defined in this class.
      */
     public synchronized String getMethod() {
         return method;
@@ -470,9 +470,7 @@ public class RequestTrans implements Serializable {
         return this.rewriteDone;
     }
     
-    /* Helma 1.6 Changes */
-    
-    /**
+       /**
      * @return get the query parameters for this request
      */
     public Scriptable getQueryParams() {

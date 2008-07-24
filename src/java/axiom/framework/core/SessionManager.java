@@ -128,7 +128,7 @@ public class SessionManager {
 
     /**
      * Return an array of <code>SessionBean</code> objects currently associated with a given
-     * Helma user.
+     * Axiom user.
      */
     public List getSessionsForUsername(String username) {
         ArrayList list = new ArrayList();
@@ -151,7 +151,7 @@ public class SessionManager {
     }
 
     /**
-     * Return a list of Helma nodes (AxiomObjects -  the database object representing the user,
+     * Return a list of Axiom nodes (AxiomObjects -  the database object representing the user,
      *  not the session object) representing currently logged in users.
      */
     public List getActiveUsers() {

@@ -23,7 +23,7 @@ import axiom.main.Server;
 import axiom.scripting.ScriptingEngine;
 
 /**
- * Helma extensions have to subclass this. The extensions to be loaded are
+ * Axiom extensions have to subclass this. The extensions to be loaded are
  * defined in <code>server.properties</code> by setting <code>extensions =
  * packagename.classname, packagename.classname</code>.
  */

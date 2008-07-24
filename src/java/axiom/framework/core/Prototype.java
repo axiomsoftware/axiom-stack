@@ -32,7 +32,7 @@ import axiom.util.ResourceProperties;
 import axiom.util.WrappedMap;
 
 /**
- * The Prototype class represents Script prototypes/type defined in a Helma
+ * The Prototype class represents Script prototypes/type defined in an Axiom
  * application. This class manages a prototypes templates, functions and actions
  * as well as optional information about the mapping of this type to a
  * relational database table.

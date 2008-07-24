@@ -24,7 +24,7 @@ import java.util.HashSet;
 import axiom.framework.core.AppClassLoader;
 
 /**
- *  Liberal security manager for Helma system that makes sure application code
+ *  Liberal security manager for Axiom system that makes sure application code
  *  is not allowed to exit the VM and set a security manager.
  *
  *  This class can be subclassed to implement actual security policies. It contains

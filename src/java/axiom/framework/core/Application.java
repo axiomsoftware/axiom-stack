@@ -52,7 +52,7 @@ import java.util.ArrayList;
 
 
 /**
- * The central class of a Helma application. This class keeps a pool of so-called
+ * The central class of a Axiom application. This class keeps a pool of so-called
  * request evaluators (threads with JavaScript interpreters), waits for
  * requests from the Web server or XML-RPC port and dispatches them to
  * the evaluators.
@@ -82,7 +82,7 @@ public final class Application implements IPathElement, Runnable {
 	// This application's main directory
 	File appDir;
 
-	// Helma server axiomHome directory
+	// Axiom server axiomHome directory
 	File axiomHome;
 
 	// embedded db directory
@@ -193,12 +193,6 @@ public final class Application implements IPathElement, Runnable {
 	
 	// time we last read the module properties
 	private long lastModuleRead = -1L;
-
-	// the set of prototype/function pairs which are allowed to be called via XML-RPC
-	private HashSet xmlrpcAccess;
-
-	// the name under which this app serves XML-RPC requests. Defaults to the app name
-	private String xmlrpcHandlerName;
 
 	// the list of currently active cron jobs
 	Hashtable activeCronJobs = null;
@@ -390,7 +384,7 @@ public final class Application implements IPathElement, Runnable {
 		classMapping = new ResourceProperties(this, "class.properties");
 		classMapping.setIgnoreCase(false);
 
-		// get class name of root object if defined. Otherwise native Helma objectmodel will be used.
+		// get class name of root object if defined. Otherwise native Axiom objectmodel will be used.
 		rootObjectClass = classMapping.getProperty("root");
 
 		onstartFunctions = new HashSet();
@@ -1110,8 +1104,8 @@ public final class Application implements IPathElement, Runnable {
 
 	/**
 	 *  Set the application's root element to an arbitrary object. After this is called
-	 *  with a non-null object, the helma node manager will be bypassed. This function
-	 * can be used to script and publish any Java object structure with Helma.
+	 *  with a non-null object, the Axiom node manager will be bypassed. This function
+	 * can be used to script and publish any Java object structure with Axiom.
 	 */
 	public void setDataRoot(Object root) {
 		this.rootObject = root;
@@ -1148,7 +1142,7 @@ public final class Application implements IPathElement, Runnable {
 
 			return rootObject;
 		}
-		// no custom root object is defined - use standard helma objectmodel
+		// no custom root object is defined - use standard Axiom objectmodel
 		else {
 			return nmgr.safe.getRootNode();
 		}
@@ -1280,7 +1274,7 @@ public final class Application implements IPathElement, Runnable {
 
 	/**
 	 * Return an array of <code>SessionBean</code> objects currently associated
-	 * with a given Helma user.
+	 * with a given Axiom user.
 	 */
 	public List getSessionsForUsername(String username) {
 		return sessionMgr.getSessionsForUsername(username);
@@ -1574,7 +1568,7 @@ public final class Application implements IPathElement, Runnable {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///   The following methods mimic the IPathElement interface. This allows us
 	///   to script any Java object: If the object implements IPathElement (as does
-	///   the Node class in Helma's internal objectmodel) then the corresponding
+	///   the Node class in Axiom's internal objectmodel) then the corresponding
 	///   method is called in the object itself. Otherwise, a corresponding script function
 	///   is called on the object.
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2122,7 +2116,7 @@ public final class Application implements IPathElement, Runnable {
 	}
 
 	/**
-	 * Return the directory of the Helma server
+	 * Return the directory of the Axiom server
 	 */
 	public File getServerDir() {
 		return axiomHome;
@@ -2192,23 +2186,6 @@ public final class Application implements IPathElement, Runnable {
 			}
 			hrefRootPrototype = props.getProperty("hrefrootprototype");
 
-			// update the XML-RPC access list, containting prototype.method
-			// entries of functions that may be called via XML-RPC
-			String xmlrpcAccessProp = props.getProperty("xmlrpcaccess");
-			HashSet xra = new HashSet();
-
-			if (xmlrpcAccessProp != null) {
-				StringTokenizer st = new StringTokenizer(xmlrpcAccessProp, ",; ");
-
-				while (st.hasMoreTokens()) {
-					String token = st.nextToken().trim();
-
-					xra.add(token.toLowerCase());
-				}
-			}
-
-			xmlrpcAccess = xra;
-
 			// if node manager exists, update it
 			if (nmgr != null) {
 				nmgr.updateProperties(props);
@@ -2230,11 +2207,11 @@ public final class Application implements IPathElement, Runnable {
 			}
 
 			logDir = props.getProperty("logdir", "log");
-			if (System.getProperty("helma.logdir") == null) {
-				// set up helma.logdir system property in case we're using it
+			if (System.getProperty("axiom.logdir") == null) {
+				// set up axiom.logdir system property in case we're using it
 				// FIXME: this sets a global System property, should be per-app
 				File dir = new File(logDir);
-				System.setProperty("helma.logdir", dir.getAbsolutePath());
+				System.setProperty("axiom.logdir", dir.getAbsolutePath());
 			}
             
             String repos = props.getProperty("db.blob.dir");
@@ -2324,19 +2301,6 @@ public final class Application implements IPathElement, Runnable {
         return this.searchProps;
     }
 
-
-	/**
-	 * Return the XML-RPC handler name for this app. The contract is to
-	 * always return the same string, even if it has been changed in the properties file
-	 * during runtime, so the app gets unregistered correctly.
-	 */
-	public String getXmlRpcHandlerName() {
-		if (xmlrpcHandlerName == null) {
-			xmlrpcHandlerName = props.getProperty("xmlrpcHandlerName", this.name);
-		}
-
-		return xmlrpcHandlerName;
-	}
 
 	/**
 	 * Return a string representation for this app.
@@ -2434,19 +2398,6 @@ public final class Application implements IPathElement, Runnable {
 
 		logEvent("Free memory: " + (free / 1024) + " kB");
 		logEvent("Total memory: " + (total / 1024) + " kB");
-	}
-
-	/**
-	 * Check if a method may be invoked via XML-RPC on a prototype.
-	 */
-	protected void checkXmlRpcAccess(String proto, String method)
-	throws Exception {
-		String key = proto + "." + method;
-
-		// XML-RPC access items are case insensitive and stored in lower case
-		if (!xmlrpcAccess.contains(key.toLowerCase())) {
-			throw new Exception("Method " + key + " is not callable via XML-RPC");
-		}
 	}
 
 	class CronRunner extends Thread {

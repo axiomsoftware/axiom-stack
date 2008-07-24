@@ -48,9 +48,9 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
                 if (args[0] instanceof Key) {
                     targetKey = (Key) args[0];
                 } else if (args[0] instanceof AxiomObject) {
-                    AxiomObject hobj = (AxiomObject) args[0];
-                    if (hobj.node instanceof axiom.objectmodel.db.Node) {
-                        axiom.objectmodel.db.Node curr = (axiom.objectmodel.db.Node) hobj.node;
+                    AxiomObject axobj = (AxiomObject) args[0];
+                    if (axobj.node instanceof axiom.objectmodel.db.Node) {
+                        axiom.objectmodel.db.Node curr = (axiom.objectmodel.db.Node) axobj.node;
                         targetKey = curr.getKey();
                     }
                 } else if (args[0] instanceof axiom.objectmodel.db.Node) {

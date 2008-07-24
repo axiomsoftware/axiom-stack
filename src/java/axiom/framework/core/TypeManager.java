@@ -76,26 +76,26 @@ public final class TypeManager {
                 ignoreDirs.add(arr[i].trim());
         }
 
-        URL helmajar = TypeManager.class.getResource("/");
+        URL axiomjar = TypeManager.class.getResource("/");
 
-        if (helmajar == null) {
-            // Helma classes are in jar file, get helma.jar URL
+        if (axiomjar == null) {
+            // Axiom classes are in jar file, get axiom.jar URL
             URL[] urls = ((URLClassLoader) TypeManager.class.getClassLoader()).getURLs();
 
             for (int i = 0; i < urls.length; i++) {
                 String url = urls[i].toString().toLowerCase();
-                if (url.endsWith("helma.jar")) {
-                    helmajar = urls[i];
+                if (url.endsWith("axiom.jar")) {
+                    axiomjar = urls[i];
                     break;
                 }
             }
         }
 
-        if (helmajar == null) {
-            // throw new RuntimeException("helma.jar not found in embedding classpath");
+        if (axiomjar == null) {
+            // throw new RuntimeException("axiom.jar not found in embedding classpath");
             loader = new AppClassLoader(app.getName(), new URL[0]);
         } else {
-            loader = new AppClassLoader(app.getName(), new URL[] { helmajar });
+            loader = new AppClassLoader(app.getName(), new URL[] { axiomjar });
         }
         
         for (int i = 0; i < defaultStandardTypes.length; i++) {

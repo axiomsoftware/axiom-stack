@@ -74,7 +74,7 @@ public class Logger implements Log {
      * Get loglevel from System properties
      */
      private void init() {
-        String level = System.getProperty("helma.loglevel");
+        String level = System.getProperty("axiom.loglevel");
         if ("trace".equalsIgnoreCase(level))
             logLevel = TRACE;
         else if ("debug".equalsIgnoreCase(level))

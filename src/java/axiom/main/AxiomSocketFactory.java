@@ -31,7 +31,7 @@ public class AxiomSocketFactory extends RMISocketFactory {
     private InetAddressFilter filter;
 
     /**
-     * Creates a new HelmaSocketFactory object.
+     * Creates a new AxiomSocketFactory object.
      */
     public AxiomSocketFactory() {
         filter = new InetAddressFilter();

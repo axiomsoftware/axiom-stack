@@ -705,11 +705,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		checkNode();
 
 		if (child instanceof AxiomObject) {
-			AxiomObject hobj = (AxiomObject) child;
-			INode hobjnode = hobj.node;
+			AxiomObject axobj = (AxiomObject) child;
+			INode axobjnode = axobj.node;
 
-			if (hobjnode != null) { 
-				node.removeNode(hobjnode);
+			if (axobjnode != null) { 
+				node.removeNode(axobjnode);
 
 				return true;
 			}
@@ -2050,8 +2050,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 
 	    INode newparent = null;
 	    if (parent instanceof AxiomObject) {
-	        AxiomObject hobj = (AxiomObject) parent;
-	        newparent = hobj.node;
+	        AxiomObject axobj = (AxiomObject) parent;
+	        newparent = axobj.node;
 	    } else if (parent instanceof String || (parent instanceof Scriptable 
 	            && ((Scriptable) parent).getClassName().equals("String"))) {
 	        final String path = parent instanceof String ? parent.toString() : 
@@ -2346,7 +2346,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 axiom.objectmodel.db.Node copynode = new axiom.objectmodel.db.Node(protoname, protoname,
 				 core.app.getWrappedNodeManager());
 		 Scriptable proto = core.getPrototype(protoname);
-		 AxiomObject hobj = new AxiomObject(protoname, core, copynode, proto);
+		 AxiomObject axobj = new AxiomObject(protoname, core, copynode, proto);
 
 		 if (proto != null) {
 			 Object f = ScriptableObject.getProperty(proto, protoname);
@@ -2356,7 +2356,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			 }
 			 if (f instanceof Function) {
 				 try {
-					 ((Function) f).call(Context.getCurrentContext(), core.global, hobj, null);
+					 ((Function) f).call(Context.getCurrentContext(), core.global, axobj, null);
 				 } catch (JavaScriptException ex) {
 					 System.err.println("Error in jsFunction_copy() -> Could not create the axiom object: " + ex.getMessage());
 				 }
@@ -2385,7 +2385,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 }
 
 
-		 return hobj;
+		 return axobj;
 	 }
 
 	 // a unique code representing a node

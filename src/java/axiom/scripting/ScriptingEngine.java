@@ -27,10 +27,10 @@ import axiom.framework.core.RequestEvaluator;
 
 /**
  * This is the interface that must be implemented to make a scripting environment
- * usable by the Helma application server.
+ * usable by the Axiom application server.
  *
  * Implementations of this interface must have a public zero-argument constructor
- * to be usable by the Helma framework.
+ * to be usable by the Axiom framework.
  */
 public interface ScriptingEngine {
 

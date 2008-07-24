@@ -23,7 +23,7 @@ import axiom.framework.core.Application;
 import axiom.main.*;
 
 /**
- *  Servlet client that runs a Helma application for the embedded
+ *  Servlet client that runs a Axiom application for the embedded
  *  web server
  */
 public final class EmbeddedServletClient extends AbstractServletClient {
