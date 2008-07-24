@@ -55,13 +55,13 @@ import axiom.util.*;
  */
 public abstract class AbstractServletClient extends HttpServlet {
 
-    // host on which Helma app is running
+    // host on which Axiom app is running
     String host = null;
 
-    // port of Helma RMI server
+    // port of Axiom RMI server
     int port = 0;
 
-    // RMI url of Helma app
+    // RMI url of Axiom app
     String axiomUrl;
 
     // limit to HTTP uploads in kB
@@ -86,8 +86,8 @@ public abstract class AbstractServletClient extends HttpServlet {
     // enable debug output
     boolean debug;
 
-    // soft fail on file upload errors by setting flag "helma_upload_error" in RequestTrans
-    // if fals, an error response is written to the client immediately without entering helma
+    // soft fail on file upload errors by setting flag "axiom_upload_error" in RequestTrans
+    // if fals, an error response is written to the client immediately without entering Axiom
     boolean uploadSoftfail = false;
 
     /**

@@ -642,11 +642,11 @@ public final class NodeManager {
     }
 
     /**
-     *  calls onPersist function for the HopObject
+     *  calls onPersist function for the AxiomObject
      */
     private void invokeOnPersist(Node node) {
         try {
-            // We need to reach deap into helma.framework.core to invoke onPersist(),
+            // We need to reach deap into axiom.framework.core to invoke onPersist(),
             // but the functionality is really worth it.
             RequestEvaluator reval = this.app.getCurrentRequestEvaluator();
             if (reval != null) {
@@ -2413,7 +2413,7 @@ public final class NodeManager {
                                  long logTimeStart, long logTimeStop, String statement) {
         // init sql-log if necessary
         if (sqlLog == null) {
-            String sqlLogName = app.getProperty("sqlLog", "helma."+app.getName()+".sql");
+            String sqlLogName = app.getProperty("sqlLog", "axiom."+app.getName()+".sql");
             sqlLog = LogFactory.getLog(sqlLogName);
         }
 

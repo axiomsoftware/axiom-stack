@@ -48,10 +48,10 @@ public class Logging extends LogFactory {
 
     /**
      *  Constructs a log factory, getting the base logging directory from the
-     *  helma.logdir system property.
+     *  axiom.logdir system property.
      */
     public Logging() {
-        logdir = System.getProperty("helma.logdir", "log");
+        logdir = System.getProperty("axiom.logdir", "log");
     }
 
     /**

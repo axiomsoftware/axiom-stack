@@ -101,10 +101,10 @@ public class ActionSecurityManager {
     	
         Stack s = new Stack();
         if (object instanceof AxiomObject) {
-            AxiomObject hobj = (AxiomObject) object;
-            while (hobj != null) {
-                s.push(hobj);
-                hobj = (AxiomObject) hobj.get("__parent__", hobj);
+            AxiomObject axobj = (AxiomObject) object;
+            while (axobj != null) {
+                s.push(axobj);
+                axobj = (AxiomObject) axobj.get("__parent__", axobj);
             }
         } else {
             return false;

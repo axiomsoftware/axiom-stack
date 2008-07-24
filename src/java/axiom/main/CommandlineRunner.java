@@ -23,7 +23,7 @@ import axiom.framework.core.Application;
 import axiom.util.SystemProperties;
 
 /**
- *  Helma command line runner class. This class creates and starts a single application,
+ *  Axiom command line runner class. This class creates and starts a single application,
  *  invokes a function in, writes its return value to the console and exits.
  *
  *  @author Stefan Pollach
@@ -32,12 +32,12 @@ public class CommandlineRunner {
 
     /**
      * boot method for running a request from the command line.
-     * This retrieves the Helma home directory, creates the app and
+     * This retrieves the Axiom home directory, creates the app and
      * runs the function.
      *
      * @param args command line arguments
      *
-     * @throws Exception if the Helma home dir or classpath couldn't be built
+     * @throws Exception if the Axiom home dir or classpath couldn't be built
      */
     public static void main(String[] args) throws Exception {
 
@@ -45,9 +45,9 @@ public class CommandlineRunner {
         String commandStr = null;
         Vector funcArgs = new Vector();
     
-        // get possible environment setting for helma home
-        if (System.getProperty("helma.home")!=null) {
-            config.homeDir = new File(System.getProperty("helma.home"));
+        // get possible environment setting for Axiom home
+        if (System.getProperty("axiom.home")!=null) {
+            config.homeDir = new File(System.getProperty("axiom.home"));
         }
 
         // parse arguments

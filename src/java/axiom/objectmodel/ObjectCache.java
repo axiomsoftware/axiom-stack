@@ -22,7 +22,7 @@ import java.util.Properties;
 import axiom.framework.core.Application;
 
 /**
- * Interface Helma object cache classes need to implement.
+ * Interface Axiom object cache classes need to implement.
  *
  */
 public interface ObjectCache {

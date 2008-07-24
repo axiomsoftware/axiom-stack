@@ -41,7 +41,7 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
     final List list;
     final RhinoCore core;
     final WrappedNodeManager wnm;
-    final AxiomObject hObj;
+    final AxiomObject axObj;
     INode node;
 
     static ListViewWrapper listViewProto;
@@ -54,7 +54,7 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
         core = null;
         wnm = null;
         node = null;
-        hObj = null;
+        axObj = null;
     }
 
     /**
@@ -62,17 +62,17 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
      * @param list
      * @param core
      * @param wnm
-     * @param hObj
+     * @param axObj
      */
-    ListViewWrapper (List list, RhinoCore core, WrappedNodeManager wnm, AxiomObject hObj) {
+    ListViewWrapper (List list, RhinoCore core, WrappedNodeManager wnm, AxiomObject axObj) {
         if (list == null) {
             throw new IllegalArgumentException ("ListWrapper unable to wrap null list.");
         }
         this.core = core;
         this.list = list;
         this.wnm = wnm;
-        this.hObj = hObj;
-        this.node = hObj.node;
+        this.axObj = axObj;
+        this.node = axObj.node;
         if (listViewProto == null) {
             listViewProto = new ListViewWrapper();
             listViewProto.init();
@@ -107,7 +107,7 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
         if (idxObj instanceof Number)
             return jsFunction_get(((Number) idxObj).intValue());
         else // fallback to this View's AxiomObject's get-function
-            return hObj.jsFunction_get(idxObj);
+            return axObj.jsFunction_get(idxObj);
     }
     
     public Object jsFunction_get(int idx) {
@@ -137,7 +137,7 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
     }
     
     public Object jsFunction_getById(Object id) {
-        return hObj.jsFunction_getById(id);
+        return axObj.jsFunction_getById(id);
     }
 
     /**
@@ -185,9 +185,9 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
     }
 
     public void jsFunction_add(Object child) {
-        if (this.hObj==null)
+        if (this.axObj==null)
             throw new RuntimeException("ListWrapper has no knowledge about any AxiomObject or collection");
-        hObj.jsFunction_add(child);
+        axObj.jsFunction_add(child);
     }
     
     /**
@@ -255,18 +255,18 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
      *  it from the database.
      */
     public boolean jsFunction_removeChild(Object child) {
-        if (this.hObj==null)
+        if (this.axObj==null)
             throw new RuntimeException("ListWrapper has no knowledge about any AxiomObject or collection");
-        return hObj.removeChild(child);
+        return axObj.removeChild(child);
     }
 
     /**
      *  Invalidate the node itself or a subnode
      */
     public boolean jsFunction_invalidate() {
-        if (this.hObj==null)
+        if (this.axObj==null)
             throw new RuntimeException("ListWrapper has no knowledge about any AxiomObject or collection");
-        return hObj.jsFunction_invalidate();
+        return axObj.jsFunction_invalidate();
     }
 
     /**
@@ -309,7 +309,7 @@ public class ListViewWrapper extends ScriptableObject implements Wrapper, Script
         checkNode();
         
         OrderedSubnodeList osl = (OrderedSubnodeList) list;
-        return new ListViewWrapper (osl.getOrderedView(expr), core, wnm, hObj);
+        return new ListViewWrapper (osl.getOrderedView(expr), core, wnm, axObj);
     }
     
     public String toString() {

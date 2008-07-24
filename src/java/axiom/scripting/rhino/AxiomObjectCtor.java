@@ -94,16 +94,16 @@ public class AxiomObjectCtor extends FunctionObject {
             INode node = new axiom.objectmodel.db.Node(protoname, protoname,
                                                     core.app.getWrappedNodeManager());
             Scriptable proto = core.getPrototype(protoname);
-            AxiomObject hobj = null;
+            AxiomObject axobj = null;
 
             if(args != null && args.length > 0 && args[0] instanceof Scriptable){
             	Scriptable data = (Scriptable)args[0];
-            	hobj = new AxiomObject(protoname, core, node, proto, data);   
+            	axobj = new AxiomObject(protoname, core, node, proto, data);   
             } else {
-            	hobj = new AxiomObject(protoname, core, node, proto, true);
+            	axobj = new AxiomObject(protoname, core, node, proto, true);
                 String uname = "";
                 try {
-                	uname = hobj.getUserName();
+                	uname = axobj.getUserName();
                 } catch (Exception e) { 
                 }
                 node.setString("creator", uname);
@@ -117,11 +117,11 @@ public class AxiomObjectCtor extends FunctionObject {
                     f = ScriptableObject.getProperty(proto, "__constructor__");
                 }
                 if (f instanceof Function) {
-                    ((Function) f).call(cx, core.global, hobj, args);
+                    ((Function) f).call(cx, core.global, axobj, args);
                 }
             }
 
-            return hobj;
+            return axobj;
         }
     }
 

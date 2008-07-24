@@ -356,7 +356,7 @@ public final class HtmlEncoder {
 
     /**
      *  Do "smart" encodging on a string. This means that valid HTML entities and tags,
-     *  Helma macros and HTML comments are passed through unescaped, while
+     *  Axiom macros and HTML comments are passed through unescaped, while
      *  other occurrences of '<', '>' and '&' are encoded to HTML entities.
      */
     public final static String encode(String str) {
@@ -380,7 +380,7 @@ public final class HtmlEncoder {
 
     /**
      *  Do "smart" encodging on a string. This means that valid HTML entities and tags,
-     *  Helma macros and HTML comments are passed through unescaped, while
+     *  Axiom macros and HTML comments are passed through unescaped, while
      *  other occurrences of '<', '>' and '&' are encoded to HTML entities.
      */
     public final static void encode(String str, StringBuffer ret) {
@@ -389,7 +389,7 @@ public final class HtmlEncoder {
 
     /**
      *  Do "smart" encodging on a string. This means that valid HTML entities and tags,
-     *  Helma macros and HTML comments are passed through unescaped, while
+     *  Axiom macros and HTML comments are passed through unescaped, while
      *  other occurrences of '<', '>' and '&' are encoded to HTML entities.
      *
      *  @param str the string to encode
@@ -434,7 +434,7 @@ public final class HtmlEncoder {
         boolean insideCodeTag = false;
         boolean insidePreTag = false;
 
-        // are we within a Helma <% macro %> tag? We treat macro tags and
+        // are we within a Axiom <% macro %> tag? We treat macro tags and
         // comments specially, since we can't rely on tag balancing
         // to know when we leave a macro tag or comment.
         boolean insideMacroTag = false;
@@ -458,11 +458,11 @@ public final class HtmlEncoder {
             char c = str.charAt(i);
 
             // step one: check if this is the beginning of an HTML tag, comment or
-            // Helma macro.
+            // Axiom macro.
             if (c == '<') {
                 if (i < (l - 2)) {
                     if (!insideMacroTag && ('%' == str.charAt(i + 1))) {
-                        // this is the beginning of a Helma macro tag
+                        // this is the beginning of a Axiom macro tag
                         if (!insideCodeTag) {
                             insideMacroTag = insideTag = true;
                             macroQuoteChar = '\u0000';
@@ -691,7 +691,7 @@ public final class HtmlEncoder {
 
                 case '>':
 
-                    // For Helma macro tags and comments, we overrule tag balancing,
+                    // For Axiom macro tags and comments, we overrule tag balancing,
                     // i.e. we don't require that '<' and '>' be balanced within
                     // macros and comments. Rather, we check for the matching closing tag.
                     if (insideComment) {

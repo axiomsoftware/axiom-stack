@@ -460,13 +460,6 @@ public final class RequestEvaluator implements Runnable {
                                         functionName = st.nextToken();
                                     }
 
-                                    if (reqtype == XMLRPC) {
-                                        // check XML-RPC access permissions
-                                        String proto = app.getPrototypeName(currentElement);
-
-                                        app.checkXmlRpcAccess(proto, functionName);
-                                    }
-
                                     // reset skin recursion detection counter
                                     skinDepth = 0;
 

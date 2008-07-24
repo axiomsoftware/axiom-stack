@@ -26,7 +26,7 @@ public class AppClassLoader extends URLClassLoader {
     private final String appname;
 
     /**
-     *  Create a HelmaClassLoader with the given application name and the given URLs
+     *  Create a AxiomClassLoader with the given application name and the given URLs
      */
     public AppClassLoader(String appname, URL[] urls) {
         super(urls, AppClassLoader.class.getClassLoader());

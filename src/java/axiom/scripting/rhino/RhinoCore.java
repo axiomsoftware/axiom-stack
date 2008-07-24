@@ -241,7 +241,7 @@ public final class RhinoCore implements ScopeProvider {
             }
             
             MailObject.init(global, app.getProperties());
-            // defining the ActiveX scriptable object for exposure of its API in Helma
+            // defining the ActiveX scriptable object for exposure of its API in Axiom
             ScriptableObject.defineClass(global, ActiveX.class);
             
             // add some convenience functions to string, date and number prototypes

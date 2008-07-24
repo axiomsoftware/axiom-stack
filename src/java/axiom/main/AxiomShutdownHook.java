@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import axiom.util.*;
 
 /**
- * ShutdownHook that shuts down all running Helma applications on exit.
+ * ShutdownHook that shuts down all running Axiom applications on exit.
  */
 public class AxiomShutdownHook extends Thread {
 

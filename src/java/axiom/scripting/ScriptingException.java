@@ -20,7 +20,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 /**
- * The base class for exceptions thrown by Helma scripting package
+ * The base class for exceptions thrown by Axiom scripting package
  */
 public class ScriptingException extends Exception {
 

@@ -953,8 +953,6 @@ public final class ResponseTrans extends Writer implements Serializable {
         this.status = status;
     }
 
-    /* Helma 1.6 Changes */
-
     /**
      * Proxy to HttpServletResponse.addHeader()
      * @param name the header name
