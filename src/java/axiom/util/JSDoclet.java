@@ -43,6 +43,7 @@ public class JSDoclet extends Doclet {
 					}
 					String jsForm = className+(method.isStatic()?".":".prototype.");
 					String name = method.name();
+					
 					Tag[] jsfunctionTags = method.tags("@jsfunction");
 					Tag[] jspropertyTags = method.tags("@jsproperty");
 					Tag[] jsomitTags = method.tags("@jsomit");
@@ -64,7 +65,7 @@ public class JSDoclet extends Doclet {
 							Tag[] deprecatedTags = method.tags("@deprecated");
 							if(name.startsWith(JSFUNCTION) && deprecatedTags.length == 0){
 								name = name.substring(JSFUNCTION.length());
-							} else{
+							} else if(jsfunctionTags.length == 0){
 								continue;
 							}
 						} 
