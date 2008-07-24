@@ -1161,10 +1161,6 @@ public final class DbMapping {
     	return sb.toString();
     }
     
-    public StringBuffer getSelect(Relation rel) {
-    	return this.getSelect(rel, null);
-    }
-    
     /**
      *  Get a StringBuffer initialized to the first part of the select statement
      *  for objects defined by this DbMapping
@@ -1173,7 +1169,7 @@ public final class DbMapping {
      *            Is null if selecting by primary key.
      * @return the StringBuffer containing the first part of the select query
      */
-    public StringBuffer getSelect(Relation rel, String selectPrefix) {
+    public StringBuffer getSelect(Relation rel) {
         // assign to local variable first so we are thread safe
         // (selectString may be reset by other threads)
         String sel = selectString;
@@ -1184,9 +1180,6 @@ public final class DbMapping {
         }
 
         StringBuffer s = new StringBuffer("SELECT ");
-        if (selectPrefix != null) {
-        	s.append(selectPrefix).append(" ");
-        }
 
         if (rel != null && rel.queryHints != null) {
             s.append(rel.queryHints).append(" ");

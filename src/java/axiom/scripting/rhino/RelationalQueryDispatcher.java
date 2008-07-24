@@ -102,11 +102,9 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				
 				DbColumn[] columns = dbm.getColumns();
 				Relation[] joins = dbm.getJoins();
-				String selectPrefix = (dbtype == DbSource.SQL_SERVER && maxResults != -1) 
-										? "TOP " + maxResults : null;
-				StringBuffer b = dbm.getSelect(null, selectPrefix);
+				StringBuffer b = dbm.getSelect(null);
 				
-				if (dbtype == DbSource.UNKNOWN && maxResults != -1) {
+				if (dbtype != DbSource.MYSQL && maxResults != -1) {
 					b.insert(0, "SET ROWCOUNT " + maxResults + " ");
 				}
 
@@ -131,10 +129,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 
 				b.append(dbm.getTableJoinClause(whereAdded ? 0 : 1));
 				
-				if (maxResults != -1 && dbtype == DbSource.ORACLE) {
-					b.append(" ").append(whereAdded ? "WHERE " : "AND ").append("ROWNUM <= ").append(maxResults);
-				}
-
 				if (sort != null) {
 					String sortQuery = getRelationalSortQuery(sort, dbm);
 					if (sortQuery != null && sortQuery.length() > 0) {
@@ -142,9 +136,9 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 					}
 				}
 				
-				if (maxResults != -1 && dbtype == DbSource.MYSQL) {
+				/*if (maxResults != -1 && dbtype == DbSource.MYSQL) {
 					b.append(" ").append("LIMIT ").append(maxResults);
-				}
+				}*/
 				
 				query = b.toString();
 
