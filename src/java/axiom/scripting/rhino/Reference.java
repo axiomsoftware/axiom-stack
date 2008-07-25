@@ -383,4 +383,15 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     	return super.equals(other);
     }
     
+    public void changeCurrentLayer(int layer) {
+    	Key k = this.getSourceKey();
+    	if (k instanceof DbKey) {
+    		((DbKey) k).setLayer(layer);
+    	}
+    	k = this.getTargetKey();
+    	if (k instanceof DbKey) {
+    		((DbKey) k).setLayer(layer);
+    	}
+    }
+    
 }

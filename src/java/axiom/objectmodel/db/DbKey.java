@@ -82,6 +82,10 @@ public class DbKey implements Key {
 		return this.layer;
 	}
 	
+	public void setLayer(final int layer) {
+		this.layer = layer;
+	}
+	
 	public Key getParentKey() {
 		return null;
 	}

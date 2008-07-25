@@ -2590,16 +2590,16 @@ public final class NodeManager {
     	this.evictKey(dkey);
     }
     
-    public void saveNodeInLayer(Node node, final int mode) {
+    public void saveNodeInLayer(Node node, final int layer) {
     	Key oldkey = node.getKey();
     	Transactor tx = (Transactor) Thread.currentThread();
     	IDatabase db = this.getDatabaseForMapping(node.dbmap);
     	ITransaction txn = tx.getTransaction(db);
 		
-    	DbKey dkey = new DbKey(node.dbmap, node.getID(), mode);
+    	DbKey dkey = new DbKey(node.dbmap, node.getID(), layer);
     	node.setKey(dkey);
+    	node.updateLayersOnReferences(layer);
     	tx.visitCleanNode(dkey, node);
-    	tx.evictAtTxnCompletion(dkey);
 
 		Node dbNode = null;
     	try {

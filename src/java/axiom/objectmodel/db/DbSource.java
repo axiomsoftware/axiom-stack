@@ -46,6 +46,7 @@ public class DbSource {
     public static final int ORACLE = 1;
     public static final int SQL_SERVER = 2;
     public static final int MYSQL = 3;
+    public static final int H2 = 4;
 
     /**
      * Creates a new DbSource object.
@@ -256,6 +257,8 @@ public class DbSource {
     		return SQL_SERVER;
     	} else if (driver.equalsIgnoreCase("org.gjt.mm.mysql.Driver")) {
     		return MYSQL;
+    	} else if (driver.equalsIgnoreCase("org.h2.Driver")) {
+    		return H2;
     	}
     	
     	return UNKNOWN;
