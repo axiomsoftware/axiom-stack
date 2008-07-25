@@ -21,7 +21,6 @@ package axiom.servlet;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -41,12 +40,9 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Undefined;
 
 import axiom.framework.*;
 import axiom.framework.core.Application;
-import axiom.objectmodel.dom.LuceneManager;
 import axiom.util.*;
 
 /**

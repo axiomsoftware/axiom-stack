@@ -3,7 +3,6 @@ package axiom.scripting.rhino.extensions;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.apache.lucene.search.Hits;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
@@ -15,7 +14,6 @@ import axiom.framework.ErrorReporter;
 import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.Node;
 import axiom.objectmodel.db.NodeManager;
-import axiom.objectmodel.db.Transactor;
 import axiom.objectmodel.dom.LuceneManager;
 import axiom.scripting.rhino.LuceneQueryDispatcher;
 import axiom.scripting.rhino.LuceneQueryDispatcher.LuceneQueryParams;
@@ -95,6 +93,15 @@ public class LuceneHitsObject extends HitsObject{
         }
     }
 
+    /**
+     * Get a new LuceneHits object that takes the result set contained in this LuceneHits
+     * object and narrows the results further with the specified input criterion.
+     * 
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @returns {LuceneHits} A new LuceneHits object with the narrowed search results
+     */
     public Object jsFunction_getHits(Object prototype, Object filter) {
         Object ret = null;
         try {
@@ -105,6 +112,17 @@ public class LuceneHitsObject extends HitsObject{
         return ret;
     }
     
+    /**
+     * Get the number of results in the result set of the specified input criterion
+     * applied to the result set of this LuceneHits object.  This is the equivalent of
+     * <code> this.getHits(prototypes, filter).length </code> but more effecient and 
+     * thus, preferable.
+     * 
+     * @param {String|Array} [prototype] The prototype(s) to search against, 
+     *                                   if not specified, search against all prototypes
+     * @param {FilterObject} [filter] The filter to apply to the search
+     * @returns {Number} The number of narrowed search results
+     */
     public int jsFunction_getHitCount(Object prototype, Object filter) {
         int ret = 0;
         try {
@@ -121,6 +139,8 @@ public class LuceneHitsObject extends HitsObject{
     }
 
     /**
+     * Get the objects in the result set starting from <code> start </code>, retrieving
+     * <code> length </code> number of objects. 
      * 
      * @param {Number} start The start index
      * @param {Number} length The number of objects to retrieve
