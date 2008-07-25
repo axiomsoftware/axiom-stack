@@ -20,6 +20,15 @@ import axiom.objectmodel.dom.LuceneManager;
 import axiom.scripting.rhino.LuceneQueryDispatcher;
 import axiom.scripting.rhino.LuceneQueryDispatcher.LuceneQueryParams;
 
+/**
+ * This class encapsulates the behavior of the JavaScript level LuceneHits object.  
+ * Hits are returned from the Query API call when <code> app.getHits() </code> is 
+ * invoked.  The result, if the returned objects are from Lucene, is an instance of 
+ * this class which is used to retrieve objects in the result set.
+ * 
+ * @author ali
+ * @jsconstructor
+ */
 public class LuceneHitsObject extends HitsObject{
 
 	private LuceneQueryParams params = null;
@@ -46,6 +55,11 @@ public class LuceneHitsObject extends HitsObject{
         this.lmgr.releaseIndexSearcher(this.params.searcher);
     }
     
+    /**
+     * Discard this object, when it is finished being used.  After this function is 
+     * called, this object can no longer be used.  This is called to do cleanup/garbage
+     * collection on the Lucene resources that this object holds.
+     */
     public void jsFunction_discard() {
         this.lmgr.releaseIndexSearcher(this.params.searcher);
     }
@@ -106,6 +120,12 @@ public class LuceneHitsObject extends HitsObject{
         return new LuceneHitsObject(args);
     }
 
+    /**
+     * 
+     * @param {Number} start The start index
+     * @param {Number} length The number of objects to retrieve
+     * @returns {Array} An array of the requested objects from the result set
+     */
     public Scriptable jsFunction_objects(Object startInd, Object len) {
         ArrayList objects = new ArrayList();
         final Context cx = Context.getCurrentContext();
@@ -147,6 +167,10 @@ public class LuceneHitsObject extends HitsObject{
         return cx.newArray(global, objects.toArray());
     }
     
+    /**
+     * The total number of results in the result set of this LuceneHits object
+     * @type Number
+     */
     public int jsGet_length() {
         if (this.hits == null) { 
             return 0;
@@ -154,6 +178,10 @@ public class LuceneHitsObject extends HitsObject{
         return this.hits.size();
     }
     
+    /**
+     * @jsomit
+     * @deprecated replaced by <code> hits.length </code>
+     */
     public int jsGet_total() {
         if (this.hits == null) {
             return 0;
@@ -161,6 +189,9 @@ public class LuceneHitsObject extends HitsObject{
         return this.hits.size();
     }
 
+    /**
+     * @jsomit
+     */
     public Scriptable jsFunction_getFacets(){
     	return Context.getCurrentContext().newObject(this.core.getScope());
     }

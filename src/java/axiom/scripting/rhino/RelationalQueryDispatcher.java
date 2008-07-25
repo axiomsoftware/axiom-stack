@@ -104,10 +104,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				Relation[] joins = dbm.getJoins();
 				StringBuffer b = dbm.getSelect(null);
 				
-				/*if (dbtype != DbSource.MYSQL && maxResults != -1) {
-					b.insert(0, "SET ROWCOUNT " + maxResults + " ");
-				}*/
-
 				ArrayList filterObjs = new ArrayList();
 				StringBuffer filterClause = new StringBuffer();
 				boolean whereAdded = this.filterToSql(filterClause, dbm,
@@ -135,10 +131,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 						b.append(" ").append(sortQuery);
 					}
 				}
-				
-				/*if (maxResults != -1 && dbtype == DbSource.MYSQL) {
-					b.append(" ").append("LIMIT ").append(maxResults);
-				}*/
 				
 				query = b.toString();
 

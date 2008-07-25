@@ -3477,4 +3477,29 @@ public class Node implements INode, Serializable {
     	} 
     }
     
+    protected void updateLayersOnReferences(int layer) {
+    	Enumeration e = this.properties();
+    	while (e.hasMoreElements()) {
+    		String propname = (String) e.nextElement();
+    		IProperty prop = this.get(propname);
+    		if (prop.getType() == IProperty.REFERENCE) {
+    			Reference r = prop.getReferenceValue();
+    			synchronized (r) {
+    				r.changeCurrentLayer(layer);
+    			}
+    		} else if (prop.getType() == IProperty.MULTI_VALUE) {
+    			MultiValue mv = prop.getMultiValue();
+				if (mv.getValueType() == IProperty.REFERENCE) {
+					synchronized (mv) {
+						Object[] values = mv.getValues();
+						for (int i = 0; i < values.length; i++) {
+							Reference r = (Reference) values[i];
+							r.changeCurrentLayer(layer);
+						}
+    				}
+    			}
+    		}
+    	}
+    }
+    
 }
