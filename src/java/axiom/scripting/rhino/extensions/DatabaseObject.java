@@ -31,8 +31,12 @@ import java.sql.*;
 import org.mozilla.javascript.Undefined;
 
 
+
 /**
-  * A Database object, representing a connection to a JDBC Driver
+  * A Database object, representing a connection to a JDBC Driver.  DatabaseObject 
+  * cannot be instantiated and is only accessible from the results of invoking
+  * <code> global.getDBConnection() </code>.
+  * @jsconstructor 
   */
 public class DatabaseObject {
 
@@ -137,11 +141,21 @@ public class DatabaseObject {
         this.driverName = null;
         driverOK = false; // Avoid usage of this object
     }
-
+    
+    /**
+     * Returns the class name of the object.
+     * @jsfunction 
+     * @returns {String} A string of the objec'ts classname.
+     */
     public String getClassName() {
         return "DatabaseObject";
     }
 
+    /**
+     * Returns a string representation of the object.
+     * @jsfunction 
+     * @returns {String} A string representation of the object.
+     */
     public String toString() {
          if (driverName==null) return "[database protoype]";
          return "[Database: '" + driverName +
@@ -154,7 +168,13 @@ public class DatabaseObject {
         return "ES:[Object: builtin " + this.getClass().getName() + ":" +
             this.toString() + "]";
     }
-
+    
+    
+    /**
+     * Returns the last error.
+     * @jsfunction 
+     * @returns {Exception} A java.lang.Exception Object.
+     */
     public Object getLastError() {
         if (lastError == null) {
             return null;
@@ -164,13 +184,15 @@ public class DatabaseObject {
     }
 
 
-    /**
+    /**	
      * Connect to the database, using the specific url, optional user name and password
-     *
-     * @param  url the database URL
-     * @param  userName the database user name
-     * @param  password the database password
-     * @return  true if successful, false otherwise
+     * 
+     * @jsfunction 
+     * @param {String} url The url the database
+     * @param {String} username The database username
+     * @param {String} password The database password
+	 *
+     * @returns {Boolean} true if successful, false otherwise
      */
     public boolean connect(String url, String userName, String password) {
         if (!driverOK) {
@@ -195,18 +217,22 @@ public class DatabaseObject {
 
 
     /**
-     * Disconnect from the database, nop if not conected
-     *
-     * @return  true if successful, false if error during idsconnect
+     * Disconnect from the database and commits the current transaction.
+     * 
+     * @jsfunction
+     * @returns {Boolean} true if successful or false if error during disconnect
      */
     public boolean close() {
         return disconnect(true);
     }
     
     /**
-     * Disconnect from the database, nop if not conected
+     * Disconnect from the database, and either commits or rollsback the current transaction
      *
-     * @return  true if successful, false if error during idsconnect
+     * @jsfunction
+     * @param {Boolean} commit If set to true commits before disconnecting, if false rollsback 
+     * 						   current transaction before disconnecting.
+     * @returns {Boolean} true if successful or false if error during disconnect
      */
     public boolean disconnect(boolean commit) {
         if (!driverOK) {
@@ -236,6 +262,12 @@ public class DatabaseObject {
         return true;
     }
 
+    /**
+     * Executes the given SQL statement, which returns a single RowSet object.
+     * 
+     * @jsfunction
+     * @returns {RowSet} A RowSet object that contains the data produced by the given query.
+     */
     public RowSet executeQuery(String sql) {
         if (connection==null) {
             lastError = new SQLException("JDBC driver not connected");
@@ -263,6 +295,14 @@ public class DatabaseObject {
         }
     }
 
+    /**
+     * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE statement
+     *
+     * @jsfunction
+     * @param {String} sql A SQL statement such as an INSERT, UPDATE, or DELETE statement
+     * @returns {Number} either the row count for rows modified or 0 for sql statements that return
+     * 					 nothing
+     */
     public int executeUpdate(String sql) {
         int count = 0;
 
@@ -297,6 +337,15 @@ public class DatabaseObject {
         return count;
     }
 
+    /**
+     * Retrieves a DatabaseMetaData object that contains metadata about the database to which this 
+     * Connection object represents a connection. The metadata includes information about the 
+     * database's tables, its supported SQL grammar, its stored procedures, the capabilities of this 
+     * connection
+     * 
+     * @jsfunction
+     * @returns {DatabaseMetaData} DatabaseMetaData object for this Connection object
+     */
     public Object getMetaData()
     {
       if (databaseMetaData == null)
@@ -308,11 +357,20 @@ public class DatabaseObject {
       return databaseMetaData;
     }
 
+    /**
+     * Returns the database connection object 
+     * 
+     * @jsfunction
+     * @returns {Connection} Connection object for this DatabaseObject
+     */
     public Connection getConnection(){
     	return connection;
     }
+
     /**
-      * A RowSet object
+      * A RowSet object, a wrapper object to Java's ResultSet Object 
+      * 
+      * @jsconstructor
       */
     public static class RowSet {
 
@@ -358,7 +416,11 @@ public class DatabaseObject {
             }
         }
 
-
+        /**
+         * Returns the class name of the object.
+         * @jsfunction 
+         * @returns {String} A string of the objec'ts classname.
+         */
         public String getClassName() {
             return "RowSet";
         }
@@ -368,15 +430,30 @@ public class DatabaseObject {
                 this.toString() + "]";
         }
 
+        /**
+         * Returns number of columns in the RowSet.
+         * @jsfunction 
+         * @returns {Number} A string of the objec'ts classname.
+         */
         public int getColumnCount() {
             return colNames.size();
         }
 
+        /**
+         * Retrieves the number, types and properties of this ResultSet object's columns.
+         * @jsfunction 
+         * @returns {ResultSetMetaData} the description of the ResultSet object's columns.
+         */
         public Object getMetaData()
         {
           return resultSetMetaData;
         }
-
+        
+        /**
+         * Returns the last error.
+         * @jsfunction 
+         * @returns {Exception} A java.lang.Exception Object.
+         */
         public Object getLastError() {
             if (lastError == null) {
                 return null;
@@ -385,7 +462,11 @@ public class DatabaseObject {
             }
         }
 
-
+        /**
+         * Releases the RowSet's connection.
+         * 
+         * @jsfunction
+         */
         public void release() {
             try {
                 if (statement!= null) statement.close();
@@ -398,10 +479,22 @@ public class DatabaseObject {
             resultSetMetaData = null;
         }
 
+        /**
+         * Determines if there are more rows to traverse in the RowSet.
+         * @jsfunction 
+         * @returns {Boolean} truw if more rows available, false if not.
+         */
         public boolean hasMoreRows() {
             return !lastRowSeen;   // Simplistic implementation
         }
 
+        /**
+         * Get the designated column's name.
+         * 
+         * @jsfunction
+         * @param {Number} column The first column is 1, the second is 2, ...
+         * @returns {String} Column name.
+         */
         public String getColumnName(int idx) {
            if (resultSet == null) {
                 lastError = new SQLException("Attempt to access a released result set");
@@ -417,6 +510,13 @@ public class DatabaseObject {
         }
 
 
+        /**
+         * Retrieves the designated column's SQL type.
+         * 
+         * @jsfunction
+         * @param {Number} column The first column is 1, the second is 2, ...
+         * @returns {Number} SQL type from java.sql.Types.
+         */
         public int getColumnDatatypeNumber(int idx) {
            if (resultSet == null) {
                 lastError = new SQLException("Attempt to access a released result set");
@@ -437,6 +537,13 @@ public class DatabaseObject {
         }
 
 
+        /**
+         * Retrieves the designated column's database-specific type name.
+         * 
+         * @jsfunction
+         * @param {Number} column The first column is 1, the second is 2, ...
+         * @returns {String} Type name used by the database.
+         */
         public String getColumnDatatypeName(int idx) {
            if (resultSet == null) {
                 lastError = new SQLException("Attempt to access a released result set");
@@ -457,6 +564,14 @@ public class DatabaseObject {
         }
 
 
+        /**
+         * Wrapper for retrieving the value of the designated column in the current row of this 
+         * ResultSet object as a Object
+         * 
+         * @jsfunction
+         * @param {String} propertyname The label for the column specified with the SQL.
+         * @returns {Object} The column value;
+         */
         public Object getColumnItem(String propertyName) {
            if (resultSet == null) {
                 lastError = new SQLException("Attempt to access a released result set");
@@ -527,6 +642,14 @@ public class DatabaseObject {
         }
         */
 
+        /**
+         * Wrapper for retrieving the value of the designated column in the current row of this 
+         * ResultSet object as a Object
+         * 
+         * @jsfunction
+         * @param {Number} column 
+         * @returns {Object} The column value;
+         */
         public Object getProperty(int index) {
             if (!firstRowSeen) {
                 lastError = new SQLException("Attempt to access data before the first row is read");
@@ -629,10 +752,10 @@ public class DatabaseObject {
             return null;
         }
 
-        /*
+        /**
          * Returns an enumerator for the key elements of this object.
-         *
-         * @return the enumerator - may have 0 length of coulmn names where not found
+         * @jsconstructor
+         * @returns {Object} The enumerator - may have 0 length of coulmn names where not found
          */
        public Enumeration getProperties() {
            if (resultSet == null) {
@@ -647,6 +770,11 @@ public class DatabaseObject {
         }
 
 
+        /**
+         * Moves the cursor froward one row from its current position.
+         * @jsconstructor
+         * @returns {Boolean} True if the new current row is valid; false if there are no more rows
+         */
         public boolean next() {
             boolean status = false;
             if (lastRowSeen) {
@@ -670,6 +798,11 @@ public class DatabaseObject {
             return status;
        }
 
+        /**
+         * Returns a string representation of the object.
+         * @jsfunction 
+         * @returns {String} A string representation of the object.
+         */
         public String toString() {
             return "[RowSet: '"+sql+"'" +
                    (resultSet==null ? " - released]" :
