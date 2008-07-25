@@ -44,7 +44,6 @@ import axiom.objectmodel.db.DbMapping;
 import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.Node;
 import axiom.objectmodel.db.NodeManager;
-import axiom.objectmodel.db.Transactor;
 import axiom.objectmodel.dom.LuceneDataFormatter;
 import axiom.objectmodel.dom.LuceneManager;
 import axiom.scripting.rhino.extensions.filter.AndFilterObject;
@@ -1062,7 +1061,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 		final String idx = props.getProperty(key + ".index");
 		Query q = null;
 		if ((idx == null || LuceneManager.TOKENIZED_INDEX.equalsIgnoreCase(idx))
-				&& type == IProperty.STRING && !LuceneManager.ID.equals(key)) {
+				&& type == IProperty.STRING && !key.startsWith("_")) {
 			q = _getNativeQuery(key + ":\"" + (String) value + "\"",
 					(String) props.getProperty(key + ".analyzer"));
 		} else {
