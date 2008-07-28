@@ -31,8 +31,10 @@ import java.lang.reflect.Method;
 /**
  * A FTP-client object that allows to do some FTP from AXIOM applications.
  * FTP support is far from complete but can easily be extended if more
- * functionality is needed.
- * This uses the NetComponent classes from savarese.org (ex oroinc.com).
+ * functionality is needed. This uses the NetComponent classes from 
+ * savarese.org (ex oroinc.com).
+ * @jsconstructor
+ * @param {String} srvstr The name of the server to connect to.
  */
 public class FtpObject extends ScriptableObject {
     private FTPClient ftpclient;
@@ -42,8 +44,7 @@ public class FtpObject extends ScriptableObject {
 
     /**
      * Create a new FTP Client
-     *
-     * @param srvstr the name of the server to connect to
+     * @param {String} srvstr the name of the server to connect to.
      */
     public FtpObject(String srvstr) {
         this.server = srvstr;
@@ -53,19 +54,19 @@ public class FtpObject extends ScriptableObject {
     }
 
     /**
-     *
-     *
-     * @return ...
+     * Returns the class name of the object.
+     * @jsfunction 
+     * @returns {String} A string of the objec'ts classname.
      */
-    public String getClassName() {
+   public String getClassName() {
         return "FtpClient";
     }
 
-    /**
-     *
-     *
-     * @return ...
-     */
+   /**
+    * Returns a string representation of the object.
+    * @jsfunction 
+    * @returns {String} A string representation of the object.
+    */
     public String toString() {
         return "[FtpClient]";
     }
@@ -80,7 +81,12 @@ public class FtpObject extends ScriptableObject {
                this.toString() + "]";
     }
 
-    Exception getLastError() {
+    /**
+     * Returns the last error.
+     * @jsfunction 
+     * @returns {Exception} A java.lang.Exception Object.
+     */
+    public Exception getLastError() {
         if (lastError == null) {
             return null;
         } else {
@@ -89,11 +95,11 @@ public class FtpObject extends ScriptableObject {
     }
 
     /**
-     * Login to the FTP server
-     *
-     * @param   username the user name
-     * @param   password the user's password
-     * @return  true if successful, false otherwise
+     * Login to the FTP server.
+     * @jsfunction
+     * @param {String} username The username the user name.
+     * @param {String} password The password the user's password.
+     * @returns {Boolean} True if successful, false otherwise.
      */
     public boolean login(String username, String password) {
         if (server == null) {
@@ -114,6 +120,12 @@ public class FtpObject extends ScriptableObject {
         }
     }
 
+    /**
+     * Change the current working directory.
+     * @jsfunction
+     * @param {String} path The new current working directory.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean cd(String path) {
         if (ftpclient == null) {
             return false;
@@ -129,6 +141,13 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
+    /**
+     * Creates a new subdirectory on the FTP server in the current directory (if a relative 
+     * pathname is given) or where specified (if an absolute pathname is given).
+     * @jsfunction
+     * @param {String} dir The name of the directory to create.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean mkdir(String dir) {
         if (ftpclient == null) {
             return false;
@@ -142,6 +161,12 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
+    /**
+     * Sets the local directory, to which files are written to or read from.
+     * @jsfunction
+     * @param {String} dir The name of the directory.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean lcd(String dir) {
         try {
             localDir = new File(dir);
@@ -157,6 +182,13 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
+    /**
+     * Stores a file on the server using the given name.
+     * @jsfunction
+     * @param {String} localFile The local file to be uploaded.
+     * @param {String} remoteFile The remote file name to be stored.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean putFile(String localFile, String remoteFile) {
         if (ftpclient == null) {
             return false;
@@ -176,6 +208,15 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
+    /**
+     * Stores a Java object on the server.  If obj is an instance of bytes, the byte[] will 
+     * be stored on server.  If obj is of any other object, that <code> obj.toString().getBytes() 
+     * </code> is stored on the server.
+     * @jsfunction
+     * @param {Object} obj The object to be stored.
+     * @param {String} remoteFile The remote file name to be stored.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean putString(Object obj, String remoteFile) {
         if (ftpclient == null || obj == null) {
             return false;
@@ -203,7 +244,14 @@ public class FtpObject extends ScriptableObject {
 
         return false;
     }
-
+    
+    /**
+     * Retrieves a named file from the server.
+     * @jsfunction
+     * @param {String} remoteFile The remote file name to be retrieved.
+     * @param {String} localFile The local file to be stored.
+     * @returns {Boolean} True if successfully completed, false if not.
+     */
     public boolean getFile(String remoteFile, String localFile) {
         if (ftpclient == null) {
             return false;
@@ -223,7 +271,13 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
-    public Object getString(String remoteFile) {
+    /**
+     * Retrieves a named file from the server and returns the contents as a String.
+     * @jsfunction
+     * @param {String} remoteFile The remote file name to be retrieved.
+     * @returns {String} True if successfully completed, false if not.
+     */
+    public String getString(String remoteFile) {
         if (ftpclient == null) {
             return null;
         }
@@ -241,9 +295,9 @@ public class FtpObject extends ScriptableObject {
     }
 
     /**
-     * Disconnect from FTP server
-     *
-     * @return  true if successful, false otherwise
+     * Logout of the FTP server by sending the QUIT command.
+     * @jsfunction
+     * @returns {Boolean} True if successful, false otherwise
      */
     public boolean logout() {
         if (ftpclient != null) {
@@ -261,6 +315,11 @@ public class FtpObject extends ScriptableObject {
         return true;
     }
 
+    /**
+     * Sets the file type to be transferred to binary.
+     * @jsfunction
+     * @returns {Boolean} True if successful, false otherwise
+     */
     public boolean binary() {
         if (ftpclient != null) {
             try {
@@ -274,6 +333,11 @@ public class FtpObject extends ScriptableObject {
         return false;
     }
 
+    /**
+     * Sets the file type to be transferred to ascii.
+     * @jsfunction
+     * @returns {Boolean} True if successful, false otherwise
+     */
     public boolean ascii() {
         if (ftpclient != null) {
             try {

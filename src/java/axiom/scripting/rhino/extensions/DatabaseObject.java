@@ -185,14 +185,14 @@ public class DatabaseObject {
 
 
     /**	
-     * Connect to the database, using the specific url, optional user name and password
+     * Connect to the database, using the specific url, optional user name and password.
      * 
      * @jsfunction 
-     * @param {String} url The url the database
-     * @param {String} username The database username
-     * @param {String} password The database password
+     * @param {String} url The url the database.
+     * @param {String} username The database username.
+     * @param {String} password The database password.
 	 *
-     * @returns {Boolean} true if successful, false otherwise
+     * @returns {Boolean} True if successful, false otherwise.
      */
     public boolean connect(String url, String userName, String password) {
         if (!driverOK) {
@@ -220,19 +220,19 @@ public class DatabaseObject {
      * Disconnect from the database and commits the current transaction.
      * 
      * @jsfunction
-     * @returns {Boolean} true if successful or false if error during disconnect
+     * @returns {Boolean} True if successful or false if error during disconnect
      */
     public boolean close() {
         return disconnect(true);
     }
     
     /**
-     * Disconnect from the database, and either commits or rollsback the current transaction
+     * Disconnect from the database, and either commits or rollsback the current transaction.
      *
      * @jsfunction
      * @param {Boolean} commit If set to true commits before disconnecting, if false rollsback 
      * 						   current transaction before disconnecting.
-     * @returns {Boolean} true if successful or false if error during disconnect
+     * @returns {Boolean} True if successful or false if error during disconnect
      */
     public boolean disconnect(boolean commit) {
         if (!driverOK) {
@@ -266,6 +266,7 @@ public class DatabaseObject {
      * Executes the given SQL statement, which returns a single RowSet object.
      * 
      * @jsfunction
+     * @param {String} sql A SQL statement such as a SELECT statement
      * @returns {RowSet} A RowSet object that contains the data produced by the given query.
      */
     public RowSet executeQuery(String sql) {
@@ -296,12 +297,12 @@ public class DatabaseObject {
     }
 
     /**
-     * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE statement
+     * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE statement.
      *
      * @jsfunction
      * @param {String} sql A SQL statement such as an INSERT, UPDATE, or DELETE statement
-     * @returns {Number} either the row count for rows modified or 0 for sql statements that return
-     * 					 nothing
+     * @returns {Number} Either the row count for rows modified or 0 for sql statements that return
+     * 					 nothing.
      */
     public int executeUpdate(String sql) {
         int count = 0;
@@ -341,10 +342,10 @@ public class DatabaseObject {
      * Retrieves a DatabaseMetaData object that contains metadata about the database to which this 
      * Connection object represents a connection. The metadata includes information about the 
      * database's tables, its supported SQL grammar, its stored procedures, the capabilities of this 
-     * connection
+     * connection.
      * 
      * @jsfunction
-     * @returns {DatabaseMetaData} DatabaseMetaData object for this Connection object
+     * @returns {DatabaseMetaData} DatabaseMetaData object for this Connection object.
      */
     public Object getMetaData()
     {
@@ -358,17 +359,19 @@ public class DatabaseObject {
     }
 
     /**
-     * Returns the database connection object 
+     * Returns the database connection object. 
      * 
      * @jsfunction
-     * @returns {Connection} Connection object for this DatabaseObject
+     * @returns {Connection} Connection object for this DatabaseObject.
      */
     public Connection getConnection(){
     	return connection;
     }
 
     /**
-      * A RowSet object, a wrapper object to Java's ResultSet Object 
+      * A RowSet object, a wrapper object to Java's ResultSet Object. RowSet 
+      * cannot be instantiated and is only accessible from the results of invoking
+      * <code> DatabaseObject.executeQuery() </code>.
       * 
       * @jsconstructor
       */
@@ -442,7 +445,7 @@ public class DatabaseObject {
         /**
          * Retrieves the number, types and properties of this ResultSet object's columns.
          * @jsfunction 
-         * @returns {ResultSetMetaData} the description of the ResultSet object's columns.
+         * @returns {ResultSetMetaData} The description of the ResultSet object's columns.
          */
         public Object getMetaData()
         {
@@ -482,7 +485,7 @@ public class DatabaseObject {
         /**
          * Determines if there are more rows to traverse in the RowSet.
          * @jsfunction 
-         * @returns {Boolean} truw if more rows available, false if not.
+         * @returns {Boolean} True if more rows available, false if not.
          */
         public boolean hasMoreRows() {
             return !lastRowSeen;   // Simplistic implementation
@@ -566,11 +569,11 @@ public class DatabaseObject {
 
         /**
          * Wrapper for retrieving the value of the designated column in the current row of this 
-         * ResultSet object as a Object
+         * ResultSet object as a Object.
          * 
          * @jsfunction
          * @param {String} propertyname The label for the column specified with the SQL.
-         * @returns {Object} The column value;
+         * @returns {Object} The column value.
          */
         public Object getColumnItem(String propertyName) {
            if (resultSet == null) {
@@ -644,11 +647,11 @@ public class DatabaseObject {
 
         /**
          * Wrapper for retrieving the value of the designated column in the current row of this 
-         * ResultSet object as a Object
+         * ResultSet object as a Object.
          * 
          * @jsfunction
-         * @param {Number} column 
-         * @returns {Object} The column value;
+         * @param {Number} column The first column is 1, the second is 2, ...
+         * @returns {Object} The column value.
          */
         public Object getProperty(int index) {
             if (!firstRowSeen) {
@@ -755,7 +758,7 @@ public class DatabaseObject {
         /**
          * Returns an enumerator for the key elements of this object.
          * @jsconstructor
-         * @returns {Object} The enumerator - may have 0 length of coulmn names where not found
+         * @returns {Object} The enumerator - may have 0 length of coulmn names where not found.
          */
        public Enumeration getProperties() {
            if (resultSet == null) {
@@ -773,7 +776,7 @@ public class DatabaseObject {
         /**
          * Moves the cursor froward one row from its current position.
          * @jsconstructor
-         * @returns {Boolean} True if the new current row is valid; false if there are no more rows
+         * @returns {Boolean} True if the new current row is valid; false if there are no more rows.
          */
         public boolean next() {
             boolean status = false;
