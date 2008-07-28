@@ -2135,7 +2135,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 *                             <code>_parent</code> of this object.
 	 * @param {Boolean} [includeThis] Whether to include this object in the ancestor
 	 *                                hierarchy search, defaults to <code>false</code>.
-	 * @return {AxiomObject} The first AxiomObject in the hierarchy of this object matching
+	 * @returns {AxiomObject} The first AxiomObject in the hierarchy of this object matching
 	 *                       the given object prototype.
 	 */
 	public Object jsFunction_getAncestor(String prototype, Object includeThis) {

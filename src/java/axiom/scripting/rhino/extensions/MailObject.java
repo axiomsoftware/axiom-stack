@@ -40,7 +40,7 @@ import javax.mail.internet.MimeUtility;
 /**
  * A JavaScript wrapper around a JavaMail message class to send
  * mail via SMTP from Axiom
- * @jsconstructor
+ * @jsconstructor Mail
  */
 public class MailObject extends ScriptableObject implements Serializable {
 
@@ -172,9 +172,9 @@ public class MailObject extends ScriptableObject implements Serializable {
 
 
     /**
-     *  Set the error status of this message
-     *
-     * @param status the new error status
+     * Set the error status of this message.
+     * @jsfunction
+     * @param {Number} status The new error status.
      */
     public void setStatus(int status) {
         // Only register the first error that occurrs
@@ -184,9 +184,9 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     *  Returns the error status of this message.
-     *
-     * @return the error status of this message
+     * Returns the error status of this message.
+     * @jsfunction
+     * @returns {Number} The error status of this message.
      */
     public int getStatus() {
         return status;
@@ -195,6 +195,8 @@ public class MailObject extends ScriptableObject implements Serializable {
 
     /**
      *  Add some text to a plain text message.
+     *  @jsfunction
+     *  @param {String} text The text to add to the message.
      */
     public void addText(String text) {
         if (text != null) {
@@ -207,7 +209,9 @@ public class MailObject extends ScriptableObject implements Serializable {
 
 
     /**
-     *  Set the text to a plain text message, clearing any previous text.
+     * Set the text to a plain text message, clearing any previous text.
+     * @jsfunction
+     * @param {String} text The text to plain text message.
      */
     public void setText(String text) {
         if (text != null) {
@@ -216,12 +220,12 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     *  Add a MIME message part to a multipart message
-     *
-     * @param obj the MIME part object. Supported classes are java.lang.String,
+     * Add a MIME message part to a multipart message.
+     * @jsfunction
+     * @param {MimePart} obj the MIME part object. Supported classes are java.lang.String,
      *            java.io.File and axiom.util.MimePart.
-     * @param filename optional file name for the mime part
-     * @param contentType optional content type, default is text/plain 
+     * @param {String} [filename] Optional file name for the mime part.
+     * @param {String} [contentType] Ooptional content type, default is text/plain. 
      */
     public void addPart(Object obj, Object filename, Object contentType) { 
         try {
@@ -276,9 +280,9 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     *  Set the subject of this message
-     *
-     * @param subject the message subject
+     * Set the subject of this message.
+     * @jsfunction
+     * @param {String} subject Rhe message subject
      */
     public void setSubject(Object subject) {
             if (subject == null || subject == Undefined.instance) {
@@ -294,9 +298,9 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     * Set the Reply-to address for this message
-     *
-     * @param addstr the email address to set in the Reply-to header
+     * Set the Reply-to address for this message.
+     * @jsfunction
+     * @param {String} addstr The email address to set in the Reply-to header.
      */
     public void setReplyTo(String addstr) {
         try {
@@ -315,10 +319,10 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     * Set the From address for this message
-     *
-     * @param addstr the email address to set in the From header
-     * @param name the name this address belongs to
+     * Set the From address for this message.
+     * @jsfunction
+     * @param {String} addstr The email address to set in the From header.
+     * @param {String} name The name this address belongs to.
      */
     public void setFrom(String addstr, Object name) {
         try {
@@ -344,10 +348,10 @@ public class MailObject extends ScriptableObject implements Serializable {
 
 
     /**
-     * Set the To address for this message
-     *
-     * @param addstr the email address to set in the To header
-     * @param name the name this address belongs to
+     * Set the To address for this message.
+     * @jsfunction
+     * @param {String} addstr The email address to set in the To header.
+     * @param {String} name The name this address belongs to.
      */
     public void setTo(String addstr, Object name) {
         try {
@@ -361,10 +365,10 @@ public class MailObject extends ScriptableObject implements Serializable {
 
 
     /**
-     * Add a To address for this message
-     *
-     * @param addstr the email address to set in the To header
-     * @param name the name this address belongs to
+     * Add a To address for this message.
+     * @jsfunction
+     * @param {String} addstr The email address to set in the To header.
+     * @param {String} name The name this address belongs to.
      */
     public void addTo(String addstr, Object name) {
         try {
@@ -377,10 +381,10 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     * ADd a CC address for this message
-     *
-     * @param addstr the email address to set in the CC header
-     * @param name the name this address belongs to
+     * Add a CC address for this message
+     * @jsfunction
+     * @param {String} addstr The email address to set in the CC header
+     * @param {String} name The name this address belongs to
      */
     public void addCC(String addstr, Object name) {
         try {
@@ -392,10 +396,10 @@ public class MailObject extends ScriptableObject implements Serializable {
     }
 
     /**
-     *  Add a BCC address for this message
-     *
-     * @param addstr the email address to set in the BCC header
-     * @param name the name this address belongs to
+     * Add a BCC address for this message.
+     * @jsfunction
+     * @param {String} addstr The email address to set in the BCC header.
+     * @param {String} name The name this address belongs to.
      */
     public void addBCC(String addstr, Object name) {
         try {
@@ -439,6 +443,7 @@ public class MailObject extends ScriptableObject implements Serializable {
 
     /**
      *  Send the message.
+     *  @jsfunction
      */
     public void send() {
         // only send message if everything's ok
