@@ -28,22 +28,37 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
         super();
     }
 
-    public NativeFilterObject(final Object arg, final Object optional1) 
-    throws Exception {
+    public NativeFilterObject(Object[] args) throws Exception {
         super();
-        if (arg instanceof String) {
-            nativeQuery = (String) arg;
-        } else if (arg instanceof Scriptable && ((Scriptable) arg).getClassName().equals("String")) { 
-            nativeQuery = ScriptRuntime.toString(arg);
+        if (args[0] instanceof String) {
+            nativeQuery = (String) args[0];
+        } else if (args[0] instanceof Scriptable && ((Scriptable) args[0]).getClassName().equals("String")) { 
+            nativeQuery = ScriptRuntime.toString(args[0]);
         } else {
             throw new Exception("NativeFilter constructor takes only a String as its first argument.");
         }
         
-        if (optional1 != null && optional1 != Undefined.instance) {
-        	if (optional1 instanceof Boolean) {
-                this.cached = ((Boolean) optional1).booleanValue();
+        if (args.length > 1 && args[1] != null && args[1] != Undefined.instance) {
+        	if (args[1] instanceof Boolean) {
+                this.cached = ((Boolean) args[1]).booleanValue();
+            } else if (args[1] instanceof String) {
+            	this.analyzerString = (String) args[1];
+            } else if (args[1] instanceof Scriptable && ((Scriptable) args[1]).getClassName().equals("String")) {
+            	this.analyzerString = ScriptRuntime.toString(args[1]);
             }
         }
+        
+        if (args.length > 2 && args[2] != null && args[2] != Undefined.instance) {
+        	if (args[2] instanceof Boolean) {
+        		this.cached = ((Boolean) args[2]).booleanValue();
+        	}
+        }
+        
+        if (this.analyzerString == null) {
+        	this.analyzerString = DEFAULT_ANALYZER;
+        }
+        
+    	this.analyzer = LuceneManager.getAnalyzer(this.analyzerString);
     }
 
     public String getClassName() {
@@ -64,7 +79,7 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
             throw new Exception("Null argument passed to the NativeFilter constructor.");
         }
         
-        return new NativeFilterObject(args[0], args.length > 1 ? args[1] : null);
+        return new NativeFilterObject(args);
     }
     
     public static void init(Scriptable scope) {
@@ -95,6 +110,7 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
     public void jsFunction_setAnalyzer(Object analyzer) {
         if (analyzer instanceof String) {
             this.analyzerString = (String) analyzer;
+            this.analyzer = LuceneManager.getAnalyzer(this.analyzerString);
         }
     }
     

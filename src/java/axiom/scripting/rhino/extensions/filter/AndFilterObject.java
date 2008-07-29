@@ -42,11 +42,11 @@ public class AndFilterObject extends OpFilterObject {
                 if (args[i] instanceof IFilter)  {
                     filters[i] = (IFilter) args[i];
                 } else if (args[i] instanceof String) {
-                    filters[i] = new NativeFilterObject(args[i], null);
+                    filters[i] = new NativeFilterObject(new Object[] {args[i]});
                 } else if (args[i] instanceof Scriptable) {
                     Scriptable s = (Scriptable) args[i];
                     if (s.getClassName().equals("String")) {
-                        filters[i] = new NativeFilterObject(s, null);
+                        filters[i] = new NativeFilterObject(new Object[] {s});
                     } else {
                         filters[i] = new FilterObject(s, null, null);
                     }
