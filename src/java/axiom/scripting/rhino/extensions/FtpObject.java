@@ -34,7 +34,7 @@ import java.lang.reflect.Method;
  * functionality is needed. This uses the NetComponent classes from 
  * savarese.org (ex oroinc.com).
  * @jsconstructor
- * @param {String} srvstr The name of the server to connect to.
+ * @param {String} [srvstr] The name of the server to connect to.
  */
 public class FtpObject extends ScriptableObject {
     private FTPClient ftpclient;
