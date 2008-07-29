@@ -356,7 +356,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     /**
      * The Reference object's toSource() method.
      * 
-     * @return {String} The object's toSource()
+     * @returns {String} The object's toSource()
      */
     public String jsFunction_toSource() {
         StringBuffer src = new StringBuffer();

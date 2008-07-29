@@ -99,11 +99,11 @@ public final class QueryBean  {
             theFilter = new FilterObject();
         } else if (!(filter instanceof IFilter)) {
             if (filter instanceof String) {
-                theFilter = new NativeFilterObject(filter, null);
+                theFilter = new NativeFilterObject(new Object[] {filter});
             } else if (filter instanceof Scriptable) {
                 Scriptable s = (Scriptable) filter;
                 if (s.getClassName().equals("String")) {
-                    theFilter = new NativeFilterObject(filter, null);
+                    theFilter = new NativeFilterObject(new Object[] {filter});
                 } else {
                     theFilter = new FilterObject(filter, null, null);
                 }

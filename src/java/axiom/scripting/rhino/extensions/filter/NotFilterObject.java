@@ -22,11 +22,11 @@ public class NotFilterObject extends OpFilterObject {
             if (args[0] instanceof IFilter)  {
                 filters[0] = (IFilter) args[0];
             } else if (args[0] instanceof String) {
-                filters[0] = new NativeFilterObject(args[0], null);
+                filters[0] = new NativeFilterObject(new Object[] {args[0]});
             } else if (args[0] instanceof Scriptable) {
                 Scriptable s = (Scriptable) args[0];
                 if (s.getClassName().equals("String")) {
-                    filters[0] = new NativeFilterObject(s, null);
+                    filters[0] = new NativeFilterObject(new Object[] {s});
                 } else {
                     filters[0] = new FilterObject(s, null, null);
                 }
