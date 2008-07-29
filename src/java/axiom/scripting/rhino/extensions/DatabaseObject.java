@@ -36,7 +36,7 @@ import org.mozilla.javascript.Undefined;
   * A Database object, representing a connection to a JDBC Driver.  DatabaseObject 
   * cannot be instantiated and is only accessible from the results of invoking
   * <code> global.getDBConnection() </code>.
-  * @jsconstructor 
+  * @jsnoconstructor
   */
 public class DatabaseObject {
 

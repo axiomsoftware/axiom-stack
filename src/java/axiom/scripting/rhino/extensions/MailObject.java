@@ -222,7 +222,7 @@ public class MailObject extends ScriptableObject implements Serializable {
     /**
      * Add a MIME message part to a multipart message.
      * @jsfunction
-     * @param {MimePart} obj the MIME part object. Supported classes are java.lang.String,
+     * @param {String|File|MimePart} obj the MIME part object. Supported classes are java.lang.String,
      *            java.io.File and axiom.util.MimePart.
      * @param {String} [filename] Optional file name for the mime part.
      * @param {String} [contentType] Ooptional content type, default is text/plain. 

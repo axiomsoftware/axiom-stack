@@ -1,4 +1,4 @@
-	package axiom.scripting.rhino.extensions.filter;
+package axiom.scripting.rhino.extensions.filter;
 
 import java.lang.reflect.Method;
 
@@ -13,7 +13,6 @@ import org.mozilla.javascript.ScriptableObject;
 import axiom.framework.core.Application;
 import axiom.objectmodel.dom.LuceneManager;
 import axiom.scripting.rhino.RhinoEngine;
-//import axiom.scripting.rhino.extensions.filter.NativeFilterObject.SearchProfile;
 import axiom.util.ResourceProperties;
 
 /**

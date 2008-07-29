@@ -56,7 +56,7 @@ public class XmlRpcObject extends BaseFunction {
         this.method = method;
     }
 
-        /**
+   /**
      *  This method is used as AxiomObject constructor from JavaScript.
      */
     public static Object xmlrpcObjectConstructor(Context cx, Object[] args,
