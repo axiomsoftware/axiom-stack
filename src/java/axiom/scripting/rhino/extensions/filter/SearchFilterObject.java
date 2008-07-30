@@ -24,7 +24,7 @@ import axiom.util.ResourceProperties;
  * (i.e. AND, OR, etc).  For example, assume search.properties has the following entries:
  * <br><br>
  * 
- * mainProfile.fields = {id:5,title:2}
+ * mainProfile.fields = {id:5,title:2}<br>
  * mainProfile.analyzer = StandardAnalyzer
  * 
  * <br><br>
@@ -114,12 +114,22 @@ public class SearchFilterObject extends ScriptableObject implements IFilter {
         }
     }
 
+    /**
+     * Set the Lucene analyzer used on the query represented by this filter object.
+     * 
+     * @param {String} analyzer The name of the analyzer (e.g. "WhitespaceAnalyzer")
+     */
     public void jsFunction_setAnalyzer(Object analyzer) {
         if (analyzer instanceof String) {
             searchSetup((String) analyzer);
         }
     }
 
+    /**
+     * Get the Lucene analyzer used on the query represented by this filter object.
+     * 
+     * @returns {String} The name of the analyzer
+     */
     public String jsFunction_getAnalyzer() {
     	return this.analyzerString;
     }

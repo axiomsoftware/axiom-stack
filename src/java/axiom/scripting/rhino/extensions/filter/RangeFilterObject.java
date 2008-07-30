@@ -66,12 +66,22 @@ public class RangeFilterObject extends ScriptableObject implements IFilter {
         return "[RangeFilter]";
     }
 
+    /**
+     * Set the Lucene analyzer used on the query represented by this filter object.
+     * 
+     * @param {String} analyzer The name of the analyzer (e.g. "WhitespaceAnalyzer")
+     */
     public void jsFunction_setAnalyzer(Object analyzer) {
         if (analyzer instanceof String) {
             this.analyzer = (String) analyzer;
         }
     }
 
+    /**
+     * Get the Lucene analyzer used on the query represented by this filter object.
+     * 
+     * @returns {String} The name of the analyzer
+     */
     public String jsFunction_getAnalyzer() {
         return this.analyzer;
     }
