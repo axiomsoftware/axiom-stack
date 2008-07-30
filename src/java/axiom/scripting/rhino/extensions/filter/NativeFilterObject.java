@@ -122,6 +122,12 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
         return nativeQuery;
     }
     
+    /**
+     * Set the Lucene analyzer used on the query represented by this NativeFilter object.
+     * Ignored in the case of relational queries.
+     * 
+     * @param {String} analyzer The name of the analyzer (e.g. "WhitespaceAnalyzer")
+     */
     public void jsFunction_setAnalyzer(Object analyzer) {
         if (analyzer instanceof String) {
             this.analyzerString = (String) analyzer;
@@ -129,6 +135,11 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
         }
     }
     
+    /**
+     * Get the Lucene analyzer used on the query represented by this NativeFilter object.
+     * 
+     * @returns {String} The name of the analyzer
+     */
     public String jsFunction_getAnalyzer() {
     	return this.analyzerString;
     }
@@ -139,14 +150,6 @@ public class NativeFilterObject extends ScriptableObject implements IFilter {
 
     public boolean isCached() {
         return this.cached;
-    }
-
-    public void jsFunction_setFilterProfile(Object filterProfile) throws Exception{
-    	if(filterProfile instanceof Scriptable){
-    		this.filterProfile = (Scriptable)filterProfile;
-    	} else{
-    		throw new Exception("Filter Profile must be of type Scriptable");
-    	}
     }
 
     public Scriptable getFilterProfile(){
