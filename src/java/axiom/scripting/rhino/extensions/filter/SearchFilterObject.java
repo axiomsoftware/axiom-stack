@@ -16,7 +16,33 @@ import axiom.scripting.rhino.RhinoEngine;
 import axiom.util.ResourceProperties;
 
 /**
+ * The JavaScript SearchFilter class, for passing in as a filter parameter to the Query API.
+ * The SearchFilter instructs the Query API to use a custom search profile that is 
+ * specified in an application's search.properties file.  A search profile would specify
+ * what properties to search the input text against, boost factors associated with the 
+ * properties, the Lucene analyzer to use, and what operations to perform on the terms
+ * (i.e. AND, OR, etc).  For example, assume search.properties has the following entries:
+ * <br><br>
+ * 
+ * mainProfile.fields = {id:5,title:2}
+ * mainProfile.analyzer = StandardAnalyzer
+ * 
+ * <br><br>
+ * 
+ * Then with the following code: <br><br>
+ * <code>
+ * var sf = new SearchFilter("company", "mainProfile"); <br>
+ * app.getObjects("Post", sf); <br>
+ * </code>
+ * <br>
+ * 
+ * This will return all objects of the Post prototype, where id has a value of "company"
+ * OR title has a value of "company", retrieved and ordered by the 
+ * respective boost values of 5 and 2, using the StandardAnalyzer in Lucene.
+ * 
  * @jsconstructor SearchFilter
+ * @param {String} text The text to search the profile's fields against
+ * @param {String} profile The name of the search profile in search.properties
  */
 public class SearchFilterObject extends ScriptableObject implements IFilter {
 

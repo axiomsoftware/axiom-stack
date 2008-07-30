@@ -9,7 +9,24 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
+ * The JavaScript RangeFilter class, for passing in as a filter parameter to the Query API.
+ * The RangeFilter searches the input field between the input start and end ranges.  
+ * For example, <br><br>
+ * 
+ * <code>
+ * var rf = new RangeFilter('count', 1, 10, true); <br>
+ * </code>
+ * <br>
+ * 
+ * This filter would search all objects which have a property of count whose values 
+ * range from 1 to 10, inclusive.
+ * 
  * @jsconstructor RangeFilter
+ * @param {String} property The property to apply the range filter to
+ * @param {Number|String} start The start value in the range to search
+ * @param {Number|String} end The end value in the range to search
+ * @param {Boolean} [inclusive] Whether the start and end ranges are inclusive, defaults to 
+ *                              <code> true </code>.
  */
 public class RangeFilterObject extends ScriptableObject implements IFilter {
 

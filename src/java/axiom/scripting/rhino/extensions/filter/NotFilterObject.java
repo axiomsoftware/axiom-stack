@@ -1,13 +1,24 @@
 package axiom.scripting.rhino.extensions.filter;
 
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.*;
 
 import org.mozilla.javascript.*;
 
 /**
+ * The JavaScript NotFilter class, for passing in as a filter parameter to the Query API.
+ * The NotFilter is a filter with a NOT operation performed on the filter that the 
+ * NotFilter is constructed with.  For example, <br><br>
+ * 
+ * <code>
+ * var filter = new Filter({id: "company-picnic"}); <br>
+ * app.getObjects("Post", new NotFilter(filter)); <br>
+ * </code>
+ * <br>
+ * This will return all objects of the Post prototype, with an id that is not 
+ * "company-picnic".
+ *
  * @jsconstructor NotFilter
+ * @param {Filter} filter The filter to execute the NOT operation on
  */
 public class NotFilterObject extends OpFilterObject {
     
