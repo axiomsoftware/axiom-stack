@@ -1,13 +1,27 @@
 package axiom.scripting.rhino.extensions.filter;
 
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.*;
 
 import org.mozilla.javascript.*;
 
 /**
+ * The JavaScript AndFilter class, for passing in as a filter parameter to the Query API.
+ * The AndFilter acts as a chain, that is, it is comprised of other filters.  The AndFilter
+ * performs an AND operation on all of the filters in its chain.  For example, <br><br>
+ * <code>
+ * var filters = [];<br>
+ * filters.push(new Filter({id: "company-picnic"}));<br>
+ * filters.push(new NativeFilter("title: Company*"));<br>
+ * app.getObjects("Post", new AndFilter(filters));<br>
+ * </code>
+ * <br>
+ * 
+ * This will return all objects of the Post prototype, with an id exactly matching 
+ * "company-picnic", and a title that starts with "Company".
+ * 
  * @jsconstructor AndFilter
+ * @param {Array} filters An Array of the filter objects that are to be combined by an 
+ * 						  AND operation. 
  */
 public class AndFilterObject extends OpFilterObject {
     

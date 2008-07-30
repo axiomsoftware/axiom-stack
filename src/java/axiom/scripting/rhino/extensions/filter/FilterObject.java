@@ -5,6 +5,24 @@ import java.util.*;
     
 import org.mozilla.javascript.*;
 
+/**
+ * The JavaScript Filter class, for passing in as a filter parameter to the Query API.
+ * The Filter class encapsulates the basic type of filtering passed to the Query API.
+ * Query parameters are specified as a series of key/value pairs indicating the property
+ * names and their respective values to query against.  Objects that meet the specified
+ * criterion are returned by the Query API.  For example, <br><br>
+ * <code>
+ * app.getObjects("Post", new Filter({id: "company-picnic"}));
+ * </code>
+ * <br>
+ * 
+ * This will return all Axiom Objects of the Post prototype, with an id exactly 
+ * matching "company-picnic".
+ * 
+ * @jsconstructor Filter
+ * @param {Object} filter A JavaScript object of key/value pairs indicating the property 
+ *                        names and values to query against in the search
+ */
 public class FilterObject extends ScriptableObject implements IFilter {
     
     private HashMap filters = new HashMap();

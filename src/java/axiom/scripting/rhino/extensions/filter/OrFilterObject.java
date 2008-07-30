@@ -1,11 +1,28 @@
 package axiom.scripting.rhino.extensions.filter;
 
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.*;
 
 import org.mozilla.javascript.*;
 
+/**
+ * The JavaScript OrFilter class, for passing in as a filter parameter to the Query API.
+ * The OrFilter acts as a chain, that is, it is comprised of other filters.  The OrFilter
+ * performs an OR operation on all of the filters in its chain.  For example, <br><br>
+ * <code>
+ * var filters = [];<br>
+ * filters.push(new Filter({id: "company-picnic"}));<br>
+ * filters.push(new NativeFilter("title: Company*"));<br>
+ * app.getObjects("Post", new OrFilter(filters));<br>
+ * </code>
+ * <br>
+ * 
+ * This will return all Axiom Objects of the Post prototype, with an id exactly matching 
+ * "company-picnic", or a title that starts with "Company".
+ * 
+ * @jsconstructor OrFilter
+ * @param {Array} filters An Array of the filter objects that are to be combined by an 
+ * 						  OR operation. 
+ */
 public class OrFilterObject extends OpFilterObject {
     
     protected OrFilterObject() {
