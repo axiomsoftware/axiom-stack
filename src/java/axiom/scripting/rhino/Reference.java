@@ -17,9 +17,20 @@ import axiom.objectmodel.db.Key;
 import axiom.objectmodel.db.WrappedNodeManager;
 
 /**
- * The class that encapsulates the behaviors of the Axiom Reference type
+ * The class that encapsulates the behaviors of the Axiom Reference type.
+ * A Reference Object provides a reference to Axiom Object instance. 
+ * You can declare a property to be of type Reference in the prototype.properties file. 
+ * Since Axiom Objects can only exist in one location, this is useful for referencing them 
+ * from anywhere. For example, <br><br>
+ * <code>
+ * var hp = root.get("homepage"); // An Axiom Object that is an instance of the HomePage prototype <br>
+ * var cat = hp.get("category"); // This is an Axiom Object. <br>
+ * var hp.cat_ref = new Reference(cat); // cat_ref is a Reference property on the HomePage prototype <br>
+ * </code>
+ * <br>
  * 
- * @jsconstructor
+ * @jsconstructor Reference
+ * @param {AxiomObject} object The AxiomObject to create a Reference out of
  */
 public class Reference extends ScriptableObject implements IProperty, Serializable {
     

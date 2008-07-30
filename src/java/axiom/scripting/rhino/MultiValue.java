@@ -11,8 +11,35 @@ import axiom.objectmodel.IProperty;
 
 /**
  * The class that encapsulates the behaviors of the Axiom MultiValue type
+ * A MultiValue is an immutable collection of data. This data can be of the following types:
+ * Boolean, Date, Number, Reference Object, and String. 
+ * AxiomObjects cannot be placed into MultiValues directly, they must first be persisted, 
+ * and then referenced using a Reference Object. A MultiValue property can be instantiated 
+ * as follows: <br><br>
  * 
- * @jsconstructor
+ * <code> var mv = new MultiValue("dogs","cats","mice"); </code> <br><br>
+ * 
+ * The elements of a MultiValue can be retrieved just like an Array: <br><br>
+ *
+ * <code> var cats = mv[1]; // Gives us "cats" </code> <br><br>
+ *
+ * MultiValues can also be used with Axiom Objects by creating a MultiValue of 
+ * Reference Objects: <br><br>
+ * 
+ * <code>
+ * var homepage = root.get("homepage"); // This is an Axiom Object. <br>
+ * var categories = hp.get("category"); // This is an Axiom Object. <br>
+ * var mv = new MultiValue(new Reference(homepage), new Reference(categories)); <br>
+ * </code> <br>
+ *
+ * Elements from a MultiValue of Reference Objects can be retrieved as expected:<br><br>
+ *
+ * <code> var hp = mv[0].getTarget(); // Gives us the homepage, same as root.get("homepage") </code>
+ * 
+ * @jsconstructor MultiValue
+ * @param {Boolean|Date|Number|Reference|String} [object] 
+ * @param {Boolean|Date|Number|Reference|String} [object2]
+ * @param {Boolean|Date|Number|Reference|String} [etc]
  */
 public class MultiValue extends ScriptableObject implements Serializable {
     

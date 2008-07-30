@@ -12,7 +12,22 @@ import axiom.scripting.rhino.RhinoEngine;
 import axiom.util.ResourceProperties;
 
 /** 
+ * The JavaScript NativeFilter class, for passing in as a filter parameter to the Query API.
+ * A NativeFilter is used to pass in any storage specific filtering to a query.  
+ * In the case of the default embedded storage, this would be a Lucene specific query that
+ * the query parser would ingest.  In the case of relational storage, this would be what
+ * would be found in the WHERE clause, e.g. <code> COLUMN1 == X AND COLUMN2 >= Y </code>.
+ * For example, <br><br>
+ * <code>
+ * app.getObjects("Post", new NativeFilter("title: Company*"));
+ * </code>
+ * <br>
+ * 
+ * This will return all Axiom Objects of the Post prototype, with a title that starts 
+ * with "Company". 
+ * 
  * @jsconstructor NativeFilter
+ * @param {String} filter A query filter native to the underlying storage
  */
 public class NativeFilterObject extends ScriptableObject implements IFilter {
 
