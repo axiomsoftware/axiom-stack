@@ -13,7 +13,32 @@ public class JSDoclet extends Doclet {
 		for(ClassDoc clazz : root.classes()){
 			Tag[] jsInstanceTags = clazz.tags("@jsinstance");
 			Tag[] jsConstructorTags = clazz.tags("@jsconstructor");
-			if(jsInstanceTags.length != 0 || jsConstructorTags.length != 0){
+			Tag[] jsNoConstructorTags = clazz.tags("@jsnoconstructor");
+			Tag[] jsGlobal = clazz.tags("@jsglobal");
+
+			if(jsGlobal.length != 0){
+				for(MethodDoc method: clazz.methods()){
+					ArrayList<String> methodTags = new ArrayList<String>();
+					methodTags.add(method.commentText());
+					for(Tag t: method.tags()){
+						methodTags.add(t.name()+ " " +t.text());
+					}
+					
+					if(method.tags("@returns").length == 0){
+						methodTags.add("@returns "+method.returnType());
+					}
+					Tag[] jsfunctionTags = method.tags("@jsfunction");
+					Tag[] jsomitTags = method.tags("@jsomit");
+					Tag[] deprecatedTags = method.tags("@deprecated");
+
+					if(jsfunctionTags.length > 0 && jsomitTags.length == 0 && deprecatedTags.length == 0){ 
+						String name = jsfunctionTags[0].text().length() > 0 ? jsfunctionTags[0].text() : method.name();
+						emitComment(methodTags.toArray());
+						emit("function " + name+"(){};");
+					}
+				}
+			} else if(jsInstanceTags.length != 0 || jsConstructorTags.length != 0 || 
+					jsNoConstructorTags.length != 0){
 				String className = clazz.name();
 				boolean isInstance = false;
 				if(jsInstanceTags.length > 0){
@@ -21,6 +46,8 @@ public class JSDoclet extends Doclet {
 					isInstance = true;
 				} else if (jsConstructorTags.length > 0 && jsConstructorTags[0].text() != ""){
 					className = jsConstructorTags[0].text();
+				} else if (jsNoConstructorTags.length > 0 && jsNoConstructorTags[0].text() != ""){
+					className = jsNoConstructorTags[0].text();
 				}
 				
 				ArrayList<String> commentTags = new ArrayList<String>();
@@ -38,6 +65,7 @@ public class JSDoclet extends Doclet {
 					for(Tag t: method.tags()){
 						methodTags.add(t.name()+ " " +t.text());
 					}
+					
 					if(method.tags("@returns").length == 0){
 						methodTags.add("@returns "+method.returnType());
 					}
@@ -75,7 +103,7 @@ public class JSDoclet extends Doclet {
 				}
 			}
 		}
-		emitComment(new String[]{"axiom utilities namespace", "@constructor"});
+		emitComment(new String[]{"axiom utilities namespace", "@constructor", "@jsconstructor"});
 		emit("function axiom(){};");
 		writeToFile("alldoc.js");
 		return true;
