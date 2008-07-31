@@ -1,4 +1,32 @@
 function publish(symbolSet) {
+	// filters
+	function isaClass($) {return ($.is("CONSTRUCTOR") || $.isNamespace)}
+	function isGlobal($) {
+		for each(tag in $.comment.tags){
+			if(tag.title.equalsIgnoreCase("jsinstance")){
+				return true;
+			}
+		}
+		if($.alias == "_global_"){
+			return true;
+		}
+		return false;
+	};
+	function isExtension($) {
+		return $.isNamespace && $.alias != "_global_";
+	};
+	function isBuiltin($) {
+		for each(tag in $.comment.tags){
+			if(tag.title.equalsIgnoreCase('jsconstructor') || tag.title.equalsIgnoreCase('jsnoconstructor')){
+				return true;
+			}
+		}
+		if(!$.srcFile.equalsIgnoreCase('alldoc.js') && $.is("CONSTRUCTOR") && !$.isNamespace){
+			return true;
+		}
+		return false;
+	};
+
 	publish.conf = {  // trailing slash expected for dirs
 		ext: ".html",
 		outDir: JSDOC.opt.d || SYS.pwd+"../out/jsdoc/",
@@ -6,90 +34,108 @@ function publish(symbolSet) {
 		symbolsDir: "symbols/",
 		srcDir: "symbols/src/"
 	};
-	
-	
+
 	if (JSDOC.opt.s && defined(Link) && Link.prototype._makeSrcLink) {
 		Link.prototype._makeSrcLink = function(srcFilePath) {
 			return "&lt;"+srcFilePath+"&gt;";
 		}
 	}
 	
-	IO.mkPath((publish.conf.outDir+"symbols/src").split("/"));
+	IO.mkPath((publish.conf.outDir+"symbols").split("/"));
 		
 	// used to check the details of things being linked to
 	Link.symbolSet = symbolSet;
-
+	
+	var classTemplate = null;
+	var extensionTemplate = null;
+	var globalTemplate = null;
+	var builtinTemplate = null;
 	try {
-		var classTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"class.tmpl");
-		var classesTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"allclasses.tmpl");
+		classTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"class.tmpl");
+		extensionTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"extension.tmpl");
+		globalTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"global.tmpl");
+		builtinTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"builtin.tmpl");
 	}
 	catch(e) {
 		print(e.message);
 		quit();
 	}
 	
-	// filters
-	function hasNoParent($) {return ($.memberOf == "")}
-	function isaFile($) {return ($.is("FILE"))}
-	function isaClass($) {return ($.is("CONSTRUCTOR") || $.isNamespace)}
-	
 	var symbols = symbolSet.toArray();
+
+	var objects = symbols.filter(isaClass).sort(makeSortby("alias"));
+
+	var extensionObjects = symbols.filter(isExtension).sort(makeSortby("alias"));
+	var builtinObjects = symbols.filter(isBuiltin).sort(makeSortby("alias"));
+	var globalObjects = symbols.filter(isGlobal).sort(makeSortby("alias"));
+	globalObjects.methods = [];
+
+	for(var i = 0; i < globalObjects.length; i++){
+		if(globalObjects[i].alias == '_global_'){
+			index = i;
+			for each(method in globalObjects[i].methods){
+				globalObjects.methods.push(method.alias);
+			}
+			globalObjects.splice(i, 1);
+		}
+	}
 	
-	var files = JSDOC.opt.srcFiles;
- 	for (var i = 0, l = files.length; i < l; i++) {
- 		var file = files[i];
- 		var srcDir = publish.conf.outDir + "symbols/src/";
-		makeSrcFile(file, srcDir);
- 	}
- 	
- 	var classes = symbols.filter(isaClass).sort(makeSortby("alias"));
 	
+
+	
+
 	Link.base = "../";
- 	publish.classesIndex = classesTemplate.process(classes); // kept in memory
+	var objectsTemplateCache = {
+		builtin:builtinTemplate.process(builtinObjects),
+		global:globalTemplate.process(globalObjects),
+		extension:extensionTemplate.process(extensionObjects)
+	};
+
 	
-	for (var i = 0, l = classes.length; i < l; i++) {
-		var symbol = classes[i];
-		var output = "";
-		output = classTemplate.process(symbol);
-		
-		IO.saveFile(publish.conf.outDir+"symbols/", symbol.alias+publish.conf.ext, output);
+	for (var i = 0, l = objects.length; i < l; i++) {
+		publish.classesIndex = objectsTemplateCache[getObjectType(objects[i])];
+		var output = classTemplate.process(objects[i]);
+		IO.saveFile(publish.conf.outDir+"symbols/", objects[i].alias+publish.conf.ext, output);
 	}
 	
 	// regenrate the index with different relative links
 	Link.base = "";
-	publish.classesIndex = classesTemplate.process(classes);
-	
-	try {
-		var classesindexTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"index.tmpl");
-	}
-	catch(e) { print(e.message); quit(); }
-	
-	var classesIndex = classesindexTemplate.process(classes);
-	IO.saveFile(publish.conf.outDir, "index"+publish.conf.ext, classesIndex);
-	classesindexTemplate = classesIndex = classes = null;
-	
-	try {
-		var fileindexTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"allfiles.tmpl");
-	}
-	catch(e) { print(e.message); quit(); }
-	
-	var documentedFiles = symbols.filter(isaFile);
-	var allFiles = [];
-	
-	for (var i = 0; i < files.length; i++) {
-		allFiles.push(new JSDOC.Symbol(files[i], [], "FILE", new JSDOC.DocComment("/** */")));
-	}
-	
-	for (var i = 0; i < documentedFiles.length; i++) {
-		var offset = files.indexOf(documentedFiles[i].alias);
-		allFiles[offset] = documentedFiles[i];
-	}
-		
-	allFiles = allFiles.sort(makeSortby("name"));
+	buildIndexTemplate(globalTemplate, publish, globalObjects, "index", "Global Objects and Global Functions");
+	buildIndexTemplate(extensionTemplate, publish, extensionObjects, "extensions", "Prototype Extensions");
+	buildIndexTemplate(builtinTemplate, publish, builtinObjects, "builtin", "Built-in Prototypes");
 
-	var filesIndex = fileindexTemplate.process(allFiles);
-	IO.saveFile(publish.conf.outDir, "files"+publish.conf.ext, filesIndex);
-	fileindexTemplate = filesIndex = files = null;
+
+}
+
+function getObjectType(objects){
+	for each(tag in objects.comment.tags){
+		var title = new String(tag.title);
+		if(objects.alias == '_global_' || title.equalsIgnoreCase('jsinstance')){
+			return 'global';
+		} else if(objects.isNamespace){
+			return 'extension';
+		} else if(title.equalsIgnoreCase('jsconstructor') || title.equalsIgnoreCase('jsnoconstructor')) {
+			return 'builtin';
+		} else if(!objects.srcFile.equalsIgnoreCase('alldoc.js') && objects.is("CONSTRUCTOR")){
+			return 'builtin';
+		}
+	}
+
+}
+
+function buildIndexTemplate(template, publish, data, filename, title){
+	var indexTemplate = null;
+	try {
+		indexTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"index.tmpl");
+	}
+	catch(e) {
+		print(e.message);
+		quit();
+	}
+	publish.classesIndex = template.process(data);
+	publish.classTitle = title;
+	var index = indexTemplate.process(data);
+	IO.saveFile(publish.conf.outDir, filename + publish.conf.ext, index);
 }
 
 
@@ -164,3 +210,36 @@ function resolveLinks(str, from) {
 	
 	return str;
 }
+
+/*
+	// Generate Files	
+	var files = JSDOC.opt.srcFiles;
+ 	for (var i = 0, l = files.length; i < l; i++) {
+ 		var file = files[i];
+ 		var srcDir = publish.conf.outDir + "symbols/src/";
+		makeSrcFile(file, srcDir);
+ 	}
+
+	try {
+		var fileindexTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"allfiles.tmpl");
+	}
+	catch(e) { print(e.message); quit(); }
+	
+	var documentedFiles = symbols.filter(isaFile);
+	var allFiles = [];
+*/	
+//	for (var i = 0; i < files.length; i++) {
+//		allFiles.push(new JSDOC.Symbol(files[i], [], "FILE", new JSDOC.DocComment("/** */")));
+//	}
+/*	
+	for (var i = 0; i < documentedFiles.length; i++) {
+		var offset = files.indexOf(documentedFiles[i].alias);
+		allFiles[offset] = documentedFiles[i];
+	}
+		
+	allFiles = allFiles.sort(makeSortby("name"));
+
+	var filesIndex = fileindexTemplate.process(allFiles);
+	IO.saveFile(publish.conf.outDir, "files"+publish.conf.ext, filesIndex);
+	fileindexTemplate = filesIndex = files = null;
+*/

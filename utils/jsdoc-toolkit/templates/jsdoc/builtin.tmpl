@@ -1,0 +1,35 @@
+<div align="left">
+	{+new Link().toFile("index.html").withText("Global Objects and Functions")+}
+	<br/> {+new Link().toFile("extensions.html").withText("Prototype Extensions")+}
+	<br/> {+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}
+</div>
+<hr />
+<h2>Instantiable Objects</h2>
+<ul class="classList">
+	<for each="obj" in="data">
+	<li>{!
+		if(!obj.srcFile.equalsIgnoreCase('alldoc.js') && obj.is("CONSTRUCTOR")){
+			output += new Link().toClass(obj.alias);
+		} else {
+			for each(tag in obj.comment.tags){
+				if(tag.title.equalsIgnoreCase("jsconstructor")){
+					output += new Link().toClass(obj.alias);
+				}
+			}
+		}
+	!}</li>
+	</for>
+</ul>
+<h2>Uninstantiable Objects</h2>
+<ul class="classList">
+	<for each="obj" in="data">
+	<li>{!
+		for each(tag in obj.comment.tags){
+			if(tag.title.equalsIgnoreCase("jsnoconstructor")){
+				output += new Link().toClass(obj.alias);
+			}
+		}
+	!}</li>
+	</for>
+</ul>
+<hr />

@@ -20,12 +20,12 @@
 		</div>
 		
 		<div id="content">
-			<h1 class="classTitle">Class Index</h1>
+			<h1 class="classTitle">{+publish.classTitle+}</h1>
 			
 			<for each="thisClass" in="data">
 			<div>
-				<h2>{+(new Link().toSymbol(thisClass.alias))+}</h2>
-				{+resolveLinks(summarize(thisClass.classDesc))+}
+				<h2>{+(new Link().toClass(thisClass.alias))+}</h2>
+				{+resolveLinks(summarize(thisClass.desc))+}
 			</div>
 			<hr />
 			</for>
