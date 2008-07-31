@@ -36,6 +36,7 @@ import java.io.*;
 
 /**
  * Axiom global object defines a number of custom global functions.
+ * @jsglobal
  */
 public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     Application app;
@@ -378,9 +379,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
-     * Wrap a java.util.Map so that it looks and behaves like a native JS object
-     * @param obj a map
-     * @return a wrapper that makes the map look like a JS object
+     * Wrap a java.util.Map so that it looks and behaves like a native JS object.
+     * @jsfunction
+     * @param {Object} obj A map.
+     * @returns {String} A wrapper that makes the map look like a JS object.
      */
     public Object wrapJavaMap(Object obj) {
         if (obj instanceof Wrapper) {
