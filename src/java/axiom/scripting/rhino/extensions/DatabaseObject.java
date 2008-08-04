@@ -345,7 +345,7 @@ public class DatabaseObject {
      * connection.
      * 
      * @jsfunction
-     * @returns {DatabaseMetaData} DatabaseMetaData object for this Connection object.
+     * @returns {java.sql.DatabaseMetaData} DatabaseMetaData object for this Connection object.
      */
     public Object getMetaData()
     {
@@ -373,7 +373,7 @@ public class DatabaseObject {
       * cannot be instantiated and is only accessible from the results of invoking
       * <code> DatabaseObject.executeQuery() </code>.
       * 
-      * @jsconstructor
+      * @jsnoconstructor RowSet
       */
     public static class RowSet {
 
