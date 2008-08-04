@@ -161,3 +161,26 @@ ul.inheritsList
 	text-align: right;
 	font-size: 10px;
 }
+
+.summaryTable td.attributes2
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes2, .fixedFont
+{
+	line-height: 15px;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+td.noconstructorattribs
+{
+	line-height: 15px;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+}

@@ -26,26 +26,37 @@
 		</div>
 		
 		<div id="content">
+<!-- ============================== object evaluation ========================== -->
+			{!
+				var objectType = getObjectType(data);
+				if(objectType == 'builtin'){
+					for each(tag in data.comment.tags){
+						if(tag.title.equalsIgnoreCase('jsnoconstructor')){
+							objectType = tag.title;
+						}
+					}
+				}
+				print(data.alias + " "  + objectType);
+			!}
+
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				{!
 					var classType = "";
-					
-					if (data.isBuiltin()) {
-						classType += "Built-In ";
-					}
-					
-					if (data.isNamespace) {
-						if (data.is('FUNCTION')) {
-							classType += "Function ";
-						}
-						classType += "Namespace ";
-					}
-					else {
-						classType += "Class ";
+					if(data.alias == '_global_'){
+						classType = "Global Functions ";
+						output += classType;
+					} else if (data.isNamespace) {
+						classType = "Prototype Extension ";
+						output += classType + data.alias;
+					} else if (objectType == 'jsnoconstructor' || objectType == 'global') {
+						classType = "Object ";
+						output += classType + data.alias;
+					} else {
+						classType = "Constructor ";
+						output += classType + data.alias;
 					}
 				!}
-				{+classType+}{+data.alias+}
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -60,12 +71,8 @@
 						.join(", ")
 					+}.<br />
 				</if>
-			
 				{+resolveLinks(data.classDesc)+}
 				
-				<if test="!data.isBuiltin()">{# isn't defined in any file #}
-					<br /><i>Defined in: </i> {+new Link().toSrc(data.srcFile)+}.
-				</if>
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
@@ -74,22 +81,36 @@
 				<caption>{+classType+}Summary</caption>
 				<thead>
 					<tr>
-						<th scope="col">Constructor Attributes</th>
-						<th scope="col">Constructor Name and Description</th>
+						<if test="objectType == 'extension' || objectType == 'global' || objectType == 'jsnoconstructor'">
+							<th scope="col">Constructor Name and Description</th>
+						<else/>
+							<if test="data.isPrivate || data.isInner">
+								<th scope="col">Constructor Attributes</th>
+							</if>
+							<th scope="col">Constructor Name and Description</th>
+						</if>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td class="attributes">{!
-							if (data.isPrivate) output += "&lt;private&gt; ";
-							if (data.isInner) output += "&lt;inner&gt; ";
-						!}&nbsp;</td>
-						<td class="nameDescription" {!if (data.comment.getTag("hilited").length){output += 'style="color: red"'}!}>
-							<div class="fixedFont">
-								<b>{+ new Link().toSymbol(data.alias).inner('constructor')+}</b><if test="classType != 'Namespace '">{+ makeSignature(data.params) +}</if>
-							</div>
-							<div class="description">{+resolveLinks(summarize(data.desc))+}</div>
-						</td>
+						<if test="objectType == 'extension' || objectType == 'global' || objectType == 'jsnoconstructor'">
+							<td class="noconstructorattribs">								
+								<div class="description">{+resolveLinks(data.desc)+}</div>
+							</td>
+						<else/>
+							<if test="data.isPrivate || data.isInner">
+								<td class="attributes">{!
+									if (data.isPrivate) output += "&lt;private&gt; ";
+									if (data.isInner) output += "&lt;inner&gt; ";
+								!}&nbsp;</td>
+							</if>
+							<td class="{!output = (data.isPrivate || data.isInner) ? output+= 'nameDescription' : output+= 'noconstructorattribs'!}" {!if (data.comment.getTag("hilited").length){output += 'style="color: red"'}!}>
+								<div class="fixedFont">
+									<b>{+ new Link().toSymbol(data.alias).inner('constructor')+}</b><if test="classType != 'Namespace '">{+ makeSignature(data.params) +}</if>
+								</div>
+								<div class="description">{+resolveLinks(summarize(data.desc))+}</div>
+							</td>
+						</if>
 					</tr>
 				</tbody>
 			</table>
@@ -115,6 +136,9 @@
 								if (member.isInner) output += "&lt;inner&gt; ";
 								if (member.isStatic) output += "&lt;static&gt; ";
 								if (member.isConstant) output += "&lt;constant&gt; ";
+								if(!member.isPrivate && !member.isInner && !member.isStatic && !member.isConstant && !member.isPrivate){
+									output+= new Link().toClass(member.type);
+								}
 							!}&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
@@ -176,6 +200,15 @@
 								if (member.isPrivate) output += "&lt;private&gt; ";
 								if (member.isInner) output += "&lt;inner&gt; ";
 								if (member.isStatic) output += "&lt;static&gt; ";
+								if(!member.isPrivate && !member.isInner && !member.isStatic){
+									for each(ret in member.returns){
+										if(ret.title.equalsIgnoreCase('return') && ret.type == '' && ret.desc.equalsIgnoreCase('void')){
+											output += 'void';
+										} else if(ret.title.equalsIgnoreCase('return')){
+											output += new Link().toClass(ret.type);
+										}
+									}
+								}
 							!}&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if><b>{+new Link().toSymbol(member.alias).withText(member.name)+}</b>{+makeSignature(member.params)+}
@@ -218,7 +251,8 @@
 			</if>
 
 <!-- ============================== constructor details ==================== -->		
-			<if test="!data.isBuiltin() && (data.isNamespace || data.is('CONSTRUCTOR'))">
+
+			<if test="objectType == 'builtin'">
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
 					{+classType+}Detail
@@ -328,10 +362,6 @@
 					</div>
 					<div class="description">
 						{+resolveLinks(member.desc)+}
-						<if test="member.srcFile != data.srcFile">
-							<br />
-							<i>Defined in: </i> {+new Link().toSrc(member.srcFile)+}.
-						</if>
 						<if test="member.author"><br /><i>Author: </i>{+member.author+}.</if>
 					</div>
 					
@@ -394,10 +424,6 @@
 					</div>
 					<div class="description">
 						{+resolveLinks(member.desc)+}
-						<if test="member.srcFile != data.srcFile">
-							<br />
-							<i>Defined in: </i> {+new Link().toSrc(member.srcFile)+}.
-						</if>
 						<if test="member.author"><br /><i>Author: </i>{+member.author+}.</if>
 					</div>
 					
