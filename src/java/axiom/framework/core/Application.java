@@ -179,9 +179,6 @@ public final class Application implements IPathElement, Runnable {
 	// name of response encoding
 	String charset;
 
-	// password file to use for authenticate() function
-	private CryptResource pwfile;
-
 	// Map of java class names to object prototypes
 	ResourceProperties classMapping;
 
@@ -377,8 +374,6 @@ public final class Application implements IPathElement, Runnable {
 		if (axiomHome != null) {
 			parentpwfile = new CryptResource(new FileResource(new File(axiomHome, "passwd")), null);
 		}
-
-		pwfile = new CryptResource(repositories[0].getResource("passwd"), parentpwfile);
 
 		// the properties that map java class names to prototype names
 		classMapping = new ResourceProperties(this, "class.properties");
@@ -1394,19 +1389,6 @@ public final class Application implements IPathElement, Runnable {
 	 */
 	public void logoutSession(Session session) {
 		session.logout();
-	}
-
-	/**
-	 * In contrast to login, this works outside the Axiom user object framework. Instead, the user is
-	 * authenticated against a passwd file in the application directory. This is to have some sort of
-	 * authentication available *before* the application is up and running, i.e. for application setup tasks.
-	 */
-	public boolean authenticate(String uname, String password) {
-		if ((uname == null) || (password == null)) {
-			return false;
-		}
-
-		return pwfile.authenticate(uname, password);
 	}
 
 	/**

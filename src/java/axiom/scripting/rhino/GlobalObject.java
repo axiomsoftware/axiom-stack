@@ -71,11 +71,12 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      */
     public void init() throws PropertyException {
         String[] globalFuncs = {
-                                   "getProperty", "authenticate", "format", "encode",
-                                   "encodeXml", "encodeForm", "stripTags", "formatParagraphs",
+                                   "format", "formatParagraphs", 
+                                   "encode", "encodeXml", "encodeForm", 
+                                   "stripTags", 
                                    "getXmlDocument", "seal",
-                                   "getDBConnection", "getURL", "write", "writeln",
-                                   "serialize", "deserialize", "defineLibraryScope",
+                                   "getDBConnection", "getURL",
+                                   "defineLibraryScope",
                                    "wrapJavaMap", "unwrapJavaMap", "toJavaObject"
                                };
 
@@ -173,41 +174,19 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
+     * Get a DatabaseObject encapsulating a DB connection from either the specified 
+     * DbSource in db.properties or from the input DB url string
      *
-     *
-     * @param propname ...
-     * @param defvalue ...
-     *
-     * @return ...
+     * @jsfunction
+     * @param {String} dbsource the db source name, or the jdbc driver for making a connection
+     *                          not specified in db.properties (if specifying the jdbc 
+     *                          driver, then the following optional parameters are required)
+     * @param {String} [url] The DB url
+     * @param {String} [user] The user name for the DB connection
+     * @param {String} [pwd] The password for user
+     * @param {Boolean} [autocommit] Whether autocommit should be set on the connection or not
+     * @returns {DatabaseObject} The specified connection as a DatabaseObject
      */
-    public String getProperty(String propname, Object defvalue) {
-        if (defvalue == Undefined.instance) {
-            return app.getProperty(propname);
-        } else {
-            return app.getProperty(propname, toString(defvalue));
-        }
-    }
-
-    /**
-     *
-     *
-     * @param user ...
-     * @param pwd ...
-     *
-     * @return ...
-     */
-    public boolean authenticate(String user, String pwd) {
-        return app.authenticate(user, pwd);
-    }
-
-    /**
-     * Get a Axiom DB connection specified in db.properties
-     *
-     * @param dbsource the db source name
-     *
-     * @return a DatabaseObject for the specified DbConnection
-     */
-
     public Object getDBConnection(Object option1, Object option2, Object option3, Object option4, Object option5) throws Exception {
         DatabaseObject db = null;
         if( (option1 != null && (option2 == null || option2 == Undefined.instance) && 
@@ -244,10 +223,11 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     /**
      * Retrieve a Document from the specified URL.
      *
-     * @param location the URL to retrieve
-     * @param opt either a LastModified date or an ETag string for conditional GETs
+     * @jsfunction
+     * @param {String} location the URL to retrieve
+     * @param {Object} [opt] either a LastModified date or an ETag string for conditional GETs
      *
-     * @return a wrapped MIME object
+     * @returns {MIMEPart} a wrapped MIME object
      */
     public Object getURL(String location, Object opt) {
         if (location ==  null) {
@@ -330,8 +310,13 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
-     *  Try to parse an object to a XML DOM tree. The argument must be
-     *  either a URL, a piece of XML, an InputStream or a Reader.
+     * Try to parse an object to a XML DOM tree. The argument must be
+     * either a URL, a piece of XML, an InputStream or a Reader.
+     * 
+     * @jsfunction
+     * @param {String|InputStream|Reader} src The source URL, a piece of XML, 
+     * 										  an InputStream, or a Reader
+     * @returns {Document} an XML DOM tree parsed from the src
      */
     public Object getXmlDocument(Object src) {
         try {
@@ -355,7 +340,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * to extend standard JavaScript functionality, but leave the original
      * prototypes alone.
      *
-     * @param name the name of the new scope
+     * @jsfunction
+     * @param {String} name the name of the new scope
+     * @param {Boolean} [initStandardObjects] whether or not to initialize the scope with 
+     *                                        standard JavaScript objects, defaults to false
      */
     public void defineLibraryScope(final String name, boolean initStandardObjects) {
         Object obj = get(name, this);
@@ -380,9 +368,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
 
     /**
      * Wrap a java.util.Map so that it looks and behaves like a native JS object.
+     * 
      * @jsfunction
      * @param {Object} obj A map.
-     * @returns {String} A wrapper that makes the map look like a JS object.
+     * @returns {MapWrapper} A wrapper that makes the map look like a JS object.
      */
     public Object wrapJavaMap(Object obj) {
         if (obj instanceof Wrapper) {
@@ -397,8 +386,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
 
     /**
      * Unwrap a map previously wrapped using {@link #wrapJavaMap(Object)}.
-     * @param obj the wrapped map
-     * @return the map exposed as java object
+     * 
+     * @jsfunction
+     * @param {MapWrapper} obj the wrapped map
+     * @returns {Object} the map exposed as java object
      */
     public Object unwrapJavaMap(Object obj) {
         if (!(obj instanceof MapWrapper)) {
@@ -410,55 +401,62 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
-     *
-     *
-     * @param obj ...
-     *
-     * @return ...
+     * Encode the string's HTML tags into HTML entities
+     * 
+     * @jsfunction
+     * @param {String} str the string to encode
+     * @returns {String} the encoded string
      */
     public String encode(Object obj) {
         return HtmlEncoder.encodeAll(toString(obj));
     }
 
     /**
-     *
-     *
-     * @param obj ...
-     *
-     * @return ...
+     * Encode the string's XML tags into XML entities
+     * 
+     * @jsfunction
+     * @param {String} str the string to encode
+     * @returns {String} the encoded string
      */
     public String encodeXml(Object obj) {
         return HtmlEncoder.encodeXml(toString(obj));
     }
 
     /**
-     *
-     *
-     * @param obj ...
-     *
-     * @return ...
+     * Encode the string's HTML tags into HTML form entities.  The difference between
+     * <code> encode() </code> and <code> encodeForm() </code> is that the latter 
+     * does not add ending br tags at the end of a line.
+     * 
+     * @jsfunction
+     * @param {String} str the string to encode
+     * @returns {String} the encoded string
      */
     public String encodeForm(Object obj) {
         return HtmlEncoder.encodeFormValue(toString(obj));
     }
 
     /**
+     * Do "smart" encoding on a string. This means that valid HTML entities and tags,
+     * Axiom macros and HTML comments are passed through unescaped, while
+     * other occurrences of '<', '>' and '&' are encoded to HTML entities.
      *
-     *
-     * @param obj ...
-     *
-     * @return ...
+     * @jsfunction
+     * @param {String} str the string to format
+     * @returns {String} the formatted string
      */
     public String format(Object obj) {
         return HtmlEncoder.encode(toString(obj));
     }
 
     /**
+     * Do "smart" encoding on a string. This means that valid HTML entities and tags,
+     * Axiom macros and HTML comments are passed through unescaped, while
+     * other occurrences of '<', '>' and '&' are encoded to HTML entities.  Uses p tags
+     * for paragraphs.
      *
-     *
-     * @param obj ...
-     *
-     * @return ...
+     * @jsfunction
+     * @param {String} str the string to format
+     * @returns {String} the formatted string
      */
     public String formatParagraphs(Object obj) {
         String str = toString(obj);
@@ -481,26 +479,12 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
         return buffer.toString();
     }
 
-    /**
-     *
-     *
-     * @param str ...
-     */
-    public void write(String str) {
-        System.out.print(str);
-    }
-
-    /**
-     *
-     *
-     * @param str ...
-     */
-    public void writeln(String str) {
-        System.out.println(str);
-    }
-
      /**
-     * The seal function seals all supplied arguments.
+     * The seal function seals all supplied arguments.  Once an object is sealed, 
+     * properties may not be added or removed from it.
+     * 
+     * @jsfunction
+     * @param {Array} objects an array of JavaScript objects to seal
      */
     public static void seal(Context cx, Scriptable thisObj, Object[] args,
                             Function funObj)
@@ -527,8 +511,9 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     /**
      * (Try to) strip all HTML/XML style tags from the given string argument
      *
-     * @param str a string
-     * @return the string with tags removed
+     * @jsfunction
+     * @param {String} str a string
+     * @returns {String} the string with tags removed
      */
     public String stripTags(String str) {
         if (str == null) {
@@ -563,64 +548,6 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
         }
 
         return str;
-    }
-
-    /**
-     * Serialize a JavaScript object to a file.
-     */
-    public static void serialize(Context cx, Scriptable thisObj,
-                                 Object[] args, Function funObj)
-        throws IOException
-    {
-        if (args.length < 2) {
-            throw Context.reportRuntimeError(
-                "Expected an object to serialize and a filename to write " +
-                "the serialization to");
-        }
-        Object obj = args[0];
-        String filename = Context.toString(args[1]);
-        FileOutputStream fos = new FileOutputStream(filename);
-        Scriptable scope = ScriptableObject.getTopLevelScope(thisObj).getPrototype();
-        // use a ScriptableOutputStream that unwraps Wrappers
-        ScriptableOutputStream out = new ScriptableOutputStream(fos, scope) {
-            protected Object replaceObject(Object obj) {
-                if (obj instanceof Wrapper)
-                    obj = ((Wrapper) obj).unwrap();
-                return super.replaceObject(obj);
-            }
-        };
-        out.writeObject(obj);
-        out.close();
-    }
-
-    /**
-     * Read a previously serialized JavaScript object from a file.
-     */
-    public static Object deserialize(Context cx, Scriptable thisObj,
-                                     Object[] args, Function funObj)
-        throws IOException, ClassNotFoundException
-    {
-        if (args.length < 1) {
-            throw Context.reportRuntimeError(
-                "Expected a filename to read the serialization from");
-        }
-        String filename = Context.toString(args[0]);
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        Object deserialized = null;
-        Scriptable scope = null;
-        try{
-        	fis = new FileInputStream(filename);
-            scope = ScriptableObject.getTopLevelScope(thisObj).getPrototype();
-            in = new ScriptableInputStream(fis, scope);
-            deserialized = in.readObject();
-        } catch(IOException e){
-        	e.printStackTrace();
-        } finally{
-        	in.close();
-        }
-
-        return Context.toObject(deserialized, scope);
     }
 
     /**
@@ -689,12 +616,14 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     /**
      * Convert an object into a wrapper that exposes the java
      * methods of the object to JavaScript. This is useful for
-     * treating native numbers, strings, etc as their java
+     * treating native numbers, strings, etc as their Java
      * counterpart such as java.lang.Double, java.lang.String etc.
-     * @param obj a java object that is wrapped in a special way
-     * Rhino
-     * @return the object wrapped as NativeJavaObject, exposing
-     * the public methods of the underlying class.
+     * 
+     * @jsfunction
+     * @param {Object} obj a JavaScript object to convert to its Java counterpart
+     * 
+     * @returns {Object} the object wrapped as NativeJavaObject, exposing the public methods
+     *                  of the underlying class.
      */
     public Object toJavaObject(Object obj) {
         if (obj == null || obj instanceof NativeJavaObject
