@@ -24,8 +24,7 @@ import axiom.scripting.rhino.LuceneQueryDispatcher.LuceneQueryParams;
  * invoked.  The result, if the returned objects are from Lucene, is an instance of 
  * this class which is used to retrieve objects in the result set.
  * 
- * @author ali
- * @jsnoconstructor
+ * @jsnoconstructor LuceneHits
  */
 public class LuceneHitsObject extends HitsObject{
 

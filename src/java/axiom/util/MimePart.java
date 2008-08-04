@@ -23,7 +23,9 @@ import java.util.StringTokenizer;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * This represents a MIME part of a HTTP file upload
+ * This class represents a MIME part of a HTTP file upload.
+ * 
+ * @jsnoconstructor MimePart
  */
 public class MimePart implements Serializable {
     public final String name;
@@ -49,9 +51,10 @@ public class MimePart implements Serializable {
     }
 
     /**
+     * Get the content type of this MimePart
      *
-     *
-     * @return ...
+     * @jsfunction
+     * @returns {String} the content type
      */
     public String getContentType() {
         return contentType;
@@ -62,27 +65,30 @@ public class MimePart implements Serializable {
     }
     
     /**
-     *
-     *
-     * @return ...
+     * Get the content length as the number of bytes for this MimePart
+     * 
+     * @jsfunction
+     * @returns {Number} the nubmer of bytes
      */
     public int getContentLength() {
         return contentLength;
     }
 
     /**
-     *
-     *
-     * @return ...
+     * Get the name of this MimePart
+     * 
+     * @jsfunction
+     * @returns {String} the name 
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
-     *
-     * @return ...
+     * Get the content of this MimePart as a byte array
+     * 
+     * @jsfunction
+     * @returns {Array} an array of bytes representing the content
      */
     public byte[] getContent() {
         return content;
@@ -102,9 +108,10 @@ public class MimePart implements Serializable {
     }
     
     /**
+     * Get the text of the MimePart, if the content type is text
      *
-     *
-     * @return ...
+     * @jsfunction
+     * @returns {String} the text
      */
     public String getText() {
         if ((contentType == null) || contentType.startsWith("text/")

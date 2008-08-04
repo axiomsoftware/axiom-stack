@@ -592,7 +592,7 @@ public class ApplicationBean implements Serializable {
      *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
      *            
      *            
-     * @returns {HitsObject} The results in HitsObject form, so they are not all
+     * @returns {LuceneHits} The results in HitsObject form, so they are not all
      * 						 loaded at once.
      * @throws Exception
      */
