@@ -30,7 +30,6 @@ public class JSDoclet extends Doclet {
 					Tag[] jsfunctionTags = method.tags("@jsfunction");
 					Tag[] jsomitTags = method.tags("@jsomit");
 					Tag[] deprecatedTags = method.tags("@deprecated");
-
 					if(jsfunctionTags.length > 0 && jsomitTags.length == 0 && deprecatedTags.length == 0){ 
 						String name = jsfunctionTags[0].text().length() > 0 ? jsfunctionTags[0].text() : method.name();
 						emitComment(methodTags.toArray());
@@ -86,7 +85,7 @@ public class JSDoclet extends Doclet {
 						}
 						emitComment(methodTags.toArray());
 						emit(jsForm+name+" = {};");
-					} else {
+					} else if(jsomitTags.length == 0){
 						if(jsfunctionTags.length > 0 && jsfunctionTags[0].text().length() > 0){
 							name = jsfunctionTags[0].text();
 						} else if(!isInstance){
