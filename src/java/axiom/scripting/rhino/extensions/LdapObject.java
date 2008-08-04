@@ -7,6 +7,12 @@ import org.mozilla.javascript.*;
 
 import com.novell.ldap.*;
 
+/**
+ * The JavaScript LdapClient class.  Provides JavaScript level functionality for accessing
+ * the Java Novell LDAP library.
+ * 
+ * @jsconstructor LdapClient
+ */
 public class LdapObject extends ScriptableObject {
 
     private String ldapHost;
@@ -25,22 +31,52 @@ public class LdapObject extends ScriptableObject {
         return "[LdapClient]";
     }
     
+    /**
+     * Set the host name of the LDAP server to connect to
+     * 
+     * @jsfunction
+     * @param {String} host the host name
+     */
     public void setHost(String host) {
     	this.ldapHost = host;
     }
     
+    /**
+     * Set the base value used in LDAP searches
+     * 
+     * @jsfunction
+     * @param {String} base the base value
+     */
     public void setBase(String base) {
     	this.ldapBase = base;
     }
     
+    /**
+     * Set the UID attribute used in LDAP searches
+     * 
+     * @jsfunction
+     * @param {String} attr the UID attribute
+     */
     public void setUIDAttr(String attr) {
     	this.ldapUIDAttr = attr;
     }
     
+    /**
+     * Set the port number of the LDAP server to connect to
+     * 
+     * @jsfunction
+     * @param {Number} port the port number
+     */
     public void setPort(int port) {
     	this.ldapPort = port;
     }
     
+    /**
+     * Set the SSL port number of the LDAP server to connect to
+     * 
+     * @jsfunction
+     * @param {Number} port the SSL port number
+     */
     public void setSSLPort(int port) {
     	this.ldapSSLPort = port;
     }
@@ -58,6 +94,15 @@ public class LdapObject extends ScriptableObject {
         return version;
     }
     
+    /**
+     * Get a user's LDAP entry attributes
+     * 
+     * @jsfunction
+     * @param {String} user the user name to authenticate with 
+     * @param {String} passwd the user password to authenticate with
+     * @returns {Object} a JavaScript object of key/value pairs containting the user's
+     *                   LDAP entry attributes
+     */
     public Object getEntry(String user, String psswd) throws Exception {
     	Context cx = Context.getCurrentContext();
     	ImporterTopLevel scope = new ImporterTopLevel(cx);
@@ -98,6 +143,14 @@ public class LdapObject extends ScriptableObject {
         return s;
     }
     
+    /**
+     * Authenticate the user credentials against the LDAP server
+     * 
+     * @jsfunction
+     * @param {String} user the user name to authenticate with 
+     * @param {String} passwd the user password to authenticate with
+     * @returns {Boolean} whether authentication was a success or not
+     */
     public boolean authenticate(String user, String psswd) {
         boolean success = false;
         
