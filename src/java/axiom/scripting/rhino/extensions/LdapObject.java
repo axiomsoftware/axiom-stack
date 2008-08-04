@@ -1,6 +1,5 @@
 package axiom.scripting.rhino.extensions;
 
-import java.io.*;
 import java.lang.reflect.*;
 import java.util.Iterator;
 

@@ -461,7 +461,7 @@ public class ApplicationBean implements Serializable {
      * @param {String|Array} field The field(s) values to return in the array 
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -522,7 +522,7 @@ public class ApplicationBean implements Serializable {
      * @jsfunction
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -576,7 +576,7 @@ public class ApplicationBean implements Serializable {
      * @jsfunction
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -682,7 +682,7 @@ public class ApplicationBean implements Serializable {
      * @jsfunction
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -714,6 +714,27 @@ public class ApplicationBean implements Serializable {
             properties = new WrappedMap(app.getProperties(), true);
         }
         return properties;
+    }
+    
+    public Object getProperty(String name) {
+    	return getProperty(name, null);
+    }
+    
+    /**
+     * Get the value of a property from the application's app.properties file.
+     * 
+     * @jsfunction
+     * @param {String} propname The property name
+     * @param {String} [defvalue] The default value to return for the property name, 
+     *                            if none is specified in the application's app.properties
+     * @returns {String} The value of the property
+     */
+    public Object getProperty(String propname, Object defvalue) {
+    	if (defvalue == null || defvalue == Undefined.instance) {
+            return app.getProperty(propname);
+        } else {
+            return app.getProperty(propname, Context.toString(defvalue));
+        }
     }
     
     /**
@@ -766,7 +787,7 @@ public class ApplicationBean implements Serializable {
      *                                   '**' (e.g. /path/to/foo/**), then all objects
      *                                   located under foo will be included in 
      *                                   retrieving references. 
-     * @return {Array} An array of reference objects
+     * @returns {Array} An array of reference objects
      * @throws Exception
      */
     public Scriptable getReferences(Object source, Object target) throws Exception {
@@ -990,7 +1011,7 @@ public class ApplicationBean implements Serializable {
      *                                    retrieving objects with references to target.
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -1051,7 +1072,7 @@ public class ApplicationBean implements Serializable {
      *                                    retrieving objects with references to target.
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -1132,7 +1153,7 @@ public class ApplicationBean implements Serializable {
      *                                    originating from source.
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.
@@ -1194,7 +1215,7 @@ public class ApplicationBean implements Serializable {
      *                                    originating from source.
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
-     * @param {FilterObject} [filter] The filter to apply to the search
+     * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
      *                           javascript object.

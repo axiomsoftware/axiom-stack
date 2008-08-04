@@ -355,7 +355,7 @@ public final class HtmlEncoder {
     static final String newLine = System.getProperty("line.separator");
 
     /**
-     *  Do "smart" encodging on a string. This means that valid HTML entities and tags,
+     *  Do "smart" encoding on a string. This means that valid HTML entities and tags,
      *  Axiom macros and HTML comments are passed through unescaped, while
      *  other occurrences of '<', '>' and '&' are encoded to HTML entities.
      */
@@ -828,13 +828,6 @@ public final class HtmlEncoder {
         encodeAll(str, ret, false);
 
         return ret.toString();
-    }
-
-    /**
-     *
-     */
-    public final static void encodeFormValue(String str, StringBuffer ret) {
-        encodeAll(str, ret, false);
     }
 
     /**
