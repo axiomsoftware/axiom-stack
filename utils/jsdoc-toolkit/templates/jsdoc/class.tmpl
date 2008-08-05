@@ -36,7 +36,6 @@
 						}
 					}
 				}
-				print(data.alias + " "  + objectType);
 			!}
 
 <!-- ============================== class title ============================ -->
@@ -66,7 +65,7 @@
 						data.augments
 						.sort()
 						.map(
-							function($) { return new Link().toSymbol($); }
+							function($) { return new Link().toClass($); }
 						)
 						.join(", ")
 					+}.<br />
@@ -200,15 +199,21 @@
 								if (member.isPrivate) output += "&lt;private&gt; ";
 								if (member.isInner) output += "&lt;inner&gt; ";
 								if (member.isStatic) output += "&lt;static&gt; ";
-								if(!member.isPrivate && !member.isInner && !member.isStatic){
+								{#if(!member.isPrivate && !member.isInner && !member.isStatic){#}
+									var retType = "";
 									for each(ret in member.returns){
 										if(ret.title.equalsIgnoreCase('return') && ret.type == '' && ret.desc.equalsIgnoreCase('void')){
-											output += 'void';
+											retType = 'void';
 										} else if(ret.title.equalsIgnoreCase('return')){
-											output += new Link().toClass(ret.type);
+											retType = ret.type;
 										}
 									}
-								}
+									if(retType == 'void' || retType == ''){
+										output += 'void';
+									} else {
+										output += new Link().toClass(retType);
+									}
+								{#}#}
 							!}&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if><b>{+new Link().toSymbol(member.alias).withText(member.name)+}</b>{+makeSignature(member.params)+}
