@@ -14,12 +14,19 @@
  *   limitations under the License.
  */
 
+/** */
 MultiValue.prototype.map = Array.prototype.map;
+/** */
 MultiValue.prototype.filter = Array.prototype.filter;
+/** */
 MultiValue.prototype.some = Array.prototype.some;
+/** */
 MultiValue.prototype.someforEach = Array.prototype.someforEach;
+/** */
 MultiValue.prototype.every  = Array.prototype.every;
+/** */
 MultiValue.prototype.indexOf = Array.prototype.indexOf;
+/** */
 MultiValue.prototype.lastIndexOf = Array.prototype.lastIndexOf;
 
 for (var i in MultiValue.prototype)
