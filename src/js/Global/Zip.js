@@ -14,35 +14,26 @@
  * $Date: 2006/06/02 15:46:20 $
  */
 
-// take care of any dependencies
-//app.addRepository('modules/axiom/File.js');
-
-
 if (!global.axiom) {
     global.axiom = {};
 }
 
 /**
- * constructor function for Zip Objects
- * @param either
- *      - (Object) a File object
- *      - (Object) an instance of Axiom.File
- *      - (Object) an instance of java.io.File
- *      - (String) the path to the zip file
+ * Constructor function for Zip Objects
+ * @param {Object|String} file The constructor accepts an object representing a File object, an instance of axiom.SystemFile,
+ * an instance of java.io.File or a String representing the path to the zip file
  * @constructor
  */
 axiom.Zip = function (file) {
 
     /**
-     * private function that extracts the data of a file
-     * in a .zip archive. If a destination Path is given it
-     * writes the extracted data directly to disk using the
-     * name of the ZipEntry Object, otherwise it returns the
-     * byte array containing the extracted data
-     * @param Object jAva.util.zip.ZipFile Object
-     * @param Object java.util.zip.ZipEntry Object to extract
-     * @param String destination path to extract ZipEntry Object to
-     * @return Object ByteArray containing the data of the ZipEntry
+     * Private function that extracts the data of a file in a .zip archive. If a destination Path is given it
+     * writes the extracted data directly to disk using the name of the ZipEntry Object, otherwise it returns the
+     * byte array containing the extracted data.
+	 * @param {Object} zFile java.util.zip.ZipFile Object
+     * @param {Object} entry java.util.zip.ZipEntry Object to extract
+     * @param {String} destPath destination path to extract ZipEntry Object to
+     * @returns {java.lang.Byte[]} containing the data of the ZipEntry
      */
     var extractEntry = function(zFile, entry, destPath) {
         var size = entry.getSize();
@@ -77,12 +68,11 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * private function for adding a single file to the .zip archive
-     * @param Object java.util.zip.ZipOutputStream
-     * @param Object instance of java.io.File representing the file to be added
-     * @param Int compression-level (0-9)
-     * @param String path of the directory in the archive to which the
-     *                    file should be added (optional)
+     * Private function for adding a single file to the .zip archive.
+     * @param {Object} zOutStream java.util.zip.ZipOutputStream
+     * @param {Object} f An instance of java.io.File representing the file to be added
+     * @param {int} level Compression-level (0-9)
+     * @param {String} [pathPrefix] Path of the directory in the archive to which the file should be added
      */
     var addFile = function(zOutStream, f, level, pathPrefix) {
         var fInStream = new java.io.BufferedInputStream(new java.io.FileInputStream(f));
@@ -111,10 +101,9 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * private function that constructs an instance
-     * of java.io.File based on a JS File or Axiom.File object
-     * @param Object either a string or an instance of java.io.File, File or Axiom.File
-     * @return Object instance of java.io.File
+     * Private function that constructs an instance of java.io.File based on a JS File or Axiom.SystemFile object.
+     * @param {Object} file Either a string or an instance of java.io.File, File or Axiom.SystemFile
+     * @returns {Object} An innstance of java.io.File
      */
     var evalFile = function(f) {
         if (f instanceof java.io.File)
@@ -130,10 +119,8 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * returns an array containing the entries of a .zip file as objects
-     * (see Entry for description)
-     * @param Object File object representing the .zip file on disk
-     * @return Object result object
+     * Returns an array containing the entries of a .zip file as axiom.Zip.Entry objects.
+     * @returns {Object} An array containing the entries of a .zip file as axiom.Zip.Entry objects
      */
     this.list = function() {
         var result = new axiom.Zip.Content();
@@ -146,13 +133,11 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * extracts a single file from a .zip archive
-     * if a destination path is given it directly writes
-     * the extracted file to disk
-     * @param Object File object representing the .zip file on disk
-     * @param String Name of the file to extract
-     * @param String (optional) destination path to write file to
-     * @return Object JS Object (see Entry for description)
+     * Extracts a single file from a .zip archive.  If a destination path is given it directly writes
+     * the extracted file to disk.
+     * @param {String} name Name of the file to extract
+     * @param {String} [destPath] Path to write file to disk
+     * @returns {axiom.Zip.Entry} An object representing the metadata of a zip entry
      */
     this.extract = function(name, destPath) {
         var zFile = new java.util.zip.ZipFile(file);
@@ -166,13 +151,11 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * extracts all files in a .zip archive
-     * if a destination path is given it directly writes
-     * the extracted files to disk (preserves directory structure
-     * of .zip archive if existing!)
-     * @param String (optional) destination path to write file to
-     * @return Object Array containing JS objects for each entry
-     *                     (see Entry for description)
+     * Extracts all files in a .zip archive.  If a destination path is given it directly writes
+     * the extracted files to disk preserving the directory structure of .zip archive if existing.
+     * @param {String} [destPath] Destination path to write file to
+     * @returns {axiom.Zip.Content} An Object containing the table of contents of .zip file
+     * and the file tree of the .zip file
      */
     this.extractAll = function(destPath) {
         var result = new axiom.Zip.Content();
@@ -189,15 +172,12 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * adds a single file or a whole directory (recursive!) to the .zip archive
-     * @param either
-     *          - (Object) a File object
-     *          - (Object) an instance of java.io.File
-     *          - (String) the path to the file that should be added
-     * @param Int Level to use for compression (default: 9 = best compression)
-     * @param String name of the directory in the archive into which the
-     *                    file should be added (optional)
-     * @return Boolean true
+     * Adds a single file or a whole directory(recursive) to the .zip archive.
+     * @param {Object|String} file Accepts an object representing a File object, an instance of axiom.SystemFile,
+	 * an instance of java.io.File or a String representing the path to the file that should be added
+     * @param {Number} level To use for compression (default: 9 = best compression)
+     * @param {String} [name] Name of the directory in the archive into which the file should be added
+     * @returns {Boolean} True if successful, false otherwise
      */
     this.add = function (f, level, pathPrefix) {
         var f = evalFile(f);
@@ -219,7 +199,7 @@ axiom.Zip = function (file) {
 
         if (f.isDirectory()) {
             // add a whole directory to the zip file (recursive!)
-            var files = (new axiom.File(f.getAbsolutePath())).listRecursive();
+            var files = (new axiom.SystemFile(f.getAbsolutePath())).listRecursive();
             for (var i in files) {
                 var fAdd = new java.io.File(files[i]);
                 if (!fAdd.isDirectory()) {
@@ -235,11 +215,11 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * adds a new entry to the zip file
-     * @param Object byte[] containing the data to add
-     * @param String name of the file to add
-     * @param Int compression level (0-9, default: 9)
-     * @return Boolean true
+     * Adds a new entry to the zip file.
+     * @param {java.lang.Byte[]} buf A java.lang.byte[] containing the data to add
+     * @param {String} name Name of the file to add
+     * @param {Number} level Compression level (0-9, default: 9)
+     * @returns {Boolean} True if successful, false otherwise
      */
     this.addData = function(buf, name, level) {
         var entry = new java.util.zip.ZipEntry(name);
@@ -256,7 +236,7 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * closes the ZipOutputStream
+     * Closes the Zip File.
      */
     this.close = function() {
         zOutStream.close();
@@ -264,17 +244,17 @@ axiom.Zip = function (file) {
     };
 
     /**
-     * returns the binary data of the zip file
-     * @return Object ByteArray containing the binary data of the zip file
+     * Returns the binary data of the zip file.
+     * @returns {java.lang.Byte[]} A java.lang.Byte[] containing the binary data of the zip file
      */
     this.getData = function() {
         return bOutStream.toByteArray();
      };
 
     /**
-     * saves the archive by closing the output stream
-     * @param String path (including the name) to save the zip file to
-     * @return Boolean true
+     * Saves the archive by closing the output stream.
+     * @param {String} path The path(including the name) to save the zip file to
+     * @returns {Boolean} True if successful, false otherwise
      */
     this.save = function(dest) {
         if (!dest)
@@ -314,16 +294,26 @@ axiom.Zip = function (file) {
 }
 
 /**
- * constructor for Content Objects
+ * Constructor for axiom.Zip.Content, an object that maintains a table of contents and file tree of 
+ * the .zip file.
+ * @constructor
  */
 axiom.Zip.Content = function() {
+	/**
+	 * Table of contents.
+	 * @type Array
+	 */
     this.toc = [];
+
+	/**
+	 * File tree.
+	 * @type Object
+	 */
     this.files = {};
 
     /**
-     * adds a Zip Entry object to the table of contents
-     * and the files collection
-     * @param Object instance of axiom.Zip.Entry
+     * Adds a Zip Entry object to the table of contents and the files collection.
+     * @param {axiom.Zip.Entry} entry An instance of axiom.Zip.Entry
      */
     this.add = function(entry) {
         // add the file to the table of contents array
@@ -352,31 +342,51 @@ axiom.Zip.Content = function() {
 
 
 /**
- * constructor for Entry objects holding the meta-data of a zip entry:
- *     .name (String) name of the entry
- *     .size (Int) decompressed size of the entry in bytes
- *     .time (Date) last modification timestamp of the entry or null
- *     .isDirectory (Boolean) true in case entry is a directory, false otherwise
- *     .data (ByteArray) ByteArray containing the data of the entry
- * @param Object java.util.zip.ZipEntry Object
+ * Constructor for axiom.Zip.Entry, an object that holds the metadata of a zip entry.
+ * @param {java.util.zip.ZipEntry} entry A java.util.zip.ZipEntry Object
+ * @constructor
  */
 axiom.Zip.Entry = function(entry) {
+	/**
+	 * Name of the entry.
+	 * @type String
+	 */
     this.name = entry.getName();
-    this.size = entry.getSize();
+
+	/**
+	 * Decompressed size of the entry in bytes.
+	 * @type Number
+	 */
+	this.size = entry.getSize();
+	
+	/**
+	 * Last modification timestamp of the entry or null.
+	 * @type Date
+	 */
     this.time = entry.getTime() ? new Date(entry.getTime()) : null;
+	
+	/**
+	 * True in case entry is a directory, false otherwise.
+	 * @type Boolean
+	 */
     this.isDirectory = entry.isDirectory();
-    this.data = null;
-    for (var i in this)
+	
+	/**
+	 * A java.lang.Byte[] containg the data of the entry.
+	 * @type java.lang.Byte[]
+	 */
+	this.data = null;
+
+	for (var i in this)
         this.dontEnum(i);
     return this;
 };
 
 
 /**
- * extract all files in a ByteArray passed as argument
- * and return them as result Array
- * @param Object ByteArray containing the data of the .zip File
- * @return Object instance of axiom.Zip.Content
+ * Extract all files in a ByteArray passed as argument and return them as an Axiom.Zip.Content object.
+ * @param {java.lang.Byte[]} zipData A java.lang.Byte[] containing the data of the .zip file.
+ * @returns {axiom.Zip.Content} An instance of axiom.Zip.Content.
  */
 axiom.Zip.extractData = function(zipData) {
     var zInStream = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zipData));
