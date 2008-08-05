@@ -14,10 +14,10 @@
  * $Date: 2006/04/24 07:02:17 $
  */
 
-
 /**
- * function calculates the md5 hash of a string
- * @return String md5 hash of the string
+ * Calculates the md5 hash of a string
+ *
+ * @returns {String} md5 hash of the string
  */
 String.prototype.md5 = function() {
     return Packages.axiom.util.MD5Encoder.encode(this);
