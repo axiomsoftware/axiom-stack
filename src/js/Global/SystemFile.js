@@ -57,23 +57,45 @@ axiom.SystemFile = function(path) {
    this.lastError = null;
 
    /**
-    * Returns the java.io.File.toString() of the underlying File object
+    * Returns the java.io.File.toString() of the underlying File object.
     *
-    * @returns {String} the File's toString()
+    * @return {String} the File's toString()
     */
    this.toString = function() {
       return file.toString();
    };
 
+   /**
+    * Returns the java.io.File.getName() of the underlying File object
+    * (i.e. the name of the file or directory).
+    *
+    * @return {String} the File's getName()
+    */
    this.getName = function() {
       var name = file.getName();
       return (name == null ? "" : name);
    };
 
+   /**
+    * Returns whether or not this file has been opened or not.
+    *
+    * @return {Boolean} Value of <code> true </code> if the file is opened, 
+    					<code> false </code> otherwise
+    */
    this.isOpened = function() {
       return (readerWriter != null);
    };
 
+   /**
+    * Opens the file represented by this File object.  If an exception occurs during this
+    * operation, use <code> this.error() </code> to retrieve the error.
+    *
+    * @param {String} [mode] The mode to open the file in.  Possible values are 'w' for
+    *                        write and 'a' for append.  Defaults to opening the file in 
+    *                        read mode. 
+    * @return {Boolean} Whether the open was a success or not.  <code> false </code> will
+    *                   be returned if an exception was thrown or the file does not exist.
+    */
    this.open = function(mode) {
       if (self.isOpened()) {
          setError(new IllegalStateException("File already open"));
@@ -101,16 +123,34 @@ axiom.SystemFile = function(path) {
        return;
    };
 
+   /**
+    * Returns whether the file or directory represented by this File object exists or not.
+    *
+    * @return {Boolean} <code> true </code> if the file or directory exists, 
+    * 					<code> false </code> otherwise
+    */
    this.exists = function() {
       return file.exists();
    };
 
+   /**
+    * Returns a new axiom.SystemFile object representing the parent file/directory 
+    * to this object.
+    *
+    * @return {axiom.SystemFile} The parent file/directory
+    */
    this.getParent = function() {
       if (!file.getParent())
          return null;
       return new axiom.SystemFile(file.getParent());
    };
 
+   /**
+    * Reads characters until an end of line/file is encountered then returns the string 
+    * for these characters (without any end of line character). 
+    *
+    * @return {String} A string representing the line that was read
+    */
    this.readln = function() {
       if (!self.isOpened()) {
          setError(new IllegalStateException("File not opened"));
@@ -145,6 +185,11 @@ axiom.SystemFile = function(path) {
       return;
    };
 
+   /**
+    * Appends a string to the file represented by this File object.
+    *
+    * @param {String} what The string to write to the file
+    */
    this.write = function(what) {
       if (!self.isOpened()) {
          setError(new IllegalStateException("File not opened"));
@@ -160,6 +205,12 @@ axiom.SystemFile = function(path) {
       return true;
    };
 
+   /**
+    * Appends a string with a platform specific end of line to the file 
+    * represented by this File object. 
+    *
+    * @param {String} what The string to write to the file
+    */
    this.writeln = function(what) {
       if (self.write(what)) {
          readerWriter.println();
@@ -168,10 +219,24 @@ axiom.SystemFile = function(path) {
       return false;
    };
 
+   /**
+    * Returns whether this File object's pathname is absolute or not.
+    *
+    * @return {Boolean} <code> true </code> if the pathname is absolute, 
+    *                   <code> false </code> otherwise
+    */
    this.isAbsolute = function() {
       return file.isAbsolute();
    };
 
+   /**
+    * Deletes the file or directory represented by this File object.  This operation will 
+    * fail on a file that is currently open.  If this operation fails, 
+    * <code> this.error() </code> can be used to retrieve the error.
+    *
+    * @return {Boolean} <code> true </code> if the operation was a success,
+    *                   <code> false </code> otherwise
+    */
    this.remove = function() {
       if (self.isOpened()) {
          setError(new IllegalStateException("An openened file cannot be removed"));
@@ -180,13 +245,13 @@ axiom.SystemFile = function(path) {
       return file["delete"]();
    };
 
-   /*
-    * will list all files within a directory
-    * you may pass a RegExp Pattern to return just
-    * files matching this pattern
+   /**
+    * List all file/directory names within a directory.  Pass an optional RegExp Pattern to 
+    * return just files matching this pattern.
+    *
     * @example var xmlFiles = dir.list(/.*\.xml/);
-    * @param RegExp pattern to test each file name against
-    * @return Array the list of file names
+    * @param {RegExp} [pattern] The pattern to test each file name against
+    * @return {Array} The list of file names
     */
    this.list = function(pattern) {
       if (self.isOpened())
@@ -205,6 +270,14 @@ axiom.SystemFile = function(path) {
       return file.list();
    };
 
+   /**
+    * Flushes the content of the file represented by this File object to disk.  If the file
+    * is not opened for write, or an exception occurs during the flush, the error may
+    * be retrieved through <code> this.error() </code>.
+    *
+    * @return {Boolean} <code> true </code> if the operation was a success, 
+    *                   <code> false </code> otherwise
+    */
    this.flush = function() {
       if (!self.isOpened()) {
          setError(new IllegalStateException("File not opened"));
@@ -224,6 +297,12 @@ axiom.SystemFile = function(path) {
       return true;
    };
 
+   /**
+    * Closes the file represented by this File object.
+    *
+    * @return {Boolean} <code> true </code> if the operation was a success,
+    *					<code> false </code> otherwise
+    */
    this.close = function() {
       if (!self.isOpened())
          return false;
@@ -238,11 +317,22 @@ axiom.SystemFile = function(path) {
       }
    };
 
+   /**
+    * Returns the pathname string of this File object. The resulting string uses the default
+    * name-separator character to separate the names in the name sequence. 
+    *
+    * @return {String} The path of the file
+    */
    this.getPath = function() {
       var path = file.getPath();
       return (path == null ? "" : path);
    };
 
+   /**
+    * A string representation of the last error that occured, if any.
+    *
+    * @return {String} The error message
+    */
    this.error = function() {
       if (this.lastError == null) {
          return "";
@@ -255,40 +345,93 @@ axiom.SystemFile = function(path) {
       }
    };
 
+   /**
+    * Clears any error message that may otherwise be returned by the 
+    * <code> error() </code> method. 
+    */
    this.clearError = function() {
       this.lastError = null;
       return;
    };
 
+   /**
+    * Returns whether the application can read the file represented by 
+    * this File object or not
+    *
+    * @return {Boolean} <code> true </code> if the file can be read,
+    *					<code> false </code> otherwise
+    */
    this.canRead = function() {
       return file.canRead();
    };
 
+   /**
+    * Returns whether the application can write to the file represented by 
+    * this File object or not
+    *
+    * @return {Boolean} <code> true </code> if the file can be written to,
+    *					<code> false </code> otherwise
+    */
    this.canWrite = function() {
       return file.canWrite();
    };
 
+   /**
+    * Returns the absolute pathname string of this file. 
+    *
+    * @return {String} The absolute pathname string of this file
+    */
    this.getAbsolutePath = function() {
       var absolutPath = file.getAbsolutePath();
       return (absolutPath == null ? "" : absolutPath);
    };
 
+   /**
+    * Returns the length of the file in bytes represented by this File object. 
+    *
+    * @return {Number} The length of the file in bytes.
+    */
    this.getLength = function() {
       return file.length();
    };
 
+   /**
+    * Returns whether the file represented by this File object is a directory or not
+    *
+    * @return {Boolean} <code> true </code> if this File object is a directory,
+    *					<code> false </code> otherwise
+    */
    this.isDirectory = function() {
       return file.isDirectory();
    };
 
+   /**
+    * Returns whether the file represented by this File object is a file or not
+    *
+    * @return {Boolean} <code> true </code> if this File object is a file,
+    *					<code> false </code> otherwise
+    */
    this.isFile = function() {
       return file.isFile();
    };
 
+   /**
+    * Returns the date when the file represented by this File object was last modified.
+    *
+    * @return {Date} Last modified date
+    */
    this.lastModified = function() {
       return file.lastModified();
    };
 
+   /**
+    * Make the directory at the path represented by this File object, if it does not
+    * already exist.
+    *
+    * @return {Boolean} <code> true </code> if the directory was created, 
+    *					<code> false </code> if the directory already existed or the create
+    *					was unsuccessful
+    */
    this.makeDirectory = function() {
       if (self.isOpened())
          return false;
@@ -296,6 +439,15 @@ axiom.SystemFile = function(path) {
       return (file.exists() || file.mkdirs());
    };
 
+   /**
+    * Renames the file represented by this File object to the name and path represented by
+    * the input parameter File object.  If an error occured during this operation, the 
+    * error may be obtained through <code> this.error() </code>.
+    *
+    * @param {axiom.SystemFile} toFile The file to rename this file to
+    * @return {Boolean} <code> true </code> if the rename was successful,
+    *					<code> false </code> otherwise
+    */
    this.renameTo = function(toFile) {
       if (toFile == null) {
          setError(new IllegalArgumentException("Uninitialized target File object"));
@@ -312,6 +464,13 @@ axiom.SystemFile = function(path) {
       return file.renameTo(new java.io.File(toFile.getAbsolutePath()));
    };
 
+   /**
+    * Returns true if the file represented by this File object has been read entirely and 
+    * the end of file has been reached. 
+    *
+    * @return {Boolean} <code> true </code> if the end of file has been reached,
+    *					<code> false </code> otherwise
+    */
    this.eof = function() {
       if (!self.isOpened()) {
          setError(new IllegalStateException("File not opened"));
@@ -336,6 +495,11 @@ axiom.SystemFile = function(path) {
       }
    };
 
+   /**
+    * Read all the lines contained in the file and returns the contents as a string.
+    *
+    * @return {String} All the lines contained in the file
+    */
    this.readAll = function() {
       // Open the file for readAll
       if (self.isOpened()) {
@@ -376,9 +540,13 @@ axiom.SystemFile = function(path) {
       }
    };
 
-   // DANGER! DANGER! HIGH VOLTAGE!
-   // this method removes a directory recursively
-   // without any warning or precautious measures
+   /**
+    * Removes a directory recursively without any warning or precautious measures.  
+    * USE WITH PRECAUTION!
+    *
+    * @return {Boolean} <code> true </code> if the operation was a success,
+    *					<code> false </code> otherwise
+    */
    this.removeDirectory = function() {
       if (!file.isDirectory())
          return false;
@@ -395,12 +563,11 @@ axiom.SystemFile = function(path) {
    };
 
    /**
-    * recursivly lists all files below a given directory
-    * you may pass a RegExp Pattern to return just
-    * files matching this pattern
+    * Recursivly lists all files below a given directory.  Pass a RegExp Pattern to return 
+    * just files matching this pattern.
     *
-    * @param {RegExp} pattern the pattern to test each file name against
-    * @returns {Array} the list of absolute file paths
+    * @param {RegExp} [pattern] The pattern to test each file name against
+    * @return {Array} The list of absolute file paths
     */
    this.listRecursive = function(pattern) {
       if (!file.isDirectory())
@@ -421,8 +588,11 @@ axiom.SystemFile = function(path) {
    }
 
    /**
-    * function makes a copy of a file over partitions
-    * @param StringOrFile full path of the new file
+    * Makes a copy of a file over partitions
+    *
+    * @param {String} path Full path of the new file
+    * @return {Boolean} <code> true </code> if the operation was a success,
+    *					<code> false </code> otherwise
     */
    this.hardCopy = function(dest) {
       var inStream = new java.io.BufferedInputStream(
@@ -445,9 +615,11 @@ axiom.SystemFile = function(path) {
    }
 
    /**
-    * function moves a file to a new destination directory
-    * @param String full path of the new file
-    * @return Boolean true in case file could be moved, false otherwise
+    * Moves a file to a new location.
+    *
+    * @param {String} path Full path of the new file
+    * @return {Boolean} <code> true </code> if the file could be moved, 
+    * 				  	<code> false </code> otherwise
     */
    this.move = function(dest) {
       // instead of using the standard File method renameTo()
@@ -460,8 +632,10 @@ axiom.SystemFile = function(path) {
    }
 
    /**
-    * returns file as ByteArray
-    * useful for passing it to a function instead of an request object
+    * Returns the contents of this file object as a byte array.  Useful for passing it to 
+    * a function instead of an request object.
+    *
+    * @return {byte[]} The contents as a byte array
     */
    this.toByteArray = function() {
       if (!this.exists())
@@ -492,7 +666,10 @@ axiom.SystemFile.toString = function() {
 };
 
 /**
- * Return the string content of the file. Caller should handle potential i/o exceptions.
+ * Return the string content of the file. Caller should handle potential I/O exceptions.
+ *
+ * @param {String} filename The path of the file to read from
+ * @return {String} The contents of the file as a string
  */
 axiom.SystemFile.readFromFile = function(filename){
 	var reader;
@@ -517,7 +694,11 @@ axiom.SystemFile.readFromFile = function(filename){
 }
 
 /**
- * Write the given string to the target path or File. Caller should handle potential i/o exceptions.
+ * Write the given string to the target path or File. 
+ * Caller should handle potential I/O exceptions.
+ *
+ * @param {String} str The string to write
+ * @param {String} filename The path of the file to write to
  */
 axiom.SystemFile.writeToFile = function(str, filename){
 	var writer;
@@ -531,7 +712,7 @@ axiom.SystemFile.writeToFile = function(str, filename){
 	}
 }
 
-
+/** The operating system specific path separator */
 axiom.SystemFile.separator = java.io.File.separator;
 
 
