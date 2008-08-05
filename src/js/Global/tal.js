@@ -14,6 +14,16 @@
  *   limitations under the License.
  */
 
+/**
+ * The global TAL function for rendering TAL/TALE documents.  This is called within 
+ * <code> AxiomObject.renderTAL() </code>, and thus, would generally not be called 
+ * directly by the application programmer.
+ *
+ * @param {XML} taldoc A TAL document as a JavaScript XML object
+ * @param {Object} data A JavaScript object containing the data to pass to the TAL rendering
+ *                      engine
+ * @return {XML} The rendered TAL document as a JavaScript XML object
+ */
 function TAL(doc, data) {
     var tal = new Namespace('tal', 'http://axiomstack.com/tale');
     TAL.Scope.prototype = data;

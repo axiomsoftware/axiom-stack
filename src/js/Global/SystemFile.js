@@ -19,7 +19,7 @@ if (!global.axiom) {
     global.axiom = {};
 }
 /**
- *  @constructor
+ * @constructor {String} path The path to the file on the file system
  */
 axiom.SystemFile = function(path) {
    var BufferedReader            = java.io.BufferedReader;
@@ -56,6 +56,11 @@ axiom.SystemFile = function(path) {
 
    this.lastError = null;
 
+   /**
+    * Returns the java.io.File.toString() of the underlying File object
+    *
+    * @returns {String} the File's toString()
+    */
    this.toString = function() {
       return file.toString();
    };
@@ -393,8 +398,9 @@ axiom.SystemFile = function(path) {
     * recursivly lists all files below a given directory
     * you may pass a RegExp Pattern to return just
     * files matching this pattern
-    * @param RegExp pattern to test each file name against
-    * @returns Array the list of absolute file paths
+    *
+    * @param {RegExp} pattern the pattern to test each file name against
+    * @returns {Array} the list of absolute file paths
     */
    this.listRecursive = function(pattern) {
       if (!file.isDirectory())

@@ -15,10 +15,52 @@
  */
 
 
+/**
+ * Return the SMALLINT string representation of this Number.  When doing a search with a
+ * NativeFilter against a property that is declared as a SMALLINT in Axiom, 
+ * the value passed into the search must be in its SMALLINT string representation.  
+ * For example, suppose the following: <br><br>
+ *
+ * Page's prototype.properties:<br>
+ * <code>
+ * count<br>
+ * count.type = SMALLINT<br><br>
+ * </code>
+ *
+ * Then, to query for Page objects with a count value of 10 in the query API, execute the
+ * following: <br><br>
+ * <code>
+ * var num = 10;<br>
+ * app.getObjects("Page",new NativeFilter("count: " + num.smallFloatValue()));<br><br>
+ * </code>  
+ *
+ * @return {String} the SMALLINT string representation
+ */
 Number.prototype.smallIntValue = function() {
 	return new java.text.DecimalFormat("0000").format(0 + this);
 }
 
+/**
+ * Return the SMALLFLOAT string representation of this Number.  When doing a search with a 
+ * NativeFilter against a property that is declared as a SMALLFLOAT in Axiom, 
+ * the value passed into the search must be in its SMALLFLOAT string representation.  
+ * For example, suppose the following: <br><br>
+ *
+ * Page's prototype.properties:<br>
+ * <code>
+ * percent<br>
+ * percent.type = SMALLFLOAT<br><br>
+ * </code>
+ *
+ * Then, to query for Page objects with a count value of 10 in the query API, execute the
+ * following: <br><br>
+ * <code>
+ * var num = 10;<br>
+ * app.getObjects("Page",new NativeFilter("percent: " + num.smallFloatValue()));<br><br>
+ * </code>  
+ *
+ * @return {String} the SMALLFLOAT string representation
+ */
 Number.prototype.smallFloatValue = function() {
 	return new java.text.DecimalFormat("0000.0000").format(0 + this);
 }

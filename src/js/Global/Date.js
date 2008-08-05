@@ -23,11 +23,12 @@ Date.ONEWEEK      =  7 * Date.ONEDAY;
 
 
 /**
- * format a Date to a string
- * @param String Format pattern
- * @param Object Java Locale Object (optional)
- * @param Object Java TimeZone Object (optional)
- * @return String formatted Date
+ * Format a Date to a string.
+ *
+ * @param {String} pattern format pattern
+ * @param {Object} locale Java Locale Object (optional)
+ * @param {Object} timezone Java TimeZone Object (optional)
+ * @return {String} formatted date
  */
 Date.prototype.format = function (format, locale, timezone) {
     if (!format)
@@ -39,21 +40,84 @@ Date.prototype.format = function (format, locale, timezone) {
     return sdf.format(this);
 };
 
-
+/**
+ * Return the DATE string representation of this Date.  When doing a search with a
+ * NativeFilter against a property that is declared as a DATE in Axiom, 
+ * the value passed into the search must be in its DATE string representation (which 
+ * provides day level granularity).  
+ * For example, suppose the following: <br><br>
+ *
+ * Page's prototype.properties:<br>
+ * <code>
+ * date<br>
+ * date.type = DATE<br><br>
+ * </code>
+ *
+ * Then, to query for Page objects with a date value of 01/01/2008 in the query API, 
+ * execute the following: <br><br>
+ * <code>
+ * var date = new Date("01/01/2008");<br>
+ * app.getObjects("Page",new NativeFilter("date: " + date.dateValue()));<br><br>
+ * </code>  
+ *
+ * @return {String} the DATE type string representation
+ */
 Date.prototype.dateValue = function() {
 	var t = this.getTime() / 86400000;
 	t = Packages.axiom.objectmodel.dom.LuceneDataFormatter.roundUpDouble(t);
     return new java.text.DecimalFormat("000000").format(0 + t);
 };
 
-
+/**
+ * Return the TIME string representation of this Date.  When doing a search with a
+ * NativeFilter against a property that is declared as a TIME in Axiom, 
+ * the value passed into the search must be in its TIME string representation (which 
+ * provides seconds level granularity).  
+ * For example, suppose the following: <br><br>
+ *
+ * Page's prototype.properties:<br>
+ * <code>
+ * date<br>
+ * date.type = TIME<br><br>
+ * </code>
+ *
+ * Then, to query for Page objects with a date value of 01/01/2008 at noon in the query API, 
+ * execute the following: <br><br>
+ * <code>
+ * var date = new Date("01/01/2008 12:00:00");<br>
+ * app.getObjects("Page",new NativeFilter("date: " + date.timeValue()));<br><br>
+ * </code>  
+ *
+ * @return {String} the TIME type string representation
+ */
 Date.prototype.timeValue = function() {
 	var t = this.getTime() / 1000;
 	t = Packages.axiom.objectmodel.dom.LuceneDataFormatter.roundUpDouble(t);
     return new java.text.DecimalFormat("00000000000").format(0 + t);
 };
 
-
+/**
+ * Return the TIMESTAMP string representation of this Date.  When doing a search with a
+ * NativeFilter against a property that is declared as a TIMESTAMP in Axiom, 
+ * the value passed into the search must be in its TIMESTAMP string representation (which 
+ * provides millisecond level granularity).  
+ * For example, suppose the following: <br><br>
+ *
+ * Page's prototype.properties:<br>
+ * <code>
+ * date<br>
+ * date.type = TIMESTAMP<br><br>
+ * </code>
+ *
+ * Then, to query for Page objects with a date value of 01/01/2008 in the query API, 
+ * execute the following: <br><br>
+ * <code>
+ * var date = new Date("01/01/2008");<br>
+ * app.getObjects("Page",new NativeFilter("date: " + date.timestampValue()));<br><br>
+ * </code>  
+ *
+ * @return {String} the TIMESTAMP type string representation
+ */
 Date.prototype.timestampValue = function() {
 	var t = Packages.axiom.objectmodel.dom.LuceneDataFormatter.roundUpDouble(this.getTime());
     return new java.text.DecimalFormat("00000000000000").format(0 + t);
