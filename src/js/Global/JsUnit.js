@@ -18,11 +18,22 @@ limitations under the License.
 */
 
 /**
- *  @constructor
+ * A JsUnitError object, used for reporting a failed assertion.
+ * @constructor
+ * @param {String} msg The error message
+ * @extends Error
  */
 function JsUnitError( msg ){
+	/**
+	 * The error message.
+	 * @type String
+	 */
     this.message = msg || "";
 }
+/**
+ * Returns a string representation of JsUnitError.
+ * @returns {String} A string representation of JsUnitError
+ */
 JsUnitError.prototype.toString = function(){
     var msg = this.message;
     return this.name + ": " + msg;
@@ -31,10 +42,18 @@ JsUnitError.prototype = new Error();
 JsUnitError.prototype.name = "JsUnitError";
 
 /**
- *  @constructor
+ * An AssertionFailedError object, used for reporting a failed assertion.
+ * @constructor
+ * @param {String} msg The error message
+ * @param {CallStack} stack The call stack of the error
+ * @extends JsUnitError
  */
 function AssertionFailedError( msg, stack ){
     JsUnitError.call( this, msg );
+	/**
+	 * The call stack of the error.
+	 * @type CallStack
+	 */
     this.mCallStack = stack;
 }
 AssertionFailedError.prototype = new JsUnitError();
@@ -47,11 +66,11 @@ AssertionFailedError.prototype.name = "AssertionFailedError";
 Assert = {};
 /**
  * Asserts that two values are equal.
- * @tparam String msg An optional error message.
- * @tparam Object expected The expected value.
- * @tparam Object actual The actual value.
- * @exception AssertionFailedError Thrown if the expected value is not the
- * actual one.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The expected value
+ * @param {Object} actual The actual value
+ * @exception {AssertionFailedError} Thrownf if the expected value is not the
+ * actual one
  */
 Assert.assertEquals = function( msg, expected, actual )
 {
@@ -68,11 +87,11 @@ Assert.assertEquals = function( msg, expected, actual )
 }
 /**
  * Asserts that a regular expression matches a string.
- * @tparam String msg An optional error message.
- * @tparam Object expected The regular expression.
- * @tparam Object actual The actual value.
- * @exception AssertionFailedError Thrown if the actual value does not match
- * the regular expression.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The regular expression
+ * @param {Object} actual The actual value
+ * @exception {AssertionFailedError} Thrown if the actual value does not match
+ * the regular expression
  * @note This is an enhancement to JUnit 3.8
  * @since 1.3
  */
@@ -95,9 +114,9 @@ Assert.assertMatches = function( msg, expected, actual )
 }
 /**
  * Asserts that a condition is false.
- * @tparam String msg An optional error message.
- * @tparam String cond The condition to evaluate.
- * @exception AssertionFailedError Thrown if the evaluation was not false.
+ * @param {String} msg An optional error message
+ * @param {String} cond The condition to evaluate
+ * @exception {AssertionFailedError} Thrown if the evaluation was not false
  */
 Assert.assertFalse = function( msg, cond )
 {
@@ -112,13 +131,13 @@ Assert.assertFalse = function( msg, cond )
 }
 /**
  * Asserts that two floating point values are equal to within a given tolerance.
- * @tparam String msg An optional error message.
- * @tparam Object expected The expected value.
- * @tparam Object actual The actual value.
- * @tparam Object tolerance The maximum difference allowed to make equality check pass.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The expected value
+ * @param {Object} actual The actual value
+ * @param {Object} tolerance The maximum difference allowed to make equality check pass
  * @note This is an enhancement to JUnit 3.8
- * @exception AssertionFailedError Thrown if the expected value is not within
- * the tolerance of the actual one.
+ * @exception {AssertionFailedError} Thrown if the expected value is not within
+ * the tolerance of the actual one
  */
 Assert.assertFloatEquals = function( msg, expected, actual, tolerance)
 {
@@ -145,9 +164,9 @@ Assert.assertFloatEquals = function( msg, expected, actual, tolerance)
 }
 /**
  * Asserts that an object is not null.
- * @tparam String msg An optional error message.
- * @tparam Object object The valid object.
- * @exception AssertionFailedError Thrown if the object is not null.
+ * @param {String} msg An optional error message
+ * @param {Object} object The valid object
+ * @exception {AssertionFailedError} Thrown if the object is not null
  */
 Assert.assertNotNull = function( msg, object )
 {
@@ -161,11 +180,11 @@ Assert.assertNotNull = function( msg, object )
 }
 /**
  * Asserts that two values are not the same.
- * @tparam String msg An optional error message.
- * @tparam Object expected The expected value.
- * @tparam Object actual The actual value.
- * @exception AssertionFailedError Thrown if the expected value is not the
- * actual one.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The expected value
+ * @param {Object} actual The actual value
+ * @exception {AssertionFailedError} Thrown if the expected value is not the
+ * actual one
  */
 Assert.assertNotSame = function( msg, expected, actual )
 {
@@ -181,9 +200,9 @@ Assert.assertNotSame = function( msg, expected, actual )
 }
 /**
  * Asserts that an object is not undefined.
- * @tparam String msg An optional error message.
- * @tparam Object object The defined object.
- * @exception AssertionFailedError Thrown if the object is undefined.
+ * @param {String} msg An optional error message
+ * @param {Object} object The defined object
+ * @exception {AssertionFailedError} Thrown if the object is undefined
  */
 Assert.assertNotUndefined = function( msg, object )
 {
@@ -198,9 +217,9 @@ Assert.assertNotUndefined = function( msg, object )
 }
 /**
  * Asserts that an object is null.
- * @tparam String msg An optional error message.
- * @tparam Object object The null object.
- * @exception AssertionFailedError Thrown if the object is not null.
+ * @param {String} msg An optional error message
+ * @param {Object} object The null object
+ * @exception {AssertionFailedError} Thrown if the object is not null
  */
 Assert.assertNull = function( msg, object )
 {
@@ -215,11 +234,11 @@ Assert.assertNull = function( msg, object )
 }
 /**
  * Asserts that two values are the same.
- * @tparam String msg An optional error message.
- * @tparam Object expected The expected value.
- * @tparam Object actual The actual value.
- * @exception AssertionFailedError Thrown if the expected value is not the
- * actual one.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The expected value
+ * @param {Object} actual The actual value
+ * @exception {AssertionFailedError} Thrown if the expected value is not the
+ * actual one
  */
 Assert.assertSame = function( msg, expected, actual )
 {
@@ -237,9 +256,9 @@ Assert.assertSame = function( msg, expected, actual )
 }
 /**
  * Asserts that a condition is true.
- * @tparam String msg An optional error message.
- * @tparam String cond The condition to evaluate.
- * @exception AssertionFailedError Thrown if the evaluation was not true.
+ * @param {String} msg An optional error message
+ * @param {String} cond The condition to evaluate
+ * @exception {AssertionFailedError} Thrown if the evaluation was not true
  */
 Assert.assertTrue = function( msg, cond ){
     if( arguments.length == 1 ){
@@ -252,9 +271,9 @@ Assert.assertTrue = function( msg, cond ){
 }
 /**
  * Asserts that an object is undefined.
- * @tparam String msg An optional error message.
- * @tparam Object object The undefined object.
- * @exception AssertionFailedError Thrown if the object is not undefined.
+ * @param {String} msg An optional error message
+ * @param {Object} object The undefined object
+ * @exception {AssertionFailedError} Thrown if the object is not undefined
  */
 Assert.assertUndefined = function( msg, object ){
     if( arguments.length == 1 ){
@@ -268,10 +287,10 @@ Assert.assertUndefined = function( msg, object ){
 }
 /**
  * Fails a test with a give message.
- * @tparam String msg The error message.
- * @tparam CallStack stack The call stack of the error.
- * @tparam String usermsg The message part of the user.
- * @exception AssertionFailedError Is always thrown.
+ * @param {String} msg The error message
+ * @param {CallStack} stack The call stack of the error
+ * @param {String} usermsg The message part of the user
+ * @exception {AssertionFailedError} Is always thrown
  */
 Assert.fail = function( msg, stack, usermsg ){
    throw new AssertionFailedError( ( usermsg ? usermsg + " " : "" ) + msg, stack );
