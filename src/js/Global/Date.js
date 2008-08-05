@@ -14,11 +14,15 @@
  * $Date: 2006/04/24 07:02:17 $
  */
 
-
+/** Value of one second in milliseconds */
 Date.ONESECOND    = 1000;
+/** Value of one minute in milliseconds */
 Date.ONEMINUTE    = 60 * Date.ONESECOND;
+/** Value of one hour in milliseconds */
 Date.ONEHOUR      = 60 * Date.ONEMINUTE;
+/** Value of one day in milliseconds */
 Date.ONEDAY       = 24 * Date.ONEHOUR;
+/** Value of one week in milliseconds */
 Date.ONEWEEK      =  7 * Date.ONEDAY;
 
 
