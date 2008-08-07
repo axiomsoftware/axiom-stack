@@ -14,25 +14,40 @@
  * $Date: 2006/04/24 07:02:17 $
  */
 
-/** Value of one second in milliseconds */
+/** 
+ * Value of one second in milliseconds. 
+ * @type Number
+ */
 Date.ONESECOND    = 1000;
-/** Value of one minute in milliseconds */
+/** 
+ * Value of one minute in milliseconds. 
+ * @type Number
+ */
 Date.ONEMINUTE    = 60 * Date.ONESECOND;
-/** Value of one hour in milliseconds */
+/** 
+ * Value of one hour in milliseconds. 
+ * @type Number
+ */
 Date.ONEHOUR      = 60 * Date.ONEMINUTE;
-/** Value of one day in milliseconds */
+/**
+ * Value of one day in milliseconds. 
+ * @type Number
+ */
 Date.ONEDAY       = 24 * Date.ONEHOUR;
-/** Value of one week in milliseconds */
+/** 
+ * Value of one week in milliseconds. 
+ * @type Number
+ */
 Date.ONEWEEK      =  7 * Date.ONEDAY;
 
 
 /**
  * Format a Date to a string.
  *
- * @param {String} pattern format pattern
- * @param {Object} locale Java Locale Object (optional)
- * @param {Object} timezone Java TimeZone Object (optional)
- * @return {String} formatted date
+ * @param {String} pattern Format pattern
+ * @param {Object} [locale] Java Locale Object
+ * @param {Object} [timezone] Java TimeZone Object
+ * @return {String} The formatted date
  */
 Date.prototype.format = function (format, locale, timezone) {
     if (!format)
@@ -64,7 +79,7 @@ Date.prototype.format = function (format, locale, timezone) {
  * app.getObjects("Page",new NativeFilter("date: " + date.dateValue()));<br><br>
  * </code>  
  *
- * @return {String} the DATE type string representation
+ * @return {String} The DATE type string representation
  */
 Date.prototype.dateValue = function() {
 	var t = this.getTime() / 86400000;
@@ -92,7 +107,7 @@ Date.prototype.dateValue = function() {
  * app.getObjects("Page",new NativeFilter("date: " + date.timeValue()));<br><br>
  * </code>  
  *
- * @return {String} the TIME type string representation
+ * @return {String} The TIME type string representation
  */
 Date.prototype.timeValue = function() {
 	var t = this.getTime() / 1000;
@@ -120,7 +135,7 @@ Date.prototype.timeValue = function() {
  * app.getObjects("Page",new NativeFilter("date: " + date.timestampValue()));<br><br>
  * </code>  
  *
- * @return {String} the TIMESTAMP type string representation
+ * @return {String} The TIMESTAMP type string representation
  */
 Date.prototype.timestampValue = function() {
 	var t = Packages.axiom.objectmodel.dom.LuceneDataFormatter.roundUpDouble(this.getTime());

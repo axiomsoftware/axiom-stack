@@ -19,7 +19,9 @@ if (!global.axiom) {
     global.axiom = {};
 }
 /**
- * @constructor {String} path The path to the file on the file system
+ * A file library used for easy file access.
+ * @constructor
+ * @param {String} path The path to the file on the file system
  */
 axiom.SystemFile = function(path) {
    var BufferedReader            = java.io.BufferedReader;
@@ -59,7 +61,7 @@ axiom.SystemFile = function(path) {
    /**
     * Returns the java.io.File.toString() of the underlying File object.
     *
-    * @return {String} the File's toString()
+    * @return {String} The File's toString()
     */
    this.toString = function() {
       return file.toString();
@@ -69,7 +71,7 @@ axiom.SystemFile = function(path) {
     * Returns the java.io.File.getName() of the underlying File object
     * (i.e. the name of the file or directory).
     *
-    * @return {String} the File's getName()
+    * @return {String} The File's getName()
     */
    this.getName = function() {
       var name = file.getName();
@@ -79,7 +81,7 @@ axiom.SystemFile = function(path) {
    /**
     * Returns whether or not this file has been opened or not.
     *
-    * @return {Boolean} Value of <code> true </code> if the file is opened, 
+    * @return {Boolean} Value of <code> True </code> if the file is opened, 
     					<code> false </code> otherwise
     */
    this.isOpened = function() {
@@ -92,9 +94,9 @@ axiom.SystemFile = function(path) {
     *
     * @param {String} [mode] The mode to open the file in.  Possible values are 'w' for
     *                        write and 'a' for append.  Defaults to opening the file in 
-    *                        read mode. 
+    *                        read mode
     * @return {Boolean} Whether the open was a success or not.  <code> false </code> will
-    *                   be returned if an exception was thrown or the file does not exist.
+    *                   be returned if an exception was thrown or the file does not exist
     */
    this.open = function(mode) {
       if (self.isOpened()) {
@@ -126,7 +128,7 @@ axiom.SystemFile = function(path) {
    /**
     * Returns whether the file or directory represented by this File object exists or not.
     *
-    * @return {Boolean} <code> true </code> if the file or directory exists, 
+    * @return {Boolean} <code> True </code> if the file or directory exists, 
     * 					<code> false </code> otherwise
     */
    this.exists = function() {
@@ -222,7 +224,7 @@ axiom.SystemFile = function(path) {
    /**
     * Returns whether this File object's pathname is absolute or not.
     *
-    * @return {Boolean} <code> true </code> if the pathname is absolute, 
+    * @return {Boolean} <code> True </code> if the pathname is absolute, 
     *                   <code> false </code> otherwise
     */
    this.isAbsolute = function() {
@@ -234,7 +236,7 @@ axiom.SystemFile = function(path) {
     * fail on a file that is currently open.  If this operation fails, 
     * <code> this.error() </code> can be used to retrieve the error.
     *
-    * @return {Boolean} <code> true </code> if the operation was a success,
+    * @return {Boolean} <code> True </code> if the operation was a success,
     *                   <code> false </code> otherwise
     */
    this.remove = function() {
@@ -273,9 +275,9 @@ axiom.SystemFile = function(path) {
    /**
     * Flushes the content of the file represented by this File object to disk.  If the file
     * is not opened for write, or an exception occurs during the flush, the error may
-    * be retrieved through <code> this.error() </code>.
+    * be retrieved through <code> this.error()</code>.
     *
-    * @return {Boolean} <code> true </code> if the operation was a success, 
+    * @return {Boolean} <code> True </code> if the operation was a success, 
     *                   <code> false </code> otherwise
     */
    this.flush = function() {
@@ -300,7 +302,7 @@ axiom.SystemFile = function(path) {
    /**
     * Closes the file represented by this File object.
     *
-    * @return {Boolean} <code> true </code> if the operation was a success,
+    * @return {Boolean} <code> True </code> if the operation was a success,
     *					<code> false </code> otherwise
     */
    this.close = function() {
@@ -329,7 +331,7 @@ axiom.SystemFile = function(path) {
    };
 
    /**
-    * A string representation of the last error that occured, if any.
+    * A string representation of the last error that occurred, if any.
     *
     * @return {String} The error message
     */
@@ -356,9 +358,9 @@ axiom.SystemFile = function(path) {
 
    /**
     * Returns whether the application can read the file represented by 
-    * this File object or not
+    * this File object or not.
     *
-    * @return {Boolean} <code> true </code> if the file can be read,
+    * @return {Boolean} <code> True </code> if the file can be read,
     *					<code> false </code> otherwise
     */
    this.canRead = function() {
@@ -367,9 +369,9 @@ axiom.SystemFile = function(path) {
 
    /**
     * Returns whether the application can write to the file represented by 
-    * this File object or not
+    * this File object or not.
     *
-    * @return {Boolean} <code> true </code> if the file can be written to,
+    * @return {Boolean} <code> True </code> if the file can be written to,
     *					<code> false </code> otherwise
     */
    this.canWrite = function() {
@@ -389,16 +391,16 @@ axiom.SystemFile = function(path) {
    /**
     * Returns the length of the file in bytes represented by this File object. 
     *
-    * @return {Number} The length of the file in bytes.
+    * @return {Number} The length of the file in bytes
     */
    this.getLength = function() {
       return file.length();
    };
 
    /**
-    * Returns whether the file represented by this File object is a directory or not
+    * Returns whether the file represented by this File object is a directory or not.
     *
-    * @return {Boolean} <code> true </code> if this File object is a directory,
+    * @return {Boolean} <code> True </code> if this File object is a directory,
     *					<code> false </code> otherwise
     */
    this.isDirectory = function() {
@@ -406,9 +408,9 @@ axiom.SystemFile = function(path) {
    };
 
    /**
-    * Returns whether the file represented by this File object is a file or not
+    * Returns whether the file represented by this File object is a file or not.
     *
-    * @return {Boolean} <code> true </code> if this File object is a file,
+    * @return {Boolean} <code> True </code> if this File object is a file,
     *					<code> false </code> otherwise
     */
    this.isFile = function() {
@@ -428,7 +430,7 @@ axiom.SystemFile = function(path) {
     * Make the directory at the path represented by this File object, if it does not
     * already exist.
     *
-    * @return {Boolean} <code> true </code> if the directory was created, 
+    * @return {Boolean} <code> True </code> if the directory was created, 
     *					<code> false </code> if the directory already existed or the create
     *					was unsuccessful
     */
@@ -441,11 +443,11 @@ axiom.SystemFile = function(path) {
 
    /**
     * Renames the file represented by this File object to the name and path represented by
-    * the input parameter File object.  If an error occured during this operation, the 
+    * the input parameter File object.  If an error occurred during this operation, the 
     * error may be obtained through <code> this.error() </code>.
     *
     * @param {axiom.SystemFile} toFile The file to rename this file to
-    * @return {Boolean} <code> true </code> if the rename was successful,
+    * @return {Boolean} <code> True </code> if the rename was successful,
     *					<code> false </code> otherwise
     */
    this.renameTo = function(toFile) {
@@ -468,7 +470,7 @@ axiom.SystemFile = function(path) {
     * Returns true if the file represented by this File object has been read entirely and 
     * the end of file has been reached. 
     *
-    * @return {Boolean} <code> true </code> if the end of file has been reached,
+    * @return {Boolean} <code> True </code> if the end of file has been reached,
     *					<code> false </code> otherwise
     */
    this.eof = function() {
@@ -544,7 +546,7 @@ axiom.SystemFile = function(path) {
     * Removes a directory recursively without any warning or precautious measures.  
     * USE WITH PRECAUTION!
     *
-    * @return {Boolean} <code> true </code> if the operation was a success,
+    * @return {Boolean} <code> True </code> if the operation was a success,
     *					<code> false </code> otherwise
     */
    this.removeDirectory = function() {
@@ -563,7 +565,7 @@ axiom.SystemFile = function(path) {
    };
 
    /**
-    * Recursivly lists all files below a given directory.  Pass a RegExp Pattern to return 
+    * Recursively lists all files below a given directory.  Pass a RegExp Pattern to return 
     * just files matching this pattern.
     *
     * @param {RegExp} [pattern] The pattern to test each file name against
@@ -588,10 +590,10 @@ axiom.SystemFile = function(path) {
    }
 
    /**
-    * Makes a copy of a file over partitions
+    * Makes a copy of a file over partitions.
     *
     * @param {String} path Full path of the new file
-    * @return {Boolean} <code> true </code> if the operation was a success,
+    * @return {Boolean} <code> True </code> if the operation was a success,
     *					<code> false </code> otherwise
     */
    this.hardCopy = function(dest) {
@@ -618,7 +620,7 @@ axiom.SystemFile = function(path) {
     * Moves a file to a new location.
     *
     * @param {String} path Full path of the new file
-    * @return {Boolean} <code> true </code> if the file could be moved, 
+    * @return {Boolean} <code> True </code> if the file could be moved, 
     * 				  	<code> false </code> otherwise
     */
    this.move = function(dest) {
@@ -712,7 +714,10 @@ axiom.SystemFile.writeToFile = function(str, filename){
 	}
 }
 
-/** The operating system specific path separator */
+/** 
+ * The operating system specific path separator.
+ * @type String
+ */
 axiom.SystemFile.separator = java.io.File.separator;
 
 

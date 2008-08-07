@@ -19,7 +19,7 @@ if (!global.axiom) {
 }
 
 /**
- * Constructor function for Zip Objects
+ * Constructor function for Zip Objects.
  * @param {Object|String} file The constructor accepts an object representing a File object, an instance of axiom.SystemFile,
  * an instance of java.io.File or a String representing the path to the zip file
  * @constructor
@@ -372,7 +372,7 @@ axiom.Zip.Entry = function(entry) {
     this.isDirectory = entry.isDirectory();
 	
 	/**
-	 * A java.lang.Byte[] containg the data of the entry.
+	 * A java.lang.Byte[] containing the data of the entry.
 	 * @type java.lang.Byte[]
 	 */
 	this.data = null;
@@ -385,8 +385,8 @@ axiom.Zip.Entry = function(entry) {
 
 /**
  * Extract all files in a ByteArray passed as argument and return them as an Axiom.Zip.Content object.
- * @param {java.lang.Byte[]} zipData A java.lang.Byte[] containing the data of the .zip file.
- * @returns {axiom.Zip.Content} An instance of axiom.Zip.Content.
+ * @param {java.lang.Byte[]} zipData A java.lang.Byte[] containing the data of the .zip file
+ * @returns {axiom.Zip.Content} An instance of axiom.Zip.Content
  */
 axiom.Zip.extractData = function(zipData) {
     var zInStream = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zipData));

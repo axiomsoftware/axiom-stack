@@ -69,7 +69,7 @@ Assert = {};
  * @param {String} msg An optional error message
  * @param {Object} expected The expected value
  * @param {Object} actual The actual value
- * @exception {AssertionFailedError} Thrownf if the expected value is not the
+ * @exception {AssertionFailedError} Thrown if the expected value is not the
  * actual one
  */
 Assert.assertEquals = function( msg, expected, actual )
@@ -134,7 +134,7 @@ Assert.assertFalse = function( msg, cond )
  * @param {String} msg An optional error message
  * @param {Object} expected The expected value
  * @param {Object} actual The actual value
- * @param {Object} tolerance The maximum difference allowed to make equality check pass
+ * @param {Object} tolerance The maximum difference allowed making equality check pass
  * @note This is an enhancement to JUnit 3.8
  * @exception {AssertionFailedError} Thrown if the expected value is not within
  * the tolerance of the actual one

@@ -26,10 +26,10 @@ if (!global.axiom) {
 axiom.Test = {};
 
 /**
- * Checks the global scope to determine if a global test suite is defined and interates over all prototypes within
+ * Checks the global scope to determine if a global test suite is defined and iterates over all prototypes within
  * the application determining if there is test suite defined.
- * @returns {Object} An object containg the global test suite along with all other prototypes within the application
- * that have a test suite defined.
+ * @returns {Object} An object containing the global test suite along with all other prototypes within the application
+ * that have a test suite defined
  */
 axiom.Test.globalSuite = function(){
 	var suite = { global: (global._test || {}) };
@@ -43,8 +43,8 @@ axiom.Test.globalSuite = function(){
 
 /**
  * Executes all defined test suites for within the application.
- * @param {Object} suite Test suite to be run.
- * @returns {Object} An object containing the number of errors, failures and results for individual tests.
+ * @param {Object} suite Test suite to be run
+ * @returns {Object} An object containing the number of errors, failures and results for individual tests
  */
 axiom.Test.run = function(suite){
 	var results = { 
@@ -64,9 +64,9 @@ axiom.Test.run = function(suite){
 
 /**
  * Executes an individual test suite.
- * @param {Object} tests The tests to be run.
- * @param {Object} results The results object to be modified.
- * @param {String} proto Name of the prototype suite to be executed.
+ * @param {Object} tests The tests to be run
+ * @param {Object} results The results object to be modified
+ * @param {String} proto Name of the prototype suite to be executed
  */
 axiom.Test.runSuite = function(tests, results, proto){
 	var setup = (tests.setup || function(){});
@@ -106,8 +106,8 @@ axiom.Test.runSuite = function(tests, results, proto){
 
 /**
  * Builds an XML report based on the results of the test suite execution.
- * @param {Object} results An object containing the results of all the test suites executed.
- * @returns {Object} An XML object representing the results of the test suite execution.
+ * @param {Object} results An object containing the results of all the test suites executed
+ * @returns {Object} An XML object representing the results of the test suite execution
  */
 axiom.Test.XMLReport = function(results) {
 	var markup = <testsuite name="AxiomTestSuite"/>;
