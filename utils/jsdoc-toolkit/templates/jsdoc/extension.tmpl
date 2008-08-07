@@ -1,20 +1,25 @@
-<div align="left">
-	{+new Link().toFile("index.html").withText("Global Objects and Functions")+}
-	<br/> {+new Link().toFile("extensions.html").withText("Prototype Extensions")+}
-	<br/> {+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}
+<div class="classbox">
+	<div><strong>{+new Link().toFile("index.html").withText("Global Objects and Functions")+}</strong></div>
+	<if test="publish.currentClass != ''">
+		<div><strong>{+new Link().toFile("extension.html").withText("Prototype Extensions")+}</strong></div>
+	<else/>
+		<div><strong>Prototype Extensions</strong></div>
+	</if>
+	<div class="lastclass"><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
 </div>
-<hr />
-<h2>Classes</h2>
+
+<div class="classbox">
+<h2>Prototypes</h2>
 <ul class="classList">
 	<for each="thisClass" in="data">
 	<li>{!
-		if (thisClass.alias == "_global_") {
-			output += "<i>"+new Link().toClass(thisClass.alias)+"</i>";
+		if(thisClass.alias == publish.currentClass){
+			output += thisClass.alias;
 		}
-		else {
+		else{
 			output += new Link().toClass(thisClass.alias);
 		}
 	!}</li>
 	</for>
 </ul>
-<hr />
+</div>
