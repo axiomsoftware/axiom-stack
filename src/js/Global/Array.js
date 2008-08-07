@@ -16,10 +16,10 @@
 
 
 /**
- * Retrieve the union set of a bunch of arrays
+ * Retrieve the union set of a bunch of arrays.
  *
- * @param {Array} (array1,array2,...) the arrays to unify
- * @return {Array} the union set
+ * @param {Array} (array1,array2,...) Rhe arrays to unify
+ * @return {Array} The union set
  */
 Array.union = function() {
    var result = [];
@@ -38,10 +38,10 @@ Array.union = function() {
 
 
 /**
- * Retrieve the intersection set of a bunch of arrays
+ * Retrieve the intersection set of a bunch of arrays.
  *
- * @param {Array} (array1,array2,...) the arrays to intersect
- * @return {Array} the intersection set
+ * @param {Array} (array1,array2,...) The arrays to intersect
+ * @return {Array} The intersection set
  */
 Array.intersection = function() {
    var all = Array.union.apply(this, arguments);
@@ -64,10 +64,10 @@ Array.intersection = function() {
 
 /**
  * Return the first index position of the specified value
- * contained in this array
+ * contained in this array.
  *
- * @param {String|Object} val the String or Object to check
- * @return {Number} the index of the value, -1 if not found
+ * @param {String|Object} val The String or Object to check
+ * @return {Number} The index of the value, -1 if not found
  */
 Array.prototype.indexOf = function(val) {
    var i = -1;
@@ -81,10 +81,10 @@ Array.prototype.indexOf = function(val) {
 
 /**
  * Return the last index position of the specified value
- * contained in this array
+ * contained in this array.
  *
- * @param {String|Object} val the String or Object to check
- * @return {Number} the last index of the value, -1 if not found
+ * @param {String|Object} val The String or Object to check
+ * @return {Number} The last index of the value, -1 if not found
  */
 Array.prototype.lastIndexOf = function(val) {
    var i = 1;
@@ -97,10 +97,10 @@ Array.prototype.lastIndexOf = function(val) {
 
 
 /**
- * Check if this array contains the specified value
+ * Check if this array contains the specified value.
  *
- * @param {String|Object} val the String or Object to check
- * @return {Boolean} whether the value is contained in this array or not
+ * @param {String|Object} val The String or Object to check
+ * @return {Boolean} Whether The value is contained in this array or not
  */
 Array.prototype.contains = function(val) {
    if (this.indexOf(val) > -1)

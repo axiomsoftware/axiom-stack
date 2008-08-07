@@ -15,9 +15,9 @@
  */
 
 /**
- * Calculates the md5 hash of a string
+ * Calculates the md5 hash of a string.
  *
- * @returns {String} md5 hash of the string
+ * @returns {String} The md5 hash of the string
  */
 String.prototype.md5 = function() {
     return Packages.axiom.util.MD5Encoder.encode(this);

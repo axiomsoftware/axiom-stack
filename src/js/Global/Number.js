@@ -34,7 +34,7 @@
  * app.getObjects("Page",new NativeFilter("count: " + num.smallFloatValue()));<br><br>
  * </code>  
  *
- * @return {String} the SMALLINT string representation
+ * @return {String} The SMALLINT string representation
  */
 Number.prototype.smallIntValue = function() {
 	return new java.text.DecimalFormat("0000").format(0 + this);
@@ -59,7 +59,7 @@ Number.prototype.smallIntValue = function() {
  * app.getObjects("Page",new NativeFilter("percent: " + num.smallFloatValue()));<br><br>
  * </code>  
  *
- * @return {String} the SMALLFLOAT string representation
+ * @return {String} The SMALLFLOAT string representation
  */
 Number.prototype.smallFloatValue = function() {
 	return new java.text.DecimalFormat("0000.0000").format(0 + this);
