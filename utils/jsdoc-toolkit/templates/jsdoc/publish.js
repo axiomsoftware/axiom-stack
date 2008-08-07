@@ -31,8 +31,7 @@ function publish(symbolSet) {
 		ext: ".html",
 		outDir: JSDOC.opt.d || SYS.pwd+"../out/jsdoc/",
 		templatesDir: SYS.pwd+"../templates/jsdoc/",
-		symbolsDir: "symbols/",
-		srcDir: "symbols/src/"
+		symbolsDir: ""
 	};
 
 	if (JSDOC.opt.s && defined(Link) && Link.prototype._makeSrcLink) {
@@ -41,7 +40,7 @@ function publish(symbolSet) {
 		}
 	}
 	
-	IO.mkPath((publish.conf.outDir+"symbols").split("/"));
+	IO.mkPath(publish.conf.outDir);
 		
 	// used to check the details of things being linked to
 	Link.symbolSet = symbolSet;
@@ -80,29 +79,37 @@ function publish(symbolSet) {
 		}
 	}
 	
-	
+	Link.base = "";
 
-	
-
-	Link.base = "../";
 	var objectsTemplateCache = {
 		builtin:builtinTemplate.process(builtinObjects),
 		global:globalTemplate.process(globalObjects),
 		extension:extensionTemplate.process(extensionObjects)
 	};
 
-	
+	publish.currentClass = "";
+	buildIndexTemplate(globalTemplate.process(globalObjects), publish, globalObjects, "index", "Global Objects and Functions");
+	buildIndexTemplate(extensionTemplate.process(extensionObjects), publish, extensionObjects, "extensions", "Prototype Extensions");
+	buildIndexTemplate(builtinTemplate.process(builtinObjects), publish, builtinObjects, "builtin", "Built-in Prototypes");
+
 	for (var i = 0, l = objects.length; i < l; i++) {
-		publish.classesIndex = objectsTemplateCache[getObjectType(objects[i])];
+		var objType = getObjectType(objects[i]);
+		var sidebarTemplate = "";
+		if(objType == 'global'){
+			publish.currentClass = objects[i].alias;
+			sidebarTemplate = globalTemplate.process(globalObjects);
+		} else if(objType == 'extension'){
+			publish.currentClass = objects[i].alias;
+			sidebarTemplate = extensionTemplate.process(extensionObjects);
+		} else if(objType == 'builtin'){
+			publish.currentClass = objects[i].alias;
+			sidebarTemplate = builtinTemplate.process(builtinObjects);
+		}
+
+		publish.classesIndex = sidebarTemplate;
 		var output = classTemplate.process(objects[i]);
-		IO.saveFile(publish.conf.outDir+"symbols/", objects[i].alias+publish.conf.ext, output);
+		IO.saveFile(publish.conf.outDir, objects[i].alias+publish.conf.ext, output);
 	}
-	
-	// regenrate the index with different relative links
-	Link.base = "";
-	buildIndexTemplate(globalTemplate, publish, globalObjects, "index", "Global Objects and Global Functions");
-	buildIndexTemplate(extensionTemplate, publish, extensionObjects, "extensions", "Prototype Extensions");
-	buildIndexTemplate(builtinTemplate, publish, builtinObjects, "builtin", "Built-in Prototypes");
 
 
 }
@@ -132,7 +139,7 @@ function buildIndexTemplate(template, publish, data, filename, title){
 		print(e.message);
 		quit();
 	}
-	publish.classesIndex = template.process(data);
+	publish.classesIndex = template;
 	publish.classTitle = title;
 	var index = indexTemplate.process(data);
 	IO.saveFile(publish.conf.outDir, filename + publish.conf.ext, index);
@@ -210,36 +217,3 @@ function resolveLinks(str, from) {
 	
 	return str;
 }
-
-/*
-	// Generate Files	
-	var files = JSDOC.opt.srcFiles;
- 	for (var i = 0, l = files.length; i < l; i++) {
- 		var file = files[i];
- 		var srcDir = publish.conf.outDir + "symbols/src/";
-		makeSrcFile(file, srcDir);
- 	}
-
-	try {
-		var fileindexTemplate = new JSDOC.JsPlate(publish.conf.templatesDir+"allfiles.tmpl");
-	}
-	catch(e) { print(e.message); quit(); }
-	
-	var documentedFiles = symbols.filter(isaFile);
-	var allFiles = [];
-*/	
-//	for (var i = 0; i < files.length; i++) {
-//		allFiles.push(new JSDOC.Symbol(files[i], [], "FILE", new JSDOC.DocComment("/** */")));
-//	}
-/*	
-	for (var i = 0; i < documentedFiles.length; i++) {
-		var offset = files.indexOf(documentedFiles[i].alias);
-		allFiles[offset] = documentedFiles[i];
-	}
-		
-	allFiles = allFiles.sort(makeSortby("name"));
-
-	var filesIndex = fileindexTemplate.process(allFiles);
-	IO.saveFile(publish.conf.outDir, "files"+publish.conf.ext, filesIndex);
-	fileindexTemplate = filesIndex = files = null;
-*/
