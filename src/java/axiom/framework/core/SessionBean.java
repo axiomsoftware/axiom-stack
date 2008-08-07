@@ -45,7 +45,7 @@ public class SessionBean implements Serializable {
     }
 
     /**
-     * Turn on object layering for the AxiomObject id specified in arr on given layer.
+     * Turn on object layering for the AxiomObject id specified, on a given layer.
      * This method adds to the current list of draft ids, and does not replace any of the
      * previously set draft ids. 
      * 
@@ -57,7 +57,7 @@ public class SessionBean implements Serializable {
      *                                to a layer through the draftHost property in 
      *                                app.properties. A Number is a direction specification
      *                                of the layer. If no layer is specified, defaults to
-     *                                the layer on which the call is being executed.
+     *                                the layer on which the call is being executed
      */
     public void addDraftId(Object id, Object layer) {
         session.addDraftId(id, layer);
@@ -76,7 +76,7 @@ public class SessionBean implements Serializable {
      *                                to a layer through the draftHost property in 
      *                                app.properties. A Number is a direction specification
      *                                of the layer. If no layer is specified, defaults to
-     *                                the layer on which the call is being executed.
+     *                                the layer on which the call is being executed
      */
     public void clearDraftIds(Object layer) {
     	session.clearDraftIds(layer);
@@ -101,7 +101,7 @@ public class SessionBean implements Serializable {
 
     /** 
      * The <code>Debug</code> object for this session, only applicable if in Rhino debug
-     * mode (i.e. rhino.debugger = true in app.properties)
+     * mode (i.e. rhino.debugger = true in app.properties).
      * @type Debug
      */
     public Object getDebug() {
@@ -117,7 +117,7 @@ public class SessionBean implements Serializable {
     }
 
     /**
-     * Returns the AxiomObject ids for which layering is turned on at the given layer
+     * Returns the AxiomObject ids for which layering is turned on at the given layer.
      * 
      * @jsfunction
      * @param {String|Number} [layer] The layer on which to get the AxiomObject ids for 
@@ -126,7 +126,7 @@ public class SessionBean implements Serializable {
      *                                to a layer through the draftHost property in 
      *                                app.properties. A Number is a direction specification
      *                                of the layer. If no layer is specified, defaults to
-     *                                the layer on which the call is being executed.
+     *                                the layer on which the call is being executed
      * @returns {Array} A list of AxiomObject ids
      */
     public Object getDraftIds(Object layer) {
@@ -134,9 +134,9 @@ public class SessionBean implements Serializable {
     }
 
     /**
-     * The http_referer that is used for determing where the user should be
+     * The http_referer that is used for determining where the user should be
      * redirected to when logging in successfully after trying to view unauthorized
-     * material
+     * material.
      * @type String
      */
     public String getHttpReferer(){
@@ -181,7 +181,7 @@ public class SessionBean implements Serializable {
      * Associates the current session with the user object.
      *
      * @jsfunction
-     * @param {AxiomObject} userNode The AxiomObject node representing the user.
+     * @param {AxiomObject} userNode The AxiomObject node representing the user
      */
     public void login(INode userNode) {
         session.login(userNode);
@@ -221,7 +221,7 @@ public class SessionBean implements Serializable {
      *                                to a layer through the draftHost property in 
      *                                app.properties. A Number is a direction specification
      *                                of the layer. If no layer is specified, defaults to
-     *                                the layer on which the call is being executed.
+     *                                the layer on which the call is being executed
      */
     public void setDraftIds(Object arr, Object layer) {
         session.setDraftIds(arr, layer);
@@ -229,8 +229,8 @@ public class SessionBean implements Serializable {
     
     /**
      * Set the http_referer on to the session.  Http_referer refers to the
-     * URL the user reuqested and was unauthorized for.  When the user authenticates,
-     * the url can be retreived to redirect the user to their original request.
+     * URL the user requested and was unauthorized for.  When the user authenticates,
+     * the url can be retrieved to redirect the user to their original request.
      * 
      * @jsfunction
      * @param {String} httpRef The http_referer
@@ -240,7 +240,7 @@ public class SessionBean implements Serializable {
     }
     
     /**
-     * session's toString() method
+     * Session's toString() method.
      *
      * @jsfunction
      * @returns {String} A string representation of the session

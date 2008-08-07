@@ -129,7 +129,7 @@ public class ImageObject extends FileObject {
      *                              retrieved by calling getThumbnail(accessname).  If 
      *                              this argument is left unspecified, defaults to a String
      *                              "[width]x[height]". So if the width is 200 and the 
-     *                              height is 100, the default accessname will be 200x100.
+     *                              height is 100, the default accessname will be 200x100
      * @returns {Boolean} Whether the operation was a success or not.  If there is already
      *                    an Image object with the same name as accessname located as a
      *                    child of this Image object, then it will fail and return <code> false </code>
@@ -157,8 +157,8 @@ public class ImageObject extends FileObject {
      * Retrieves the thumbnail (child) from this Image object's thumbnail collection.
      * Thumbnails are added using <code> addThumbnail(child, accessname) </code>.
      * 
-     * @param {String} accessname The accessname with which the desired Image object was stored.
-     * @returns {Image} The requested thumbnail Image object.
+     * @param {String} accessname The accessname with which the desired Image object was stored
+     * @returns {Image} The requested thumbnail Image object
      */
     public Object jsFunction_getThumbnail(Object accessname) {
         return super.jsFunction_get(accessname);
@@ -183,7 +183,7 @@ public class ImageObject extends FileObject {
      * 
      * @param {Object} input A JavaScript object specifying the rendering parameters.
      *                       For example, <code> {maxWidth:200, maxHeight:100} </code>
-     * @returns {Image} The rendered Image object.
+     * @returns {Image} The rendered Image object
      * @throws Exception
      */
     public ImageObject jsFunction_render(Object input) throws Exception {
@@ -459,7 +459,7 @@ public class ImageObject extends FileObject {
      * file system path.
      * 
      * @param {MimePart|String} file The MimePart object or the path on the file system to
-     *                               replace the binary contents of this Image object with.
+     *                               replace the binary contents of this Image object with
      */
     public void jsFunction_replaceFile(Object mimepart){
     	String path = FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app, false);
@@ -468,9 +468,9 @@ public class ImageObject extends FileObject {
     
     /**
      * Sets whether this Image object was rendered from another Image object or not,
-     * that is, if it was the result of invoking <code> Image.render() </code>
+     * that is, if it was the result of invoking <code> Image.render()</code>.
      * 
-     * @param {Boolean} rendered <code> true </code> if it was rendered, <code> false </code> false otherwise
+     * @param {Boolean} rendered <code> True </code> if it was rendered, <code> false </code> otherwise
      */
     public void jsFunction_setRendered(boolean rendered) {
         String r = rendered ? "true" : "false";

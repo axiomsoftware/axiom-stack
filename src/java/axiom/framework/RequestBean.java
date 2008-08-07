@@ -41,7 +41,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * Get the value for a given request parameter
+     * Get the value for a given request parameter.
      *
      * @jsfunction
      * @param {String} name The name of the request parameter
@@ -52,7 +52,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The request's action
+     * The request's action.
      * @type String
      */
     public String getAction() {
@@ -60,7 +60,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The request's content type
+     * The request's content type.
      * @type String
      */
     public String getContentType() {
@@ -68,7 +68,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The cookies map containing cookies parsed from post data
+     * The cookies map containing cookies parsed from post data.
      * @type Object
      */
     public Scriptable getCookies() {
@@ -76,7 +76,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The request data
+     * The request data.
      * @type Object
      */
     public Scriptable getData() {
@@ -95,11 +95,11 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * Proxy to HttpServletRequest.getHeaders(), returns header values as an array
+     * Proxy to HttpServletRequest.getHeaders(), returns header values as an array.
      * 
      * @jsfunction
      * @param {String} name The header name
-     * @return {Array} The header values as string array
+     * @returns {Array} The header values as string array
      */
     public String[] getHeaders(String name) {
         return req.getHeaders(name);
@@ -115,7 +115,7 @@ public class RequestBean implements Serializable {
     }
     
     /**
-     * The request's path
+     * The request's path.
      * @type String
      */
     public String getPath() {
@@ -123,7 +123,7 @@ public class RequestBean implements Serializable {
     }
     
     /**
-     * The body of the request's post
+     * The body of the request's post.
      * @type Object
      */
     public Object getPostBody() {
@@ -131,7 +131,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The request parameters parsed from post data
+     * The request parameters parsed from post data.
      * @type Object
      */
     public Scriptable getPostParams() {
@@ -139,7 +139,7 @@ public class RequestBean implements Serializable {
     }
 
     /**
-     * The request parameters parsed from the query string
+     * The request parameters parsed from the query string.
      * @type Object
      */
     public Scriptable getQueryParams() {
@@ -164,27 +164,27 @@ public class RequestBean implements Serializable {
     }
     
     /**
-     * Returns whether the request is of type HTTP GET
+     * Returns whether the request is of type HTTP GET.
      *
      * @jsfunction
-     * @return {Boolean} 
+     * @returns {Boolean} True if is a GET request, false if otherwise
      */
     public boolean isGet() {
         return req.isGet();
     }
 
     /**
-     * Returns whether the request is of type HTTP POST
+     * Returns whether the request is of type HTTP POST.
      *
      * @jsfunction
-     * @return {Boolean} 
+     * @returns {Boolean} True if is a POST request, false if otherwise
      */
     public boolean isPost() {
         return req.isPost();
     }
     
     /**
-     * request's toString() method
+     * Request's toString() method.
      *
      * @jsfunction
      * @returns {String} A string representation of the request

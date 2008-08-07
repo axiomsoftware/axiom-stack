@@ -26,7 +26,7 @@ import org.mozilla.javascript.ScriptableObject;
  * @param {Number|String} start The start value in the range to search
  * @param {Number|String} end The end value in the range to search
  * @param {Boolean} [inclusive] Whether the start and end ranges are inclusive, defaults to 
- *                              <code> true </code>.
+ *                              <code> true </code>
  */
 public class RangeFilterObject extends ScriptableObject implements IFilter {
 

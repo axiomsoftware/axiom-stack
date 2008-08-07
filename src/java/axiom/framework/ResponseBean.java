@@ -46,7 +46,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Abort the current transaction by throwing an Error
+     * Abort the current transaction by throwing an Error.
      *  
      * @jsfunction
      * @throws AbortException
@@ -56,7 +56,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Proxy to HttpServletResponse.addDateHeader()
+     * Proxy to HttpServletResponse.addDateHeader().
      * 
      * @jsfunction
      * @param {String} name The header name
@@ -67,7 +67,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Proxy to HttpServletResponse.addHeader()
+     * Proxy to HttpServletResponse.addHeader().
      * 
      * @jsfunction
      * @param {String} name The header name
@@ -79,7 +79,7 @@ public class ResponseBean implements Serializable {
 
     /**
      * Commit changes made during the course of the current transaction
-     * and start a new one
+     * and start a new one.
      *
      * @jsfunction
      * @throws Exception
@@ -95,7 +95,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * add an HTML formatted debug message to the end of the page.
+     * Add an HTML formatted debug message to the end of the page.
      *
      * @jsfunction
      * @param {String} message The message
@@ -114,7 +114,7 @@ public class ResponseBean implements Serializable {
 
     /**
      * The current cachability setting for this response. 
-     * true if the response may be cached by the HTTP client, false otherwise
+     * True if the response may be cached by the HTTP client, false otherwise.
      * @type Boolean
      */
     public boolean getCache() {
@@ -122,7 +122,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * The current charset/encoding name for the response
+     * The current charset/encoding name for the response.
      * @type String
      */
     public String getCharset() {
@@ -130,7 +130,7 @@ public class ResponseBean implements Serializable {
     }
     
     /**
-     * The current content type for the response
+     * The current content type for the response.
      * @type String
      */
     public String getContentType() {
@@ -138,7 +138,7 @@ public class ResponseBean implements Serializable {
     }
     
     /**
-     * The cookies associated with this response
+     * The cookies associated with this response.
      * @type Object
      */
     public Object getCookies() {
@@ -146,7 +146,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * The current error message for the response, if any
+     * The current error message for the response, if any.
      * @type String
      */
     public String getError() {
@@ -154,7 +154,7 @@ public class ResponseBean implements Serializable {
     }
     
     /**
-     * The ETag for this response
+     * The ETag for this response.
      * @type String
      */
     public String getETag() {
@@ -162,7 +162,7 @@ public class ResponseBean implements Serializable {
     }
     
     /**
-     * The last modified date for this response
+     * The last modified date for this response.
      * @type Date
      */
     public Date getLastModified() {
@@ -185,7 +185,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * The HTTP status code for this response
+     * The HTTP status code for this response.
      * @type Number
      */
     public int getStatus() {
@@ -193,7 +193,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Redirect the request to a different URL
+     * Redirect the request to a different URL.
      *
      * @jsfunction
      * @param {String} url The URL to redirect to
@@ -204,7 +204,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Reset the response object, clearing all content previously written to it
+     * Reset the response object, clearing all content previously written to it.
      * 
      * @jsfunction
      */
@@ -229,10 +229,10 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Set cachability setting for this response
+     * Set cachability setting for this response.
      *
      * @jsfunction
-     * @param {Boolean} cache true if the response may be cached by the HTTP client, 
+     * @param {Boolean} cache True if the response may be cached by the HTTP client, 
      * 						  false otherwise
      */
     public void setCache(boolean cache) {
@@ -240,7 +240,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Set the charset/encoding name for the response
+     * Set the charset/encoding name for the response.
      *
      * @jsfunction
      * @param {String} charset The charset name
@@ -250,7 +250,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Set the content type for the response
+     * Set the content type for the response.
      *
      * @jsfunction
      * @param {String} contentType The content type
@@ -278,54 +278,54 @@ public class ResponseBean implements Serializable {
      * cookie should be immediately discarded.
      *
      * @jsfunction
-     * @param {String} key the cookie name
-     * @param {String} value the cookie value
-     * @param {Number} [days] number of days the cookie should be stored, default to -1,
+     * @param {String} key The cookie name
+     * @param {String} value The cookie value
+     * @param {Number} [days] The number of days the cookie should be stored, default to -1,
      * 						  meaning its stored until the session is discarded
-     * @param {String} [path] the URL path to apply the cookie to
-     * @param {String} [domain] domain
+     * @param {String} [path] The URL path to apply the cookie to
+     * @param {String} [domain] The domain
      */
     public void setCookie(String key, String value, int days, String path, String domain) {
         res.setCookie(key, value, days, path, domain);
     }
 
     /**
-     * Proxy to HttpServletResponse.setDateHeader()
+     * Proxy to HttpServletResponse.setDateHeader().
      * 
      * @jsfunction
-     * @param {String} name the header name
-     * @param {Date} value the header value
+     * @param {String} name The header name
+     * @param {Date} value The header value
      */
     public void setDateHeader(String name, Date value) {
         res.setDateHeader(name, value);
     }
 
     /**
-     * Set the HTTP Etag for this response
+     * Set the HTTP Etag for this response.
      *
      * @jsfunction
-     * @param {String} etag the HTTP ETag
+     * @param {String} etag The HTTP ETag
      */
     public void setETag(String etag) {
         res.setETag(etag);
     }
 
     /**
-     * Proxy to HttpServletResponse.setHeader()
+     * Proxy to HttpServletResponse.setHeader().
      * 
      * @jsfunction
-     * @param {String} name the header name
-     * @param {String} value the header value
+     * @param {String} name The header name
+     * @param {String} value The header value
      */
     public void setHeader(String name, String value) {
         res.setHeader(name, value);
     }
 
     /**
-     * Set the last modified date for this response
+     * Set the last modified date for this response.
      *
      * @jsfunction
-     * @param {Date} date the last modified date
+     * @param {Date} date The last modified date
      */
     public void setLastModified(Date date) {
         if (date == null) {
@@ -336,17 +336,17 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * Set the HTTP status code for this response
+     * Set the HTTP status code for this response.
      *
      * @jsfunction
-     * @param {Number} status the HTTP status code
+     * @param {Number} status The HTTP status code
      */
     public void setStatus(int status) {
         res.setStatus(status);
     }
 
     /**
-     * Immediately stop processing the current request
+     * Immediately stop processing the current request.
      *
      * @jsfunction
      * @throws RedirectException to immediately terminate the request
@@ -356,7 +356,7 @@ public class ResponseBean implements Serializable {
     }
 
     /**
-     * response's toString() method
+     * Response's toString() method.
      *
      * @jsfunction
      * @returns {String} A string representation of the response
@@ -370,7 +370,7 @@ public class ResponseBean implements Serializable {
      * HTTP client.
      *
      * @jsfunction
-     * @param {String} key the name of the cookie to be discarded
+     * @param {String} key The name of the cookie to be discarded
      */
     public void unsetCookie(String key) {
         res.setCookie(key, "", 0, null, null);
@@ -388,7 +388,7 @@ public class ResponseBean implements Serializable {
      * Write an object to the response buffer.
      *
      * @jsfunction
-     * @param {Object} obj the object to write to the response buffer
+     * @param {Object} obj Yhe object to write to the response buffer
      * @param {String} [doctype] The doctype to append to the response,
      *                           in the case of XML objects
      */
@@ -400,7 +400,7 @@ public class ResponseBean implements Serializable {
      * Directly write a byte array to the response buffer without any transformation.
      *
      * @jsfunction
-     * @param {byte[]} bytes the byte array to write to the response buffer
+     * @param {byte[]} bytes The byte array to write to the response buffer
      */
     public void writeBinary(byte[] bytes) {
         res.writeBinary(bytes);
@@ -414,7 +414,7 @@ public class ResponseBean implements Serializable {
      * Write string to response buffer and append a platform dependent newline sequence.
      *
      * @jsfunction
-     * @param {String} [str] the string to write to the response buffer, if no string is 
+     * @param {String} [str] The string to write to the response buffer, if no string is 
      *                       specified, simply write a newline sequence to the response
      *                       buffer
      */

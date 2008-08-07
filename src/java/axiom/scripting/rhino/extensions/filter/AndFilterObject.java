@@ -21,7 +21,7 @@ import org.mozilla.javascript.*;
  * 
  * @jsconstructor AndFilter
  * @param {Array} filters An Array of the filter objects that are to be combined by an 
- * 						  AND operation. 
+ * 						  AND operation
  */
 public class AndFilterObject extends OpFilterObject {
     

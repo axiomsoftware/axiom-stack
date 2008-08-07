@@ -175,10 +175,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
 
     /**
      * Get a DatabaseObject encapsulating a DB connection from either the specified 
-     * DbSource in db.properties or from the input DB url string
+     * DbSource in db.properties or from the input DB url string.
      *
      * @jsfunction
-     * @param {String} dbsource the db source name, or the jdbc driver for making a connection
+     * @param {String} dbsource The db source name, or the jdbc driver for making a connection
      *                          not specified in db.properties (if specifying the jdbc 
      *                          driver, then the following optional parameters are required)
      * @param {String} [url] The DB url
@@ -224,10 +224,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * Retrieve a Document from the specified URL.
      *
      * @jsfunction
-     * @param {String} location the URL to retrieve
-     * @param {Object} [opt] either a LastModified date or an ETag string for conditional GETs
+     * @param {String} location The URL to retrieve
+     * @param {Object} [opt] Either a LastModified date or an ETag string for conditional GETs
      *
-     * @returns {MIMEPart} a wrapped MIME object
+     * @returns {MimePart} A wrapped MIME object
      */
     public Object getURL(String location, Object opt) {
         if (location ==  null) {
@@ -316,7 +316,7 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * @jsfunction
      * @param {String|InputStream|Reader} src The source URL, a piece of XML, 
      * 										  an InputStream, or a Reader
-     * @returns {Document} an XML DOM tree parsed from the src
+     * @returns {Document} An XML DOM tree parsed from the src
      */
     public Object getXmlDocument(Object src) {
         try {
@@ -341,8 +341,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * prototypes alone.
      *
      * @jsfunction
-     * @param {String} name the name of the new scope
-     * @param {Boolean} [initStandardObjects] whether or not to initialize the scope with 
+     * @param {String} tame The name of the new scope
+     * @param {Boolean} [initStandardObjects] Whether or not to initialize the scope with 
      *                                        standard JavaScript objects, defaults to false
      */
     public void defineLibraryScope(final String name, boolean initStandardObjects) {
@@ -370,8 +370,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * Wrap a java.util.Map so that it looks and behaves like a native JS object.
      * 
      * @jsfunction
-     * @param {Object} obj A map.
-     * @returns {MapWrapper} A wrapper that makes the map look like a JS object.
+     * @param {Object} obj A map
+     * @returns {MapWrapper} A wrapper that makes the map look like a JS object
      */
     public Object wrapJavaMap(Object obj) {
         if (obj instanceof Wrapper) {
@@ -388,8 +388,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * Unwrap a map previously wrapped using {@link #wrapJavaMap(Object)}.
      * 
      * @jsfunction
-     * @param {MapWrapper} obj the wrapped map
-     * @returns {Object} the map exposed as java object
+     * @param {MapWrapper} obj The wrapped map
+     * @returns {Object} The map exposed as java object
      */
     public Object unwrapJavaMap(Object obj) {
         if (!(obj instanceof MapWrapper)) {
@@ -401,22 +401,22 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
-     * Encode the string's HTML tags into HTML entities
+     * Encode the string's HTML tags into HTML entities.
      * 
      * @jsfunction
-     * @param {String} str the string to encode
-     * @returns {String} the encoded string
+     * @param {String} str The string to encode
+     * @returns {String} The encoded string
      */
     public String encode(Object obj) {
         return HtmlEncoder.encodeAll(toString(obj));
     }
 
     /**
-     * Encode the string's XML tags into XML entities
+     * Encode the string's XML tags into XML entities.
      * 
      * @jsfunction
-     * @param {String} str the string to encode
-     * @returns {String} the encoded string
+     * @param {String} str The string to encode
+     * @returns {String} The encoded string
      */
     public String encodeXml(Object obj) {
         return HtmlEncoder.encodeXml(toString(obj));
@@ -428,8 +428,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * does not add ending br tags at the end of a line.
      * 
      * @jsfunction
-     * @param {String} str the string to encode
-     * @returns {String} the encoded string
+     * @param {String} str The string to encode
+     * @returns {String} The encoded string
      */
     public String encodeForm(Object obj) {
         return HtmlEncoder.encodeFormValue(toString(obj));
@@ -441,8 +441,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * other occurrences of '<', '>' and '&' are encoded to HTML entities.
      *
      * @jsfunction
-     * @param {String} str the string to format
-     * @returns {String} the formatted string
+     * @param {String} str The string to format
+     * @returns {String} The formatted string
      */
     public String format(Object obj) {
         return HtmlEncoder.encode(toString(obj));
@@ -455,8 +455,8 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * for paragraphs.
      *
      * @jsfunction
-     * @param {String} str the string to format
-     * @returns {String} the formatted string
+     * @param {String} str The string to format
+     * @returns {String} The formatted string
      */
     public String formatParagraphs(Object obj) {
         String str = toString(obj);
@@ -484,7 +484,7 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * properties may not be added or removed from it.
      * 
      * @jsfunction
-     * @param {Array} objects an array of JavaScript objects to seal
+     * @param {Array} objects An array of JavaScript objects to seal
      */
     public static void seal(Context cx, Scriptable thisObj, Object[] args,
                             Function funObj)
@@ -509,11 +509,11 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
     }
 
     /**
-     * (Try to) strip all HTML/XML style tags from the given string argument
+     * Tries to strip all HTML/XML style tags from the given string argument.
      *
      * @jsfunction
-     * @param {String} str a string
-     * @returns {String} the string with tags removed
+     * @param {String} str A string
+     * @returns {String} The string with tags removed
      */
     public String stripTags(String str) {
         if (str == null) {
@@ -620,10 +620,10 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
      * counterpart such as java.lang.Double, java.lang.String etc.
      * 
      * @jsfunction
-     * @param {Object} obj a JavaScript object to convert to its Java counterpart
+     * @param {Object} obj A JavaScript object to convert to its Java counterpart
      * 
-     * @returns {Object} the object wrapped as NativeJavaObject, exposing the public methods
-     *                  of the underlying class.
+     * @returns {Object} The object wrapped as NativeJavaObject, exposing the public methods
+     *                  of the underlying class
      */
     public Object toJavaObject(Object obj) {
         if (obj == null || obj instanceof NativeJavaObject
