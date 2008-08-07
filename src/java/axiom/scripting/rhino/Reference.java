@@ -130,7 +130,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     
     /**
      * The target object which this reference is referring to.
-     * @type {AxiomObject} 
+     * @type AxiomObject 
      */
     public Object jsGet_target() {
         return getTarget();
@@ -144,8 +144,8 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     }
  
     /**
-     * The source object of this reference
-     * @type {AxiomObject}
+     * The source object of this reference.
+     * @type AxiomObject
      */
     public Object jsGet_source() {
     	return getSource();
@@ -153,7 +153,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     
     /**
      * The _id of the target object of the reference.  Equivalent to <code> ref.target._id </code>.
-     * @type {String}
+     * @type String
      */
     public String jsGet_targetId() {
         return targetKey.getID();
@@ -161,7 +161,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     
     /**
      * The path of the target object in this reference.  Equivalent to <code> ref.target.getPath() </code>.
-     * @type {String}
+     * @type String
      */
     public String jsGet_targetPath() {
     	try {
@@ -174,7 +174,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     
     /**
      * The _id of the source object of the reference.  Equivalent to <code> ref.source._id </code>.
-     * @type {String}
+     * @type String
      */
     public String jsGet_sourceId() {
         return getSourceKey().getID();
@@ -182,7 +182,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     
     /**
      * The path of the source object in this reference.  Equivalent to <code> ref.source.getPath() </code>.
-     * @type {String}
+     * @type String
      */
     public String jsGet_sourcePath() {
         try {
@@ -196,7 +196,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     /**
      * The name of the property on the source object that is this reference.  That is,
      * if <code> src.prop = ref </code>, then <code> ref.sourceProperty = prop </code>.
-     * @type {String}
+     * @type String
      */
     public String jsGet_sourceProperty() {
         return this.sourceProperty;
@@ -205,7 +205,7 @@ public class Reference extends ScriptableObject implements IProperty, Serializab
     /**
      * The position that this Reference object holds inside a MultiValue, if it is part of
      * a MultiValue.  If it is not, its just 0.
-     * @type {Number}
+     * @type Number
      */
     public int jsGet_sourceIndex() {
         return this.sourceIndex;

@@ -86,13 +86,13 @@ public class ApplicationBean implements Serializable {
      * the defined interval.
      *
      * @jsfunction
-     * @param {String} functionName Name of the global function to be called.
+     * @param {String} functionName Name of the global function to be called
      * @param {String} [year] Year (yyyy)
      * @param {String} [month] Month (1-12)
      * @param {String} [day] Day (0-31)
      * @param {String} [weekday] Day of week (0-6, with 0 being Sunday)
      * @param {String} [hour] Hour (0-23)
-     * @param {String} [minute] (0-59)
+     * @param {String} [minute] Minute (0-59)
      * @param {Number} [timeout] In seconds
      */
     public void addCronJob(String functionName, String year, String month, String day,
@@ -109,7 +109,7 @@ public class ApplicationBean implements Serializable {
      * point to an existing file or directory.
      *
      * @jsfunction
-     * @param {Object} repository The repository, relative or absolute path to the library.
+     * @param {Object} repository The repository, relative or absolute path to the library
      */
     public void addRepository(Object obj) {
         Repository rep = null;
@@ -155,6 +155,7 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
+     * Number of currently active sessions in this application.
      * @jsfunction
      * @returns {Number} Number of currently active sessions in this application
      */
@@ -173,7 +174,7 @@ public class ApplicationBean implements Serializable {
      * if debug is set to true in app.properties.
      *
      * @jsfunction
-     * @param {String} [logname] The name (category) of the log. Defaults to the app log.
+     * @param {String} [logname] The name (category) of the log. Defaults to the app log
      * @param {Object} msg The log message
      */
     public void debug(String logname, Object msg) {
@@ -190,10 +191,10 @@ public class ApplicationBean implements Serializable {
      * Delete an object in the system at the specified layer.
      *
      * @jsfunction
-     * @param {AxiomObject} object The object to be deleted at the specified layer.
-     * @param {Number} [layer] The layer on which to delete the object.  
-     *                         If no layer is specified, default to the layer above the 
-     *                         one on which the input AxiomObject resides.
+     * @param {AxiomObject} object The object to be deleted at the specified layer
+     * @param {Number} [layer] The layer on which to delete the object,  
+     *                         if no layer is specified, default to the layer above the 
+     *                         one on which the input AxiomObject resides
      * @throws Exception
      */
     public void deleteDraft(Object obj, Object layer) throws Exception {
@@ -263,7 +264,7 @@ public class ApplicationBean implements Serializable {
      * Fetch an AxiomObject by its canonical path.
      * 
      * @jsfunction
-     * @param {String} path
+     * @param {String} path The path
      * @returns {AxiomObject} AxiomObject at the given path
      */
     public Object getByPath(Object path) {
@@ -290,7 +291,7 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * Number of AxiomObjects stored in cache
+     * Number of AxiomObjects stored in cache.
      * @type Number
      */
     public int getCacheusage() {
@@ -306,8 +307,8 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * The app's classloader
-     * @type ClassLoader
+     * The app's classloader.
+     * @type java.lang.ClassLoader
      */
     public ClassLoader getClassLoader() {
         return app.getClassLoader();
@@ -323,7 +324,7 @@ public class ApplicationBean implements Serializable {
 
     /**
      * Read-only map of the axiom cron jobs registered with the app.
-     * @type Map
+     * @type java.util.Map
      */
     public Map getCronJobs() {
         return new WrappedMap(app.customCronJobs, true);
@@ -338,8 +339,8 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * Wrapper around the app's db properties (name/value pairs in the db.properties file)	
-     * @type Map
+     * Wrapper around the app's db properties (name/value pairs in the db.properties file).	
+     * @type java.util.Map
      */
     public Map getDbProperties() {
         return new WrappedMap(app.getDbProperties(), true);
@@ -351,7 +352,7 @@ public class ApplicationBean implements Serializable {
      * 
      * @jsfunction
      * @param {String} name The name of the db source
-     * @returns {DbSource} The DbSource object
+     * @returns {axiom.objectmodel.db.DbSource} The DbSource object
      */
     public DbSource getDbSource(String name) {
         return app.getDbSource(name);
@@ -369,8 +370,8 @@ public class ApplicationBean implements Serializable {
      * Get the domains set as draftHosts for the specified layer.
      * @jsfunction
      * @param {Number} [layer] The layer for which to get the corresponding domains, 
-     * 						   defaults to the live layer if non specified.
-     * @returns {Array} Array of domains matched. 
+     * 						   defaults to the live layer if non specified
+     * @returns {Array} Array of domains matched 
      */
     public Object getDomains(Object layer) {
     	int mode = DbKey.LIVE_LAYER;
@@ -394,11 +395,11 @@ public class ApplicationBean implements Serializable {
     /**
      * Get the draft copy of obj residing at layer, creating one if none currently exists.
      * @jsfunction
-     * @param {AxiomObject} obj
-     * @param {Number} [layer] The layer on which to delete the object. If no layer is 
+     * @param {AxiomObject} obj The Object
+     * @param {Number} [layer] The layer on which to delete the object, if no layer is 
      *                         specified, default to the layer above the one on which
-     *                         the AxiomObject resides.
-     * @returns {AxiomObject} draft copy of obj at layer
+     *                         the AxiomObject resides
+     * @returns {AxiomObject} Draft copy of obj at layer
      * @throws Exception
      */
     public Object getDraft(Object obj, Object layer) throws Exception {
@@ -455,16 +456,16 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * Get an array of field values for the specified fields on all the objects that match the search criteria
+     * Get an array of field values for the specified fields on all the objects that match the search criteria.
      * 
      * @jsfunction
      * @param {String|Array} field The field(s) values to return in the array 
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {Filter} [filter] The filter to apply to the search
-     * @param {Object} [options] The optional parameters to pass in to the search. 
+     * @param {Object} [options] The optional parameters to pass in to the search.  
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -517,7 +518,7 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * Returns the number of objects that match the search criteria
+     * Returns the number of objects that match the search criteria.
      * 
      * @jsfunction
      * @param {String|Array} [prototype] The prototype(s) to search against, 
@@ -525,7 +526,7 @@ public class ApplicationBean implements Serializable {
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -571,7 +572,7 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
-     * Returns a HitsObject that contains the results of the search
+     * Returns a HitsObject that contains the results of the search.
      * 
      * @jsfunction
      * @param {String|Array} [prototype] The prototype(s) to search against, 
@@ -579,7 +580,7 @@ public class ApplicationBean implements Serializable {
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -593,7 +594,7 @@ public class ApplicationBean implements Serializable {
      *            
      *            
      * @returns {LuceneHits} The results in HitsObject form, so they are not all
-     * 						 loaded at once.
+     * 						 loaded at once
      * @throws Exception
      */
     public Object getHits(Object prototype, Object filter, Object optional1) 
@@ -602,7 +603,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * The host name of the server upon which this application is running
+     * The host name of the server upon which this application is running.
      * @type String
      */
     public Object getHostName() {
@@ -629,7 +630,7 @@ public class ApplicationBean implements Serializable {
      * @jsfunction
      * @param {String} [logname] The name of the log, if none is specified, 
      *                           defaults to the axiom.[appname].log file
-     * @returns {Log} A logger for the given log name.
+     * @returns {Log} A logger for the given log name
      */
     public Log getLogger(String logname) {
         return  LogFactory.getLog(logname);
@@ -685,7 +686,7 @@ public class ApplicationBean implements Serializable {
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -706,8 +707,8 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * A readonly wrapper around the application's app properties
-     * @type Map 
+     * A readonly wrapper around the application's app properties.
+     * @type java.util.Map 
      */
     public Map getProperties() {
         if (properties == null) {
@@ -715,6 +716,10 @@ public class ApplicationBean implements Serializable {
         }
         return properties;
     }
+    
+    /**
+     * @jsomit 
+     */
     
     public Object getProperty(String name) {
     	return getProperty(name, null);
@@ -738,7 +743,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * Get a prototype's list of resources
+     * Get a prototype's list of resources.
      *
      * @jsfunction
      * @param {String} name The prototype name
@@ -756,7 +761,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * An array of this app's prototypes
+     * An array of this app's prototypes.
      * @type Array
      */
     public Object getPrototypes() {
@@ -771,7 +776,7 @@ public class ApplicationBean implements Serializable {
     
     /**
      * Returns an array of Reference objects representing all references in the system 
-     * where source has a reference to target
+     * where source has a reference to target.
      * 
      * @jsfunction
      * @param {AxiomObject|String} source An AxiomObject as the source of the reference, 
@@ -779,14 +784,14 @@ public class ApplicationBean implements Serializable {
      *                                    If a String is specified and the path ends with
      *                                    '**' (e.g. /path/to/foo/**), then all objects
      *                                    located under foo will be included in 
-     *                                    retrieving references. 
+     *                                    retrieving references
      *
      * @param {AxiomObject|String} target An AxiomObject as the target of the reference, 
      *                                   or a String denoting the AxiomObject's path. 
      *                                   If a String is specified and the path ends with
      *                                   '**' (e.g. /path/to/foo/**), then all objects
      *                                   located under foo will be included in 
-     *                                   retrieving references. 
+     *                                   retrieving references
      * @returns {Array} An array of reference objects
      * @throws Exception
      */
@@ -795,7 +800,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * An array containing this app's repositories
+     * An array containing this app's repositories.
      * @type Array
      */
     public Object getRepositories() {
@@ -805,7 +810,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * The total number of requests processed by this app
+     * The total number of requests processed by this app.
      * @type Number
      */
     public long getRequestCount() {
@@ -814,7 +819,7 @@ public class ApplicationBean implements Serializable {
     
     /**
      * A javascript object containing a mapping of all the rewrite rules 
-     * defined in rewrite.properties
+     * defined in rewrite.properties.
      * @type Object
      */
     public Object getRewriteRules() {
@@ -854,13 +859,13 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * Get the schema (defined in prototype.properties) for a particular prototype
+     * Get the schema (defined in prototype.properties) for a particular prototype.
      * 
      * @jsfunction
      * @param {String} prototype The prototype to get the schema for
      * @param {Boolean} [ignoreInternalProperties] True to ignore the internal properties 
      *                                           (those starting with an underscore), 
-     *                                           false to include them. Defaults to true.
+     *                                           false to include them. Defaults to true
      * @returns {Object} Javascript hash of the schema for the prototype
      */
     
@@ -886,7 +891,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * The directory of the Axiom server
+     * The directory of the Axiom server.
      * @type String
      */
     public String getServerDir() {
@@ -900,11 +905,11 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * Return a <code>SessionBean</code> object associated with the given Axiom session ID
+     * Return a <code>SessionBean</code> object associated with the given Axiom session ID.
      *
      * @jsfunction
      * @param {String} sessionID The Axiom session ID
-     * @returns {SessionBean} A SessionBean object associated with the session ID
+     * @returns {axiom.framework.core.SessionBean} A SessionBean object associated with the session ID
      */
     public SessionBean getSession(String sessionID) {
         if (sessionID == null) {
@@ -956,7 +961,7 @@ public class ApplicationBean implements Serializable {
      *
      * @jsfunction
      * @param {AxiomObject|String} user Either an AxiomObject specifying the user 
-     *                             or a String specifying the username of the user.
+     *                             or a String specifying the username of the user
      * @returns {Array} An array of SessionBean objects
      */
     public Object getSessionsForUser(String username) {
@@ -1000,7 +1005,7 @@ public class ApplicationBean implements Serializable {
     
     /**
      * The number of AxiomObjects in the array that an equivalent getSources() call
-     * would return
+     * would return.
      * 
      * @jsfunction
      * @param {AxiomObject|String} target An AxiomObject as the target, or a String 
@@ -1008,13 +1013,13 @@ public class ApplicationBean implements Serializable {
      *                                    If a String is specified and the path ends with
      *                                    '**' (e.g. /path/to/foo/**), then all objects
      *                                    located under foo will be included in 
-     *                                    retrieving objects with references to target.
+     *                                    retrieving objects with references to target
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -1069,13 +1074,13 @@ public class ApplicationBean implements Serializable {
      *                                    If a String is specified and the path ends with
      *                                    '**' (e.g. /path/to/foo/**), then all objects
      *                                    located under foo will be included in 
-     *                                    retrieving objects with references to target.
+     *                                    retrieving objects with references to target
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -1141,7 +1146,7 @@ public class ApplicationBean implements Serializable {
 
     /**
      * The number of AxiomObjects in the array that an equivalent getTargets() call
-     * would return
+     * would return.
      * 
      * @jsfunction
      * @param {AxiomObject|String} source An AxiomObject as the source, or a String 
@@ -1150,13 +1155,13 @@ public class ApplicationBean implements Serializable {
      *                                    '**' (e.g. /path/to/foo/**), then all objects
      *                                    located under foo will be included in 
      *                                    retrieving objects with references 
-     *                                    originating from source.
+     *                                    originating from source
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -1212,13 +1217,13 @@ public class ApplicationBean implements Serializable {
      *                                    '**' (e.g. /path/to/foo/**), then all objects
      *                                    located under foo will be included in 
      *                                    retrieving objects with references 
-     *                                    originating from source.
+     *                                    originating from source
      * @param {String|Array} [prototype] The prototype(s) to search against, 
      *                                   if not specified, search against all prototypes
      * @param {Filter} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -1240,7 +1245,7 @@ public class ApplicationBean implements Serializable {
     
     /**
      * This application's tmp directory, either set through java System property "tmpdir"
-     * or "java.io.tmpdir"
+     * or "java.io.tmpdir."
      * @type String
      */
     public String getTmpDir() {
@@ -1248,7 +1253,7 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * The application start time
+     * The application start time.
      * @type Date
      */
     public Date getUpSince() {
@@ -1308,10 +1313,10 @@ public class ApplicationBean implements Serializable {
      * Save an object in the system at the specified layer.
      *
      * @jsfunction
-     * @param {AxiomObject} object The object to be saved at the specified layer.
+     * @param {AxiomObject} object The object to be saved at the specified layer
      * @param {Number} [layer] The layer on which to save the object.  If no layer is 
      *                         specified, default to the layer below the one on which the 
-     *                         input AxiomObject resides.
+     *                         input AxiomObject resides
      * @throws Exception
      */
     public void saveDraft(Object obj, Object layer) throws Exception {
@@ -1355,10 +1360,10 @@ public class ApplicationBean implements Serializable {
     }
     
     /**
-     * app's toString() method, returns [Application appname]
+     * App's toString() method.
      *
      * @jsfunction
-     * @returns {String} '[Application appname]'
+     * @returns {String} Returns the string '[Application appname]'
      */
     public String toString() {
         return "[Application " + app.getName() + "]";

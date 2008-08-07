@@ -134,7 +134,7 @@ public class FileObject extends AxiomObject {
      * file system path.
      * 
      * @param {MimePart|String} file The MimePart object or the path on the file system to
-     *                               replace the binary contents of this File object with.
+     *                               replace the binary contents of this File object with
      */
     public void jsFunction_replaceFile(Object mimepart){
     	FileObjectCtor.setup(this, getNode(), new Object[]{mimepart}, core.app, true);
@@ -143,8 +143,8 @@ public class FileObject extends AxiomObject {
     /**
      * Get the URL of this object within the application.
 	 *
-	 * @param {String} [action] the action name, or null/undefined for the "main" action.
-	 * @returns {String} url
+	 * @param {String} [action] The action name, or null/undefined for the "main" action
+	 * @returns {String} The URL
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
      */
@@ -157,7 +157,7 @@ public class FileObject extends AxiomObject {
     }
     
     /**
-     * Get the content type of this File object (text, xml, doc, jpg, etc)
+     * Get the content type of this File object (text, xml, doc, jpg, etc).
      * 
      * @returns {String} The content type
      */
@@ -238,7 +238,7 @@ public class FileObject extends AxiomObject {
     }
     
     /**  
-     * Invoked to serve the static binary content of this File from inside Axiom
+     * Invoked to serve the static binary content of this File from inside Axiom.
      */
     public void jsFunction_main() throws Exception {
         final String path = this.jsFunction_path();

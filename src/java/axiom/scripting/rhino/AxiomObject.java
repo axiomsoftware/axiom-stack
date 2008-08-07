@@ -336,8 +336,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	/**
 	 * Get the URL of this object within the application.
 	 *
-	 * @param {String} [action] the action name, or null/undefined for the "main" action.
-	 * @returns {String} url
+	 * @param {String} [action] The action name, or null/undefined for the "main" action
+	 * @returns {String} The URL
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
 	 */
@@ -372,10 +372,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
     
 	/**
 	 * Get the absolute URL of this object, appending the 
-	 * protocol and host name to the url to make it fully qualified.
+	 * protocol and host name to the URL to make it fully qualified.
 	 *
-	 * @param {String} [action] the action name, or null/undefined for the "main" action.
-	 * @returns {String} absolute url
+	 * @param {String} [action] The action name, or null/undefined for the "main" action
+	 * @returns {String} Absolute URL
 	 */
     public String jsFunction_getAbsoluteURI(Object action) throws Exception {
     	String trailuri = this.jsFunction_getURI(action);
@@ -420,10 +420,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
     }
 
 	/**
-	 * Get a child object by accessname/id or index
+	 * Get a child object by accessname/id or index.
 	 *
 	 * @param {String|Number} id The accessname/id or index, 
-	 * 							 depending if the argument is a String or Number.
+	 * 							 depending if the argument is a String or Number
 	 * @returns {AxiomObject} The requested child object
 	 */
 	public Object jsFunction_get(Object id) {
@@ -455,10 +455,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 * Get a child object by ID
+	 * Get a child object by ID.
 	 *
-	 * @param {String} id the child id.
-	 * @returns {AxiomObject} The requested object.
+	 * @param {String} id The child id
+	 * @returns {AxiomObject} The requested object
 	 */
 	public Object jsFunction_getById(Object id) {
 		if ((node == null) || (id == null) || id == Undefined.instance) {
@@ -480,7 +480,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 * The number of child objects
+	 * The number of child objects.
 	 * @type Number
 	 */
 	public int jsGet_length() {
@@ -561,7 +561,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
      * @param {FilterObject} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -613,7 +613,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
      * @param {FilterObject} [filter] The filter to apply to the search
      * @param {Object} [options] The optional parameters to pass in to the search. 
      *                           These are all specified in name/value pairs in a 
-     *                           javascript object.
+     *                           javascript object
      *                           
 	 * 		<br><br>Possible values for the optional parameters are:
      * 		   <ul>
@@ -625,7 +625,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
      * 		   </ul>
      *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
      *            
-	 * @returns {Number} The number of child objects.
+	 * @returns {Number} The number of child objects
 	 */
 	public int jsFunction_getChildCount(Object prototype, Object filter, Object optional) {
 
@@ -661,7 +661,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * located under this object and it will be accessible by accessname/id.
 	 *
 	 * @param {AxiomObject} child The object to add to this object's children
-	 * @returns {Boolean} Whether the operation was a success or not. 
+	 * @returns {Boolean} Whether the operation was a success or not 
 	 */
 	public boolean jsFunction_add(Object child) {
         if ((node == null) || (child == null)) {
@@ -722,7 +722,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * Invalidate the node itself, evicting it from the object cache and causing it to 
 	 * be refetched from the database.
 	 *  
-	 * @returns {Boolean} Whether the operation was a success or not.  
+	 * @returns {Boolean} Whether the operation was a success or not  
 	 */
 	public boolean jsFunction_invalidate() {
 		if (node instanceof axiom.objectmodel.db.Node) {
@@ -741,7 +741,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * Check if the input object is a child of this object.
 	 * 
 	 * @param {AxiomObject} object The object to check 
-	 * @returns {Boolean} If the input object is a child of this object.
+	 * @returns {Boolean} If the input object is a child of this object
 	 */
 	public boolean jsFunction_isChild(Object obj) {
 
@@ -1357,7 +1357,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * Default getUserName() method for any AxiomObject attempting to be used as a 
 	 * User to authenticate into Axiom with.
 	 * 
-	 * @return {String} the user name, or "Anonymous" if there is no user name on this object
+	 * @returns {String} the user name, or "Anonymous" if there is no user name on this object
 	 */
 	public String getUserName() {
 		INode n = core.app.getCurrentRequestEvaluator().getSession().getUserNode();
@@ -1437,7 +1437,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * <code>this.prop2 = prop2_value; </code><br>
 	 * 
 	 * @param {Object} input_data A JavaScript object of name/value pairs for assignment
-	 *                            on this object.
+	 *                            on this object
 	 * @returns {Object} A JavaScript hash of the errors encountered executing this function
 	 * @throws Exception
 	 */
@@ -2103,7 +2103,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	/**
 	 * Returns an array of the property names assigned on this object.
 	 * 
-	 * @returns {Array} An array of the property names assigned on this object.
+	 * @returns {Array} An array of the property names assigned on this object
 	 */
 	public Scriptable jsFunction_getPropertyNames() {
 		ArrayList a = new ArrayList();
@@ -2124,19 +2124,19 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
-	 * Return the first AxiomObject in this object's ancestoral hierarchy that matches
+	 * Return the first AxiomObject in this object's ancestral hierarchy that matches
 	 * the given prototype.  For example, if <code>this._parent = foo</code> and 
 	 * <code>foo._parent = bar</code> and <code>foo</code> is of prototype X and 
 	 * <code>bar</code> is of prototype Y, then <code>this.getAncestor("Y")</code> will
 	 * return <code>bar</code>.
 	 * 
-	 * @param {String} [prototype] The prototype to look for on the ancestor heirarchy,
+	 * @param {String} [prototype] The prototype to look for on the ancestor hierarchy,
 	 *                             if not specified, it just returns the 
-	 *                             <code>_parent</code> of this object.
+	 *                             <code>_parent</code> of this object
 	 * @param {Boolean} [includeThis] Whether to include this object in the ancestor
-	 *                                hierarchy search, defaults to <code>false</code>.
+	 *                                hierarchy search, defaults to <code>false</code>
 	 * @returns {AxiomObject} The first AxiomObject in the hierarchy of this object matching
-	 *                       the given object prototype.
+	 *                       the given object prototype
 	 */
 	public Object jsFunction_getAncestor(String prototype, Object includeThis) {
 		if (node != null) {
@@ -2187,8 +2187,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * 
 	 * @param {Boolean} [ignoreInternalProps] Whether to ignore internal properties 
 	 *                  (properties starting with an underscore) when returning the 
-	 *                  schema, defaults to <code>true</code>.
-	 * @returns {Object} A JavaScript object containing the prototype's schema.
+	 *                  schema, defaults to <code>true</code>
+	 * @returns {Object} A JavaScript object containing the prototype's schema
 	 */
 	 public Scriptable jsFunction_getSchema(Object ignoreInternalProps) throws Exception {
 		 if (this.node != null) {
@@ -2329,8 +2329,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  *                 with propvalue
 	  * @param {Object} [propvalue] The property value to set for propname
 	  * @param {Boolean} [deep] Whether to do a deep copy of the object or not, that is,
-	  *                  cloning and copying all child nodes as well.
-	  * @returns {AxiomObject} The newly created copy of this object.
+	  *                  cloning and copying all child nodes as well
+	  * @returns {AxiomObject} The newly created copy of this object
 	  * @throws UnsupportedEncodingException
 	  * @throws IOException
 	  */
@@ -2457,7 +2457,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * For example, if <code>root.get('foo').get('bar')</code> returns <code> this </code> 
 	  * then <code>this.getPath()</code> would return '/foo/bar'.
 	  *
-	  * @returns {String} This object's path.
+	  * @returns {String} This object's path
 	  * @throws UnsupportedEncodingException
 	  * @throws IOException
 	  */
@@ -2503,7 +2503,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 /**
 	  * Returns true if this object has any children.
 	  * 
-	  * @returns {Boolean} Whether or not this object has any children.
+	  * @returns {Boolean} Whether or not this object has any children
 	  */
 	 public boolean jsFunction_hasChildren() {
 		 checkNode();
@@ -2533,7 +2533,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * 							  arguments if it is a relationally backed object<br><br>
 	  *                      
 	  * @param {AxiomObject} [child] The child object to remove from this object's children
-	  * @returns {Boolean} Whether the operation was a success or not.
+	  * @returns {Boolean} Whether the operation was a success or not
 	  */ 
 	 public boolean jsFunction_remove(Object child) throws Exception{
 		 if(child == null || child == Undefined.instance){
@@ -2577,11 +2577,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * that maps to the input action on this object.
 	  * 
 	  * @param {String} action The action on this object to check if the current session
-	  *                        user is allowed to make a URL request for.
+	  *                        user is allowed to make a URL request for
 	  * @param {Array} [roles] Optional list of roles to pass in.  Defaults to retrieving
 	  *                        the user roles from the current session user and checking
 	  *                        against those roles.  Only pass in roles if you want to 
-	  *                        override the current session user's default roles.
+	  *                        override the current session user's default roles
 	  * @returns {Boolean} Whether the action is allowed by the current session user or not
 	  */
 	 public boolean jsFunction_isAllowed(String action, Scriptable roles) {
@@ -2593,7 +2593,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * want to invoke the default isAllowed() behavior in your overriding function.
 	  * 
 	  * @param {String} action The action on this object to check if the current session
-	  *                        user is allowed to make a URL request for.
+	  *                        user is allowed to make a URL request for
 	  * @param {Object} data A JavaScript object that contains name/value pairs to override
 	  *                      any of the name/value pairs in security.properties 
 	  * @returns {Boolean} Whether the action is allowed by the current session user or not
@@ -2610,12 +2610,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 /**
 	  * If cache.properties specifies that the results of a specific set of functions 
 	  * on an object may be cached (for optimized performance), then this function is
-	  * invoked to invalidate those results and reexecute the function call the next time
+	  * invoked to invalidate those results and re-execute the function call the next time
 	  * it is invoked.
 	  * 
 	  * @param {String} [func] The name of the function whose cached result should be
 	  *                        invalidated.  If no function name is specified, then ALL
-	  *                        cached function results for this object will be invalidated.
+	  *                        cached function results for this object will be invalidated
 	  */
 	 public void jsFunction_invalidateResultsCache(Object func) {
 	     if (this.node == null || this.node.getState() == INode.TRANSIENT) {
@@ -3021,7 +3021,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * @param {String} tal The name of the TAL file
 	  * @param {Object} [data] A JavaScript object encapsulating the data scope 
 	  * 					   passed to the TAL evaluation engine.  Defaults to an empty
-	  * 					   JavaScript object.
+	  * 					   JavaScript object
 	  * @returns {XML} A JavaScript XML object representing the rendered TAL
 	  * @throws Exception
 	  */

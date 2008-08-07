@@ -102,7 +102,7 @@ public class JSDoclet extends Doclet {
 				}
 			}
 		}
-		emitComment(new String[]{"axiom utilities namespace", "@constructor", "@jsconstructor"});
+		emitComment(new String[]{"Axiom utilities namespace.", "@constructor", "@jsconstructor"});
 		emit("function axiom(){};");
 		writeToFile("alldoc.js");
 		return true;

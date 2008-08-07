@@ -32,50 +32,50 @@ public class LdapObject extends ScriptableObject {
     }
     
     /**
-     * Set the host name of the LDAP server to connect to
+     * Set the host name of the LDAP server to connect to.
      * 
      * @jsfunction
-     * @param {String} host the host name
+     * @param {String} host The host name
      */
     public void setHost(String host) {
     	this.ldapHost = host;
     }
     
     /**
-     * Set the base value used in LDAP searches
+     * Set the base value used in LDAP searches.
      * 
      * @jsfunction
-     * @param {String} base the base value
+     * @param {String} base The base value
      */
     public void setBase(String base) {
     	this.ldapBase = base;
     }
     
     /**
-     * Set the UID attribute used in LDAP searches
+     * Set the UID attribute used in LDAP searches.
      * 
      * @jsfunction
-     * @param {String} attr the UID attribute
+     * @param {String} attr The UID attribute
      */
     public void setUIDAttr(String attr) {
     	this.ldapUIDAttr = attr;
     }
     
     /**
-     * Set the port number of the LDAP server to connect to
+     * Set the port number of the LDAP server to connect to.
      * 
      * @jsfunction
-     * @param {Number} port the port number
+     * @param {Number} port The port number
      */
     public void setPort(int port) {
     	this.ldapPort = port;
     }
     
     /**
-     * Set the SSL port number of the LDAP server to connect to
+     * Set the SSL port number of the LDAP server to connect to.
      * 
      * @jsfunction
-     * @param {Number} port the SSL port number
+     * @param {Number} port The SSL port number
      */
     public void setSSLPort(int port) {
     	this.ldapSSLPort = port;
@@ -95,12 +95,12 @@ public class LdapObject extends ScriptableObject {
     }
     
     /**
-     * Get a user's LDAP entry attributes
+     * Get a user's LDAP entry attributes.
      * 
      * @jsfunction
-     * @param {String} user the user name to authenticate with 
-     * @param {String} passwd the user password to authenticate with
-     * @returns {Object} a JavaScript object of key/value pairs containting the user's
+     * @param {String} user The user name to authenticate with 
+     * @param {String} passwd The user password to authenticate with
+     * @returns {Object} A JavaScript object of key/value pairs containing the user's
      *                   LDAP entry attributes
      */
     public Object getEntry(String user, String psswd) throws Exception {
@@ -144,12 +144,12 @@ public class LdapObject extends ScriptableObject {
     }
     
     /**
-     * Authenticate the user credentials against the LDAP server
+     * Authenticate the user credentials against the LDAP server.
      * 
      * @jsfunction
-     * @param {String} user the user name to authenticate with 
-     * @param {String} passwd the user password to authenticate with
-     * @returns {Boolean} whether authentication was a success or not
+     * @param {String} user The user name to authenticate with 
+     * @param {String} passwd The user password to authenticate with
+     * @returns {Boolean} Whether authentication was a success or not
      */
     public boolean authenticate(String user, String psswd) {
         boolean success = false;

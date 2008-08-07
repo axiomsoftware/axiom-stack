@@ -207,7 +207,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * Returns <code> true </code> if the input object is contained in this MultiValue, 
      * returns <code> false </code> otherwise.  An object <code> foo </code> is contained 
      * in a MultiValue if there exists an object <code> bar </code> in the MultiValue 
-     * such that <code> foo.equals(bar) </code> is <code> true </code>.
+     * such that <code> foo.equals(bar) </code> is <code> true</code>.
      * 
      * @param {Object} obj The object to check if it is contained in this MultiValue
      * @returns {Boolean} Whether the input object is contained in this MultiValue
@@ -268,7 +268,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
     /**
      * Concatenates the input object or MultiValue with this MultiValue and 
      * returns a new MultiValue.  
-     * That is, if the input object or MultiValue are of the same type as the elements in 
+     * That is, if the input object or MultiValue is of the same type as the elements in 
      * this MultiValue, then the object or the elements of the input MultiValue 
      * are added to the elements of this MultiValue, and a new MultiValue of the
      * concatenation is returned.
@@ -403,9 +403,9 @@ public class MultiValue extends ScriptableObject implements Serializable {
     
     /**
      * A string representation of the elements in this MultiValue, with each element 
-     * seperated by the input String parameter
+     * separated by the input String parameter.
      * 
-     * @param {String} on The String that acts as the delimeter
+     * @param {String} on The String that acts as the delimiter
      * @returns {String} The result of the join
      */
     public Object jsFunction_join(Object on) {
@@ -421,7 +421,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
     
     /**
      * Returns a new MultiValue that contains the elements in this MultiValue at index
-     * start up to (but not including) index end
+     * start up to (but not including) index end.
      * 
      * @param {Number} start The start index
      * @param {Number} [end] The end index, defaults to the length of this MultiValue

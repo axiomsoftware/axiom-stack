@@ -114,7 +114,7 @@ public class LuceneHitsObject extends HitsObject{
     /**
      * Get the number of results in the result set of the specified input criterion
      * applied to the result set of this LuceneHits object.  This is the equivalent of
-     * <code> this.getHits(prototypes, filter).length </code> but more effecient and 
+     * <code> this.getHits(prototypes, filter).length </code> but more efficient and 
      * thus, preferable.
      * 
      * @param {String|Array} [prototype] The prototype(s) to search against, 
@@ -187,7 +187,7 @@ public class LuceneHitsObject extends HitsObject{
     }
     
     /**
-     * The total number of results in the result set of this LuceneHits object
+     * The total number of results in the result set of this LuceneHits object.
      * @type Number
      */
     public int jsGet_length() {

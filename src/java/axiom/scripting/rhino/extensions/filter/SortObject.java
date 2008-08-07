@@ -5,7 +5,7 @@ import java.lang.reflect.*;
 import org.mozilla.javascript.*;
 
 /**
- * Encapsulates the JavaScript Sort object
+ * Encapsulates the JavaScript Sort object.
  * @jsconstructor Sort
  * @param {Object} sortFields A JavaScript object of key/value pairs indicating the sort
  *                            fields and the sort order.  For example, <code> 

@@ -21,7 +21,7 @@ import org.mozilla.javascript.*;
  * 
  * @jsconstructor OrFilter
  * @param {Array} filters An Array of the filter objects that are to be combined by an 
- * 						  OR operation. 
+ * 						  OR operation
  */
 public class OrFilterObject extends OpFilterObject {
     

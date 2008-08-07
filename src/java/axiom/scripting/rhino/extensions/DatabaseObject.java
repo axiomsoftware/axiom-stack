@@ -145,7 +145,7 @@ public class DatabaseObject {
     /**
      * Returns the class name of the object.
      * @jsfunction 
-     * @returns {String} A string of the objec'ts classname.
+     * @returns {String} A string of the object's classname
      */
     public String getClassName() {
         return "DatabaseObject";
@@ -154,7 +154,7 @@ public class DatabaseObject {
     /**
      * Returns a string representation of the object.
      * @jsfunction 
-     * @returns {String} A string representation of the object.
+     * @returns {String} A string representation of the object
      */
     public String toString() {
          if (driverName==null) return "[database protoype]";
@@ -173,7 +173,7 @@ public class DatabaseObject {
     /**
      * Returns the last error.
      * @jsfunction 
-     * @returns {Exception} A java.lang.Exception Object.
+     * @returns {Exception} A java.lang.Exception Object
      */
     public Object getLastError() {
         if (lastError == null) {
@@ -188,11 +188,11 @@ public class DatabaseObject {
      * Connect to the database, using the specific url, optional user name and password.
      * 
      * @jsfunction 
-     * @param {String} url The url the database.
-     * @param {String} username The database username.
-     * @param {String} password The database password.
+     * @param {String} url The url the database
+     * @param {String} username The database username
+     * @param {String} password The database password
 	 *
-     * @returns {Boolean} True if successful, false otherwise.
+     * @returns {Boolean} True if successful, false otherwise
      */
     public boolean connect(String url, String userName, String password) {
         if (!driverOK) {
@@ -231,7 +231,7 @@ public class DatabaseObject {
      *
      * @jsfunction
      * @param {Boolean} commit If set to true commits before disconnecting, if false rollsback 
-     * 						   current transaction before disconnecting.
+     * 						   current transaction before disconnecting
      * @returns {Boolean} True if successful or false if error during disconnect
      */
     public boolean disconnect(boolean commit) {
@@ -267,7 +267,7 @@ public class DatabaseObject {
      * 
      * @jsfunction
      * @param {String} sql A SQL statement such as a SELECT statement
-     * @returns {RowSet} A RowSet object that contains the data produced by the given query.
+     * @returns {RowSet} A RowSet object that contains the data produced by the given query
      */
     public RowSet executeQuery(String sql) {
         if (connection==null) {
@@ -302,7 +302,7 @@ public class DatabaseObject {
      * @jsfunction
      * @param {String} sql A SQL statement such as an INSERT, UPDATE, or DELETE statement
      * @returns {Number} Either the row count for rows modified or 0 for sql statements that return
-     * 					 nothing.
+     * 					 nothing
      */
     public int executeUpdate(String sql) {
         int count = 0;
@@ -345,7 +345,7 @@ public class DatabaseObject {
      * connection.
      * 
      * @jsfunction
-     * @returns {java.sql.DatabaseMetaData} DatabaseMetaData object for this Connection object.
+     * @returns {java.sql.DatabaseMetaData} DatabaseMetaData object for this Connection object
      */
     public Object getMetaData()
     {
@@ -362,7 +362,7 @@ public class DatabaseObject {
      * Returns the database connection object. 
      * 
      * @jsfunction
-     * @returns {Connection} Connection object for this DatabaseObject.
+     * @returns {Connection} Connection object for this DatabaseObject
      */
     public Connection getConnection(){
     	return connection;
@@ -422,7 +422,7 @@ public class DatabaseObject {
         /**
          * Returns the class name of the object.
          * @jsfunction 
-         * @returns {String} A string of the objec'ts classname.
+         * @returns {String} A string of the object's classname
          */
         public String getClassName() {
             return "RowSet";
@@ -436,7 +436,7 @@ public class DatabaseObject {
         /**
          * Returns number of columns in the RowSet.
          * @jsfunction 
-         * @returns {Number} A string of the objec'ts classname.
+         * @returns {Number} A string of the object's classname
          */
         public int getColumnCount() {
             return colNames.size();
@@ -445,7 +445,7 @@ public class DatabaseObject {
         /**
          * Retrieves the number, types and properties of this ResultSet object's columns.
          * @jsfunction 
-         * @returns {ResultSetMetaData} The description of the ResultSet object's columns.
+         * @returns {ResultSetMetaData} The description of the ResultSet object's columns
          */
         public Object getMetaData()
         {
@@ -455,7 +455,7 @@ public class DatabaseObject {
         /**
          * Returns the last error.
          * @jsfunction 
-         * @returns {Exception} A java.lang.Exception Object.
+         * @returns {Exception} A java.lang.Exception Object
          */
         public Object getLastError() {
             if (lastError == null) {
@@ -485,7 +485,7 @@ public class DatabaseObject {
         /**
          * Determines if there are more rows to traverse in the RowSet.
          * @jsfunction 
-         * @returns {Boolean} True if more rows available, false if not.
+         * @returns {Boolean} True if more rows available, false if not
          */
         public boolean hasMoreRows() {
             return !lastRowSeen;   // Simplistic implementation
@@ -496,7 +496,7 @@ public class DatabaseObject {
          * 
          * @jsfunction
          * @param {Number} column The first column is 1, the second is 2, ...
-         * @returns {String} Column name.
+         * @returns {String} Column name
          */
         public String getColumnName(int idx) {
            if (resultSet == null) {
@@ -518,7 +518,7 @@ public class DatabaseObject {
          * 
          * @jsfunction
          * @param {Number} column The first column is 1, the second is 2, ...
-         * @returns {Number} SQL type from java.sql.Types.
+         * @returns {Number} SQL type from java.sql.Types
          */
         public int getColumnDatatypeNumber(int idx) {
            if (resultSet == null) {
@@ -545,7 +545,7 @@ public class DatabaseObject {
          * 
          * @jsfunction
          * @param {Number} column The first column is 1, the second is 2, ...
-         * @returns {String} Type name used by the database.
+         * @returns {String} Type name used by the database
          */
         public String getColumnDatatypeName(int idx) {
            if (resultSet == null) {
@@ -572,8 +572,8 @@ public class DatabaseObject {
          * ResultSet object as a Object.
          * 
          * @jsfunction
-         * @param {String} propertyname The label for the column specified with the SQL.
-         * @returns {Object} The column value.
+         * @param {String} propertyname The label for the column specified with the SQL
+         * @returns {Object} The column value
          */
         public Object getColumnItem(String propertyName) {
            if (resultSet == null) {
@@ -651,7 +651,7 @@ public class DatabaseObject {
          * 
          * @jsfunction
          * @param {Number} column The first column is 1, the second is 2, ...
-         * @returns {Object} The column value.
+         * @returns {Object} The column value
          */
         public Object getProperty(int index) {
             if (!firstRowSeen) {
@@ -758,7 +758,7 @@ public class DatabaseObject {
         /**
          * Returns an enumerator for the key elements of this object.
          * @jsconstructor
-         * @returns {Object} The enumerator - may have 0 length of coulmn names where not found.
+         * @returns {Object} The enumerator - may have 0 length of coulmn names where not found
          */
        public Enumeration getProperties() {
            if (resultSet == null) {
@@ -804,7 +804,7 @@ public class DatabaseObject {
         /**
          * Returns a string representation of the object.
          * @jsfunction 
-         * @returns {String} A string representation of the object.
+         * @returns {String} A string representation of the object
          */
         public String toString() {
             return "[RowSet: '"+sql+"'" +

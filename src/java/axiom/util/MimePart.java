@@ -51,10 +51,10 @@ public class MimePart implements Serializable {
     }
 
     /**
-     * Get the content type of this MimePart
+     * Get the content type of this MimePart.
      *
      * @jsfunction
-     * @returns {String} the content type
+     * @returns {String} The content type
      */
     public String getContentType() {
         return contentType;
@@ -65,30 +65,30 @@ public class MimePart implements Serializable {
     }
     
     /**
-     * Get the content length as the number of bytes for this MimePart
+     * Get the content length as the number of bytes for this MimePart.
      * 
      * @jsfunction
-     * @returns {Number} the nubmer of bytes
+     * @returns {Number} The number of bytes
      */
     public int getContentLength() {
         return contentLength;
     }
 
     /**
-     * Get the name of this MimePart
+     * Get the name of this MimePart.
      * 
      * @jsfunction
-     * @returns {String} the name 
+     * @returns {String} The name 
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Get the content of this MimePart as a byte array
+     * Get the content of this MimePart as a byte array.
      * 
      * @jsfunction
-     * @returns {Array} an array of bytes representing the content
+     * @returns {Array} An array of bytes representing the content
      */
     public byte[] getContent() {
         return content;
@@ -108,10 +108,10 @@ public class MimePart implements Serializable {
     }
     
     /**
-     * Get the text of the MimePart, if the content type is text
+     * Get the text of the MimePart, if the content type is text.
      *
      * @jsfunction
-     * @returns {String} the text
+     * @returns {String} The text
      */
     public String getText() {
         if ((contentType == null) || contentType.startsWith("text/")
