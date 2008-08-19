@@ -14,6 +14,12 @@
  * $Date: 2006/04/10 10:07:42 $
  */
 
+/* 
+ * Modified by (and changed the name of):
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.scripting.rhino;
 
 import java.io.IOException;

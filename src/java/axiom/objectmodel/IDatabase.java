@@ -14,6 +14,12 @@
  * $Date: 2005/03/23 14:57:28 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.objectmodel;
 
 

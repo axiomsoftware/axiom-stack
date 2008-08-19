@@ -14,6 +14,12 @@
  * $Date: 2006/05/23 10:47:22 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.main;
 
 import org.apache.commons.logging.Log;
