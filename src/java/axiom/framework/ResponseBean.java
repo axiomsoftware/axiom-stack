@@ -14,6 +14,13 @@
  * $Date: 2006/01/13 16:50:40 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
+
 package axiom.framework;
 
 import java.io.Serializable;

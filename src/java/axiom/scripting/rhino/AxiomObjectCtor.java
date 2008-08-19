@@ -13,6 +13,13 @@
  * $Revision: 1.2 $
  * $Date: 2006/04/03 12:32:35 $
  */
+
+/* 
+ * Modified by (and changed the name of):
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.scripting.rhino;
 
 import org.mozilla.javascript.*;

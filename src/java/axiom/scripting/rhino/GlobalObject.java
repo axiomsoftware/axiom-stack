@@ -14,6 +14,12 @@
  * $Date: 2006/04/26 15:52:25 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.scripting.rhino;
 
 import org.mozilla.javascript.*;

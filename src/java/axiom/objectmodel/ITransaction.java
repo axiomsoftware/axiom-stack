@@ -14,6 +14,12 @@
  * $Date: 2004/02/17 15:13:40 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 package axiom.objectmodel;
 
 import axiom.extensions.trans.TransactionException;

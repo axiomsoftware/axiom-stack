@@ -14,6 +14,13 @@
  * $Date: 2006/05/11 19:20:31 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
+
 package axiom.framework.core;
 
 
