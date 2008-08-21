@@ -14,6 +14,12 @@
  * $Date: 2006/04/24 07:02:17 $
  */
 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
+ */
 
 /**
  * Return the SMALLINT string representation of this Number.  When doing a search with a
