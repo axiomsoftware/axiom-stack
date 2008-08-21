@@ -19,12 +19,12 @@ function compress(file, env){
 }
 
 var js_base = {output:''};
-compress(dir+'/ext-2.0.2/adapter/ext/ext-base.js', js_base);
-compress(dir+'/ext-2.0.2/ext-all.js', js_base);
+compress(dir+'/ext-2.1/adapter/ext/ext-base.js', js_base);
+compress(dir+'/ext-2.1/ext-all.js', js_base);
 
 var inspector_js = {output: js_base.output};
-compress(dir+'/ext-2.0.2/TabCloseMenu.js', inspector_js);
-compress(dir+'/ext-2.0.2/radiogroup/radiogroup.js', inspector_js);
+compress(dir+'/ext-2.1/TabCloseMenu.js', inspector_js);
+compress(dir+'/ext-2.1/radiogroup/radiogroup.js', inspector_js);
 compress(dir+'/inspector.js', inspector_js);
 writeToFile(inspector_js.output, dir+'/inspector-all.js');
 

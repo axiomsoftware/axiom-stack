@@ -1,6 +1,6 @@
 /**
   *  Copyright 2007-2008 Axiom Software Inc.
-  *  This file is part of the Axiom Manage Application.
+  *  This file is part of the Axiom Inspector Application.
   *
   *  The Axiom Manage Application is free software: you can redistribute
   *  it and/or modify it under the terms of the GNU General Public License
