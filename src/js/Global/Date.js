@@ -1,5 +1,5 @@
 /*
- * Axiom License Notice
+ * Helma License Notice
  *
  * The contents of this file are subject to the Helma License
  * Version 2.0 (the "License"). You may not use this file except in
@@ -12,6 +12,13 @@
  * $Author: czv $
  * $Revision: 1.2 $
  * $Date: 2006/04/24 07:02:17 $
+ */
+ 
+/* 
+ * Modified by:
+ * 
+ * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
+ * email: info@axiomsoftwareinc.com
  */
 
 /** 
