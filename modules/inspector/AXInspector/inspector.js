@@ -1,6 +1,6 @@
 /**
  *  Copyright 2007-2008 Axiom Software Inc.
- *  This file is part of the Axiom Manage Application.
+ *  This file is part of the Axiom Inspector Application.
  *
  *  The Axiom Manage Application is free software: you can redistribute
  *  it and/or modify it under the terms of the GNU General Public License
@@ -116,6 +116,8 @@ function object_info(data){
 		var type = typeof val;
 		if(val instanceof MultiValue){
 			val = [ (val.type() == "Reference" ? f.getTarget().getPath() : f+"") for each(f in val) ].join(',');
+		} else if(val instanceof Reference){
+			val = val.getTarget().getPath();
 		} else if(val instanceof Date){
 			val = val.getTime();
 		} else if (type != 'undefined' && type != 'number' && type != 'boolean') {
@@ -189,6 +191,10 @@ function authenticate(data){
 	var props = app.getProperties();
 	if(data.username == props['inspector.user'] && data.password == props['inspector.password']){
 		session.data.inspector = true;
+		session.debug.setWhitelist({ 'Root': [props['inspector.mountpoint'] || 'inspector'],
+									 'AXInspector': [] // whitelist all inspector funcs
+								   });
+
 		return this.main();
 	} else {
 		return this.main({login: true, error:"Incorrect username or password."});
@@ -207,7 +213,94 @@ function logout(){
 }
 
 function addable_prototypes(){
-	return [p for each(p in app.getPrototypes())].filter(function(p){
-		return !(/^AXInspector/).test(p);
-	}).sort();
+	return [p for each(p in app.getPrototypes()) if(!(/^AXInspector/).test(p))].sort();
+}
+
+function load_resource(data){
+	var resource = (data||req.data).resource;
+	return { success:     true,
+			 line_data:   [ ['<pre>'+line.replace(/</g, '&lt;')+'</pre>'] for each(line in axiom.SystemFile.readFromFile(resource).split("\n"))],
+			 breakpoints: session.debug.getBreakpoints(resource),
+			 break_on_function_entry: session.debug.getBreakOnFunctionEntry(),
+			 break_on_function_exit: session.debug.getBreakOnFunctionExit(),
+			 break_on_exceptions: session.debug.getBreakOnException()
+		   };
+}
+
+function prototype_resources(data){
+	if(data.node == '__get_prototypes__'){
+		return [{text: p, id: p} for each(p in this.addable_prototypes())];
+	} else {
+		return [{text: (new String(r)).replace(/apps/, 'weasels'), id: new String(r), leaf: true} for each(r in app.getPrototypeResources(data.node)) if((/\.js$/).test(r))];
+	}
+
+}
+
+function add_breakpoint(data){
+	app.log(data.resource.toSource()+ ' - '+ parseInt(data.line));
+	return session.debug.addBreakpoint(data.resource, parseInt(data.line));
+}
+
+function get_debug_events(data){
+	if(session.debug.getEventSize() == 0){
+		return 0;
+	} else {
+		var evt = session.debug.popEvent();
+		var scope_transform = function(scope, name){
+			return [[k, typeof scope[k], new String(scope[k]).replace(/</g, '&lt;'), name] for(k in scope)];
+		};
+		var exception;
+		if(evt.exception){
+			exception = { name: evt.exception.name,
+						  message: evt.exception.message,
+						  trace: evt.exception.getScriptStackTrace().replace(/at\s+(\S+):(\d+)\s+\(/g,
+																			 function(match, resource, line){
+																				 return 'at <a href="javascript:void(0);" onclick="axiom.load_resource(\''
+																					 +resource.replace(/\\(?!\\)/g, '\\\\')
+																					 +'\', function(tab){tab.go_to_line('+line+')})">'+resource+':'+line+'</a> (';
+																			 })
+
+						};
+		}
+		return { debug_id:  evt.requestId,
+				 line:      evt.lineNumber,
+				 resource:  evt.resourceName,
+				 event:     'breakpoint_hit',
+				 scope:     scope_transform(evt.scope, 'local').concat(scope_transform(evt.parentScope, 'global')),
+				 exception: exception
+			   };
+	}
+}
+
+
+function remove_breakpoint(data){
+	session.debug.clearBreakpoint(data.resource, data.line);
+}
+
+function go(data){
+	session.debug.go(parseInt(data.debug_id));
+}
+
+function step(data){
+	session.debug.step(parseInt(data.debug_id));
+}
+
+function step_over(data){
+	session.debug.stepOver(parseInt(data.debug_id));
+}
+
+function break_on_exceptions(data){
+	session.debug.setBreakOnException((data.value == 'true'));
+}
+
+function break_on_entry(data){
+	session.debug.setBreakOnFunctionEntry((data.value == 'true'));
+}
+
+function break_on_exit(data){
+	session.debug.setBreakOnFunctionExit((data.value == 'true'));
+}
+
+function clear_all_breakpoints(){
+	session.debug.clearAllBreakpoints();
 }

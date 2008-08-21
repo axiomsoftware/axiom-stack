@@ -1,6 +1,6 @@
 /**
  *  Copyright 2007-2008 Axiom Software Inc.
- *  This file is part of the Axiom Manage Application.
+ *  This file is part of the Axiom Inspector Application.
  *
  *  The Axiom Manage Application is free software: you can redistribute
  *  it and/or modify it under the terms of the GNU General Public License
@@ -64,6 +64,40 @@ var axiom = {
 			node.parentNode.reload(callback);
 		}
 	},
+	load_resource: function(resource, callback){
+		Ext.Ajax.request({ url: handler_url,
+						   disableCaching: true,
+						   params: {
+							   method: 'load_resource',
+							   resource: resource+''
+						   },
+						   success: function(res, options){
+							   var panel = Ext.getCmp(resource);
+							   if(!panel){
+								   var data = Ext.decode(res.responseText);
+								   panel = new axiom.DebugPanel({  id:           resource,
+																   tabTip:  	 resource,
+																   title:        resource,
+																   line_data:    data.line_data,
+																   breakpoints:  data.breakpoints,
+																   break_on_function_entry: data.break_on_function_entry,
+																   break_on_function_exit: data.break_on_function_exit,
+																   break_on_exceptions: data.break_on_exceptions
+																});
+								   axiom.main.add(panel);
+							   }
+							   axiom.main.activate(panel);
+							   axiom.main.doLayout();
+							   if(typeof callback == 'function'){
+								   callback(panel);
+							   }
+						   },
+						   failure: axiom.http_failure_handler
+						 });
+	},
+	clear_all_breakpoint_markers: function(){
+		Ext.each(Ext.query('.breakpoint'),function(n){Ext.get(n).removeClass('breakpoint');});
+	},
 	init: function() {
 		// application initialization function
 
@@ -79,16 +113,13 @@ var axiom = {
 								loader.baseParams._id = node.id;
 							});
 
-		// instantiate actual object tree
+		// instantiate object tree
 		axiom.tree = new Ext.tree.TreePanel({ title:      'Objects',
 											  id:         'object_tree',
-											  region:     'west',
 											  autoScroll: true,
 											  animate:    true,
-											  split:      true,
+											  collapsible: true,
 											  containerScroll: true,
-											  margins:    '10 0 0 10',
-											  width:      '260px',
 											  root:       new Ext.tree.AsyncTreeNode({text: 'root',
 																					  id: '0',
 																					  qtip: "Root",
@@ -97,6 +128,31 @@ var axiom = {
 																					  iconCls: 'object-icon'}),
 											  loader:     axiom.treeloader
 											});
+
+		axiom.prototypes = new Ext.tree.TreePanel({ title: 'Prototypes',
+													id:    'prototypes-tree',
+													root:  new Ext.tree.AsyncTreeNode({ text: 'prototypes', id: '__get_prototypes__'}),
+													rootVisible: false,
+													loader:	new Ext.tree.TreeLoader({ url: handler_url,
+																					  baseParams: { method: 'prototype_resources'},
+																					  baseAttrs:  {listeners: {click: function(){
+																												   if(this.attributes.leaf){
+																													   axiom.load_resource(this.id);
+																												   }
+																											   }
+																											  }}
+																					})
+												  });
+
+		// tab panel to hold object and prototype trees
+		var treecontainer = new Ext.TabPanel({ id:       'tree_panel',
+											   margins:  '10 0 0 10',
+											   region:     'west',
+											   split:      true,
+											   width:    '260px',
+											   activeTab: 0,
+											   items:     [axiom.tree, axiom.prototypes]
+											 });
 
 		// instantiate main tab panel with introduction. tabs for editing / creating
 		// objects will be placed here
@@ -111,7 +167,7 @@ var axiom = {
     											 title: 'Home',
     											 closable:false,
     											 autoScroll:true
-											   }],
+										}],
 										listeners: {
 											tabchange: function(self, tab){
 												var node = Ext.getCmp('object_tree').getNodeById(self.getActiveTab().id);
@@ -312,21 +368,56 @@ var axiom = {
 								  handles: 'w'
 								  });
 
+		var debugger_scope = { id: 'debug-scope',
+							   region: 'west',
+							   xtype: 'grid',
+							   store: new Ext.data.GroupingStore({ reader: new Ext.data.ArrayReader({},
+																									[{name: 'name'},
+																									 {name: 'type'},
+																									 {name: 'value'},
+																									 {name: 'scope'}]),
+																   data: [],
+																   groupField: 'scope',
+																   sortInfo:{field: 'scope', direction: "DESC"}
+																 }),
+							   view: new Ext.grid.GroupingView({ forceFit:true,
+																 groupTextTpl: '{text}'
+															   }),
+							   columns: [
+								   {header: "Name", dataIndex: 'name'},
+								   {header: "Type", dataIndex: 'type'},
+								   {header: "Value", dataIndex: 'value'},
+								   {header: "Scope", dataIndex: 'scope', hidden: true}
+							   ],
+							   title: "Debugger",
+							   split: true,
+							   width: 300,
+							   collapsible: true,
+							   autoScroll:true
+							 };
+
 		// create single-line interperter-mode shell
-		axiom.shell = new Ext.Panel({ id: 'shellcntr',
-									  region: 'south',
-									  split: true,
-									  height: 180,
-									  layout: 'border',
-									  margins: '0 10 10 10',
-									  items: [shellgrid, multiline_shell]
-		});
+		axiom.shell = new Ext.TabPanel({  margins: '0 10 10 10',
+										  region: 'south',
+										  split: true,
+										  height: 180,
+										  activeTab: 0,
+										  items:[{ id: 'shellcntr',
+												   title: "Shell",
+												   activeTab: 0,
+												   layout: 'border',
+												   items: 	[shellgrid, multiline_shell]
+												 }, debugger_scope]
+									   });
 
 		// overall layout container
 		axiom.nav = new Ext.Viewport({ layout: 'border',
-									   items:  [axiom.tree, axiom.main, axiom.shell]
+									   items:  [treecontainer, axiom.main, axiom.shell]
 									 });
 		axiom.tree.root.expand();
+
+		axiom.dispatcher = new axiom.DebugDispatcher();
+		axiom.dispatcher.start();
 	}
 };
 
@@ -494,6 +585,162 @@ axiom.ObjectForm = function(config){
 };
 Ext.extend(axiom.ObjectForm, Ext.form.FormPanel);
 
+/**
+ * Panel extension for displaying debug information
+ */
+axiom.DebugPanel = function(config){
+	var store = new Ext.data.SimpleStore({ fields: [{name: 'line_text'}] });
+	store.loadData(config.line_data);
+	Ext.applyIf(config, { store: store,
+						  columns: [
+							  new Ext.grid.RowNumberer(),
+							  {header: "File", dataIndex: 'line_text', id: 'line_text', sortable: false}
+						  ],
+						  tbar: [{xtype: 'button',
+								  text: 'Step',
+								  handler: function(){this.debug_call('step');},
+								  scope: this
+								 },
+								 {xtype: 'button',
+								  text: 'Step Over',
+								  handler: function(){this.debug_call('step_over');},
+								  scope: this
+								 },
+								 {xtype: 'button',
+								  text: 'Go',
+								  handler: function(){this.debug_call('go');},
+								  scope: this},
+								 {xtype: 'button',
+								  text: 'Clear All Breakpoints',
+								  handler: function(){
+									  this.debug_call('clear_all_breakpoints');
+									  axiom.clear_all_breakpoint_markers();
+								  },
+								  scope: this},
+								 {text:"Break On", menu: {items: [{text: 'Exceptions',
+																   checked: (config.break_on_exceptions || false),
+																   checkHandler: function(item, checked){this.toggle_break_on('exceptions', checked);},
+																   scope: this
+																  },
+																  {text: 'Function Entry',
+																   checked: (config.break_on_function_entry || false),
+																   checkHandler: function(item, checked){this.toggle_break_on('entry', checked);},
+																   scope: this
+																  },
+																  {text: 'Function Exit',
+																   checked: (config.break_on_function_exit || false),
+																   checkHandler: function(item, checked){this.toggle_break_on('exit', checked);},
+																   scope: this
+																  }]
+														 }}
+								],
+						  autoExpandColumn: 'line_text',
+						  height:350,
+						  width:600,
+						  closable: true,
+						  hideHeaders: true,
+						  listeners: {
+							  cellclick: function(grid, row, col, evt){
+								  if(col == 0) grid.toggle_breakpoint(row);
+							  },
+							  render: 	function(grid){
+								  Ext.each(grid.initialConfig.breakpoints, grid.display_breakpoint, grid);
+							  }
+						  }
+						});
+	axiom.DebugPanel.superclass.constructor.call(this, config);
+	this.getSelectionModel().lock();
+};
+Ext.extend(axiom.DebugPanel, Ext.grid.GridPanel, {
+	toggle_breakpoint: function(line_num){
+		var line_num_el = Ext.get(this.getView().getCell(line_num, 0));
+		var method;
+		if(line_num_el.hasClass('breakpoint')){
+			line_num_el.removeClass('breakpoint');
+			method = 'remove_breakpoint';
+		} else {
+			line_num_el.addClass('breakpoint');
+			method = 'add_breakpoint';
+		}
+		Ext.Ajax.request({url: handler_url,
+						  params: {
+							  method: method,
+							  line: line_num+1,
+							  resource: this.title+''
+						  }
+						 });
+	},
+	display_breakpoint: function(line_num){
+		Ext.get(this.getView().getCell(line_num-1,0)).addClass('breakpoint');
+	},
+	toggle_break_on: function(name, val){
+		this.debug_call('break_on_'+name, {value: val});
+	},
+	debug_call: function(method, extra_params){
+		var params = Ext.applyIf({ method: method,
+								   resource: this.title,
+								   debug_id: axiom.dispatcher.debug_id
+								 }, extra_params);
+		Ext.Ajax.request({url: handler_url, params: params});
+	},
+	go_to_line: function(num){
+		var select_model = this.getSelectionModel();
+		select_model.unlock();
+		select_model.selectRow(num-1);
+		select_model.lock();
+		this.getView().getRow(num-1).scrollIntoView();
+	}
+});
+
+/**
+ * Class to poll for and distribute debug events
+ */
+axiom.DebugDispatcher = function(){
+	this.poll_debug_events = {
+		run: function(){ this.poll();},
+		scope: this,
+		interval: 4000
+	};
+};
+Ext.extend(axiom.DebugDispatcher, Ext.util.Observable,{
+	start: function(){
+		Ext.TaskMgr.start(this.poll_debug_events);
+	},
+	stop: function(){
+		Ext.TaskMgr.stop(this.poll_debug_events);
+	},
+	poll: function(){
+		Ext.Ajax.request({
+				url: handler_url,
+				params: { method: 'get_debug_events' },
+				success: function(res, config){
+					if(res.responseText != '0'){
+						var results = Ext.decode(res.responseText);
+						this[results.event].call(this, results);
+					}
+				},
+				scope:this
+		});
+	},
+	breakpoint_hit: function(data){
+		this.debug_id = data.debug_id;
+		axiom.load_resource(data.resource, function(panel){
+								panel.go_to_line(data.line);
+								var scope = Ext.getCmp('debug-scope');
+								scope.getStore().loadData(data.scope);
+								axiom.shell.activate(scope);
+								var exception = data.exception;
+								if(exception){
+									axiom.shell.add(new Ext.Panel({ title: 'Exception',
+																	html: String.format('<b>{0}</b><br/><pre>{1}</pre>',
+																						exception.message,
+																						exception.trace),
+																	closable: true
+																  }));
+								}
+							});
+	}
+});
 
 /**
  * Override gridview's cell rendering so the text is selectable
