@@ -482,7 +482,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Array} An array of field values
      * @throws Exception
@@ -543,7 +543,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Number} The number of objects that match the search criteria
      * @throws Exception
@@ -597,7 +597,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      *            
      * @returns {LuceneHits} The results in HitsObject form, so they are not all
@@ -703,7 +703,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
@@ -1036,7 +1036,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Number} The number of AxiomObjects 
      * @throws Exception
@@ -1097,7 +1097,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
@@ -1178,7 +1178,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Number} The number of AxiomObjects
      * @throws Exception
@@ -1240,7 +1240,7 @@ public class ApplicationBean implements Serializable {
      *                   is not specified, execute the query on the layer on which this
      *                   function is being invoked.
      * 		   </ul>
-     *      <br>Example: { 'maxlength':50, 'sort':new Sort('propname','asc'), 'layer':1 }
+     *      <br>Example: { 'maxlength':50, 'sort':new Sort({'propname','asc'}), 'layer':1 }
      *            
      * @returns {Array} An array of AxiomObjects
      * @throws Exception
