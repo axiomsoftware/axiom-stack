@@ -21,5 +21,5 @@ Successful completion of the jar ANT task will result in the Axiom Stack being b
 Dependencies:
 ----------------------------------------
 
-The Axiom Stack source depends on a customized Lucene implementation.  This customized implementation comes with the Axiom Stack and is located at lib/axiom-lucene.jar; therefore, you don't need to do anything extra to get this customized version with the source you just downloaded.  However, if you would like the source code for the customized Lucene version, go to http://file.axiomstack.com/public-bzr/lucene-trunk
+The Axiom Stack source depends on a customized Lucene implementation.  This customized implementation comes with the Axiom Stack and is located at lib/axiom-lucene.jar; therefore, you don't need to do anything extra to get this customized version with the source you just downloaded.  However, if you would like the source code for the customized Lucene version, please go to http://file.axiomstack.com/public-bzr/lucene-trunk
 
