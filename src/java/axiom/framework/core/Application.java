@@ -410,7 +410,7 @@ public final class Application implements IPathElement, Runnable {
 				}
 			}
 			catch(Exception e){
-				throw new IOException(e);
+				throw new IOException(e.getMessage());
 			}
 		}
 		
