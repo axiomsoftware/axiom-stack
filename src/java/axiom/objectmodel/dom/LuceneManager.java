@@ -1033,7 +1033,7 @@ public class LuceneManager{
 				}
 			}
 			
-			SubnodeList subnodes = null;
+			Collection<NodeHandle> subnodes = null;
 			length = ids.size();
 			if (length > 0) {
 				subnodes = parent.createSubnodeList();
@@ -1041,7 +1041,11 @@ public class LuceneManager{
 				while (iter.hasNext()) {
 					String id = (String) iter.next();
 					NodeHandle handle = makeNodeHandle(nmgr, id, (String) ids.get(id), mode);
-					subnodes.addSorted(handle);
+					if(subnodes instanceof SubnodeList){
+						((SubnodeList)subnodes).addSorted(handle);
+					} else {
+						subnodes.add(handle);
+					}
 				}
 			}
 			ids.clear();
@@ -1054,7 +1058,11 @@ public class LuceneManager{
 						subnodes = parent.createSubnodeList();
 					}
 					for (int i = 0; i < charr.length; i += 2) {
-						subnodes.addSorted(makeNodeHandle(nmgr, charr[i], charr[i+1], mode));
+						if(subnodes instanceof SubnodeList){
+							((SubnodeList)subnodes).addSorted(makeNodeHandle(nmgr, charr[i], charr[i+1], mode));
+						} else {
+							subnodes.add(makeNodeHandle(nmgr, charr[i], charr[i+1], mode));							
+						}
 					}
 				}
 			}

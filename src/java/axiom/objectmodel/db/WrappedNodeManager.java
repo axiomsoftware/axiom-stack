@@ -23,6 +23,7 @@
 package axiom.objectmodel.db;
 
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -119,7 +120,7 @@ public final class WrappedNodeManager {
      * @param rel
      * @return
      */
-    public SubnodeList getNodes(Node home, Relation rel) {
+    public Collection<NodeHandle> getNodes(Node home, Relation rel) {
         try {
             return nmgr.getNodes(home, rel);
         } catch (Exception x) {
@@ -139,7 +140,7 @@ public final class WrappedNodeManager {
      * @param rel
      * @return
      */
-    public SubnodeList getNodeIDs(Node home, Relation rel) {
+    public Collection<NodeHandle> getNodeIDs(Node home, Relation rel) {
         try {
             return nmgr.getNodeIDs(home, rel);
         } catch (Exception x) {

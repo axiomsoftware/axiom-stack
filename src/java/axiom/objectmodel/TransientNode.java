@@ -458,12 +458,12 @@ public class TransientNode implements INode, Serializable {
      *
      * @return ...
      */
-    public int contains(INode n) {
+    public boolean contains(INode n) {
         if ((n == null) || (nodes == null)) {
-            return -1;
+            return false;
         }
 
-        return nodes.indexOf(n);
+        return nodes.contains(n);
     }
 
     /**

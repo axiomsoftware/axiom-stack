@@ -328,7 +328,7 @@ public final class NodeManager {
                 // apply different consistency checks for groupby nodes and database nodes:
                 // for group nodes, check if they're contained
                 if (rel.groupby != null) {
-                    if (home.contains(node) < 0) {
+                    if (home.contains(node)) {
                         node = null;
                     }
 
@@ -1035,7 +1035,7 @@ public final class NodeManager {
      *  Loades subnodes via subnode relation. Only the ID index is loaded, the nodes are
      *  loaded later on demand.
      */
-    public SubnodeList getNodeIDs(Node home, Relation rel) throws Exception {
+    public Collection<NodeHandle> getNodeIDs(Node home, Relation rel) throws Exception {
         // Transactor tx = (Transactor) Thread.currentThread ();
         // tx.timer.beginEvent ("getNodeIDs "+home);
 
@@ -1044,7 +1044,7 @@ public final class NodeManager {
             throw new RuntimeException("NodeMgr.getNodeIDs called for non-relational node " +
                                        home);
         } else {
-            SubnodeList retval = home.createSubnodeList();
+            Collection<NodeHandle> retval = home.createSubnodeList();
 
             // if we do a groupby query (creating an intermediate layer of groupby nodes),
             // retrieve the value of that field instead of the primary key
@@ -1114,7 +1114,11 @@ public final class NodeManager {
                               ? (Key) new DbKey(rel.otherType, kstr, this.app.getCurrentRequestEvaluator().getLayer())
                               : (Key) new SyntheticKey(k, kstr);
                               
-                    retval.addSorted(new NodeHandle(key));
+                    if(retval instanceof SubnodeList){
+                    	((SubnodeList)retval).addSorted(new NodeHandle(key));
+                    } else {
+                    	retval.add(new NodeHandle(key));
+                    }
 
                     // if these are groupby nodes, evict nullNode keys
                     if (rel.groupby != null) {
@@ -1148,7 +1152,7 @@ public final class NodeManager {
      *  actually loades all nodes in one go, which is better for small node collections.
      *  This method is used when xxx.loadmode=aggressive is specified.
      */
-    public SubnodeList getNodes(Node home, Relation rel) throws Exception {
+    public Collection<NodeHandle> getNodes(Node home, Relation rel) throws Exception {
         // This does not apply for groupby nodes - use getNodeIDs instead
         if (rel.groupby != null) {
             return getNodeIDs(home, rel);
@@ -1161,7 +1165,7 @@ public final class NodeManager {
             throw new RuntimeException("NodeMgr.getNodes called for non-relational node " +
                                        home);
         } else {
-            SubnodeList retval = home.createSubnodeList();
+            Collection<NodeHandle> retval = home.createSubnodeList();
             DbMapping dbm = rel.otherType;
 
             Connection con = dbm.getConnection();
@@ -1204,7 +1208,11 @@ public final class NodeManager {
                     }
                     Key primKey = node.getKey();
 
-                    retval.addSorted(new NodeHandle(primKey));
+                    if(retval instanceof SubnodeList){
+                    	((SubnodeList)retval).addSorted(new NodeHandle(primKey));
+                    } else {
+                    	retval.add(new NodeHandle(primKey));
+                    }
 
                     // do we need to synchronize on primKey here?
                     synchronized (cache) {
@@ -1256,7 +1264,8 @@ public final class NodeManager {
             throw new RuntimeException("NodeMgr.updateSubnodeList called for non-relational node " +
                                        home);
         } else {
-            List list = home.getSubnodeList();
+        	
+        	Collection<NodeHandle> list = home.getSubnodeList();
             if (list == null)
                 list = home.createSubnodeList();
             
