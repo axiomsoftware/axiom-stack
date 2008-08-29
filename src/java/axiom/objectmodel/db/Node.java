@@ -60,7 +60,7 @@ public class Node implements INode, Serializable {
     protected NodeHandle parentHandle;
 
     // Ordered list of subnodes of this node
-    private SubnodeList subnodes;
+    private Collection<NodeHandle> subnodes;
 
     // Named subnodes (properties) of this node
     private Hashtable propMap;
@@ -295,7 +295,7 @@ public class Node implements INode, Serializable {
     /**
      * used by Xml deserialization
      */
-    public synchronized void setSubnodes(SubnodeList subnodes) {
+    public synchronized void setSubnodes(Collection<NodeHandle> subnodes) {
         this.subnodes = subnodes;
     }
 
@@ -1076,10 +1076,14 @@ public class Node implements INode, Serializable {
             synchronized (subnodes) {
                 subnodes.remove(nhandle);
                 // check if index is out of bounds when adding
-                if (where < 0 || where > subnodes.size()) {
-                    subnodes.add(nhandle);
-                } else {
-                    subnodes.add(where, nhandle);
+                if(subnodes instanceof HashSet){
+                	subnodes.add(nhandle);
+                } else if(subnodes instanceof ArrayList){
+                	if (where < 0 || where > subnodes.size()) {
+                		((ArrayList<NodeHandle>)subnodes).add(nhandle);
+                	} else {
+                		((ArrayList<NodeHandle>)subnodes).add(where, nhandle);
+                	}
                 }
             }
         } else {
@@ -1126,10 +1130,14 @@ public class Node implements INode, Serializable {
             // actually add the new child to the subnode list
             synchronized (subnodes) {
                 // check if index is out of bounds when adding
-                if (where < 0 || where > subnodes.size()) {
-                    subnodes.add(nhandle);
-                } else {
-                    subnodes.add(where, nhandle);
+                if(subnodes instanceof HashSet){
+                	subnodes.add(nhandle);
+                } else if(subnodes instanceof ArrayList){
+                	if (where < 0 || where > subnodes.size()) {
+                		((ArrayList<NodeHandle>)subnodes).add(nhandle);
+                	} else {
+                		((ArrayList<NodeHandle>)subnodes).add(where, nhandle);
+                	}
                 }
             }
 
@@ -1392,19 +1400,18 @@ public class Node implements INode, Serializable {
             }
 
             NodeHandle nhandle = null;
-            int l = subnodes.size();
 
-            for (int i = 0; i < l; i++)
-                try {
-                    NodeHandle shandle = (NodeHandle) subnodes.get(i);
-                    if (subid.equals(shandle.getID())) {
-                        nhandle = shandle;
-
-                        break;
-                    }
-                } catch (Exception x) {
-                    break;
-                }
+            for(NodeHandle nh : subnodes){
+            	try{
+	            	if(subid.equals(nh.getID())){
+	            		nhandle = nh;
+	            		break;
+	            	}
+            	} catch(Exception e){
+            		break;
+            	}
+            	
+            }
 
             if (nhandle != null) {
                 retval = nhandle.getNode(nmgr);
@@ -1427,7 +1434,7 @@ public class Node implements INode, Serializable {
      *
      *
      * @param index ...
-     *
+     * @deprecated 8/29/2008, when changing subnodes to HashSet from ArrayList.
      * @return ...
      */
     public INode getSubnodeAt(int index) {
@@ -1436,13 +1443,16 @@ public class Node implements INode, Serializable {
         if (subnodes == null) {
             return null;
         }
+        nmgr.logEvent("Node.getSubNodeAt(int index) has been deprecated and may return unexpected results");
 
         Node retval = null;
 
         if (subnodes.size() > index) {
-            // check if there is a group-by relation
-            retval = ((NodeHandle) subnodes.get(index)).getNode(nmgr);
-
+            if(subnodes instanceof ArrayList){
+                retval = ((NodeHandle) ((ArrayList<NodeHandle>)subnodes).get(index)).getNode(nmgr);            	
+            } else{
+                retval = subnodes.iterator().next().getNode(nmgr);
+            }
             if ((retval != null) && (retval.parentHandle == null) &&
                     !nmgr.isRootNode(retval)) {
                 retval.setParent(this);
@@ -1683,26 +1693,20 @@ public class Node implements INode, Serializable {
      *
      * @return the node's index position in the child list, or -1
      */
-    public int contains(INode n) {
-        if (n == null) {
-            return -1;
+    public boolean contains(INode n) {
+        // if the node contains relational groupby subnodes, the subnodes vector
+        // contains the names instead of ids.
+        if (n == null || !(n instanceof Node)) {
+            return false;
         }
 
         loadNodes();
 
         if (subnodes == null) {
-            return -1;
+            return false;
         }
 
-        // if the node contains relational groupby subnodes, the subnodes vector
-        // contains the names instead of ids.
-        if (!(n instanceof Node)) {
-            return -1;
-        }
-
-        Node node = (Node) n;
-
-        return subnodes.indexOf(node.getHandle());
+        return subnodes.contains(((Node)n).getHandle());
     }
 
     /**
@@ -1733,7 +1737,7 @@ public class Node implements INode, Serializable {
             }
         }
         // just fall back to contains() for non-relational nodes
-        return contains(n) > -1;
+        return contains(n);
     }
 
     /**
@@ -1830,14 +1834,14 @@ public class Node implements INode, Serializable {
      * used for this Nodes subnode-list
      * @return List an empty List of the type used by this Node
      */
-    public SubnodeList createSubnodeList() {
-        Relation rel = this.dbmap == null ? null : this.dbmap.getSubnodeRelation();
+    public Collection<NodeHandle> createSubnodeList() {
+    	Relation rel = this.dbmap == null ? null : this.dbmap.getSubnodeRelation();
         if (rel != null && rel.updateCriteria != null) {
             subnodes = new UpdateableSubnodeList(nmgr, rel);
         } else if (rel != null && rel.autoSorted) {
             subnodes = new OrderedSubnodeList(nmgr, rel);
         } else {
-            subnodes = new SubnodeList(nmgr, rel);
+        	subnodes = new HashSet<NodeHandle>();
         }
         return subnodes;
     }
@@ -1877,9 +1881,9 @@ public class Node implements INode, Serializable {
         }
 
         Key[] keys = new Key[l];
-
+        Iterator<NodeHandle> nhs = subnodes.iterator();
         for (int i = 0; i < l; i++) {
-            keys[i] = ((NodeHandle) subnodes.get(i + startIndex)).getKey();
+        	keys[i] = nhs.next().getKey();
         }
 
         prefetchChildren (keys);
@@ -1894,18 +1898,24 @@ public class Node implements INode, Serializable {
      *
      * @return ...
      */
-    public Enumeration getSubnodes() {
+    public Enumeration<Node> getSubnodes() {
         loadNodes();
-
-        class Enum implements Enumeration {
+        
+        if(subnodes == null){
+        	subnodes = createSubnodeList();
+        }
+        
+        class Enum implements Enumeration<Node> {
             int count = 0;
+            Iterator<NodeHandle> it = subnodes.iterator();
 
             public boolean hasMoreElements() {
                 return count < numberOfNodes();
             }
 
-            public Object nextElement() {
-                return getSubnodeAt(count++);
+            public Node nextElement() {
+            	count++;
+            	return it.next().getNode(nmgr);
             }
         }
 
@@ -1924,7 +1934,7 @@ public class Node implements INode, Serializable {
      *
      * @return the subnode list
      */
-    public SubnodeList getSubnodeList() {
+    public Collection<NodeHandle> getSubnodeList() {
         return subnodes;
     }
 

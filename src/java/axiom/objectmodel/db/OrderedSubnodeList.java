@@ -88,7 +88,7 @@ public class OrderedSubnodeList extends SubnodeList {
     *
     * @param obj element to be inserted.
     */
-    public boolean add(Object obj) {
+    public boolean add(NodeHandle obj) {
         return add(obj, true);
     }
 
@@ -97,7 +97,7 @@ public class OrderedSubnodeList extends SubnodeList {
      * @param idx the index to insert the element at
      * @param obj the object t add
      */
-    public void add(int idx, Object obj) {
+    public void add(int idx, NodeHandle obj) {
         if (this.orderProperties!=null)
             throw new RuntimeException ("Indexed add isn't alowed for ordered subnodes");
         super.add(idx, obj);
@@ -110,11 +110,11 @@ public class OrderedSubnodeList extends SubnodeList {
     *
     * @param obj element to be inserted.
     */
-    public boolean addSorted(Object obj) {
+    public boolean addSorted(NodeHandle obj) {
         return add(obj, false);
     }
 
-    boolean add(Object obj, boolean sort) {
+    boolean add(NodeHandle obj, boolean sort) {
         if (origin != null) {
             return origin.add(obj);
         }
@@ -136,7 +136,7 @@ public class OrderedSubnodeList extends SubnodeList {
      * add a new node honoring the Nodes SQL-Order
      * @param obj the object to add
      */
-    public boolean sortIn(Object obj) {
+    public boolean sortIn(NodeHandle obj) {
         // no order, just add
         if (this.orderProperties==null)
             return super.add(obj);
@@ -175,12 +175,12 @@ public class OrderedSubnodeList extends SubnodeList {
      * @param col the collection containing all elements to add in the order returned by the select-statement
      * @param colHasDefaultOrder true if the given collection does have the default-order defined by the relation
      */
-    public int sortIn (Collection col, boolean colHasDefaultOrder) {
+    public int sortIn (Collection<NodeHandle> col, boolean colHasDefaultOrder) {
         addAllToViews(col);
         int cntr=0;
         // there is no order specified, add on top
         if (orderProperties == null) {
-            for (Iterator i = col.iterator(); i.hasNext(); ) {
+            for (Iterator<NodeHandle> i = col.iterator(); i.hasNext(); ) {
                 super.add(cntr, i.next());
                 cntr++;
             }
@@ -193,8 +193,8 @@ public class OrderedSubnodeList extends SubnodeList {
         } else if (!colHasDefaultOrder || origin != null) {
             // this collection is a view or the given collection doesn't have the
             // default order
-            for (Iterator i = col.iterator(); i.hasNext(); ) {
-                Object obj = i.next();
+            for (Iterator<NodeHandle> i = col.iterator(); i.hasNext(); ) {
+            	NodeHandle obj = i.next();
                 if (obj==null)
                     continue;
                 sortIn (obj);

@@ -756,7 +756,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		if ((node != null) && obj instanceof AxiomObject) {
 			checkNode();
 
-			if (node.contains(((AxiomObject) obj).node) > -1) {
+			if (node.contains(((AxiomObject) obj).node)) {
 				return true;
 			}
 		}

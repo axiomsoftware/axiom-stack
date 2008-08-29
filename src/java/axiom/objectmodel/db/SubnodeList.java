@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * A subclass of ArrayList that adds an addSorted(Object) method to
  */
-public class SubnodeList extends ArrayList {
+public class SubnodeList extends ArrayList<NodeHandle> {
 
     WrappedNodeManager nmgr;
 
@@ -51,7 +51,7 @@ public class SubnodeList extends ArrayList {
     *
     * @param obj element to be inserted.
     */
-    public boolean addSorted(Object obj)  {
+    public boolean addSorted(NodeHandle obj)  {
         return add(obj);
     }
 
@@ -61,7 +61,7 @@ public class SubnodeList extends ArrayList {
      *
      * @param obj element to be inserted.
      */
-    public boolean add(Object obj) {
+    public boolean add(NodeHandle obj) {
         addToViews(obj);
         return super.add(obj);
     }
@@ -70,7 +70,7 @@ public class SubnodeList extends ArrayList {
      * @param idx the index to insert the element at
      * @param obj the object t add
      */
-    public void add(int idx, Object obj) {
+    public void add(int idx, NodeHandle obj) {
         addToViews(obj);
         super.add(idx, obj);
     }
@@ -79,7 +79,7 @@ public class SubnodeList extends ArrayList {
      * remove the object specified by the given index-position
      * @param idx the index-position of the NodeHandle to remove
      */
-    public Object remove (int idx) {
+    public NodeHandle remove (int idx) {
         Object obj = get(idx);
         if (obj != null) {
             removeFromViews(obj);
@@ -119,7 +119,7 @@ public class SubnodeList extends ArrayList {
         return osl;
     }
 
-    protected void addToViews (Object obj) {
+    protected void addToViews (NodeHandle obj) {
         if (views == null || views.isEmpty())
             return;
         for (Iterator i = views.values().iterator(); i.hasNext(); ) {

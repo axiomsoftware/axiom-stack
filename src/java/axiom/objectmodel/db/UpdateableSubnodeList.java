@@ -203,7 +203,7 @@ public class UpdateableSubnodeList extends OrderedSubnodeList {
      * the updateCriterias have changed by adding this node
      * @param obj the object to add
      */
-    public boolean add(Object obj) {
+    public boolean add(NodeHandle obj) {
         // we do not have a SQL-Order and add this node on top of the list
         NodeHandle nh = (NodeHandle) obj;
         updateBorders(nh);
@@ -217,7 +217,7 @@ public class UpdateableSubnodeList extends OrderedSubnodeList {
      * @param idx the index-position this node should be added at
      * @param obj the NodeHandle of the node which should be added
      */
-    public void add (int idx, Object obj) {
+    public void add (int idx, NodeHandle obj) {
         NodeHandle nh = (NodeHandle) obj;
         super.add(idx, nh);
         updateBorders(nh);
@@ -335,8 +335,8 @@ public class UpdateableSubnodeList extends OrderedSubnodeList {
      * and update the borders if neccesary
      * @param idx the index-position of the NodeHandle to remove
      */
-    public Object remove (int idx) {
-        Object obj = super.remove(idx);
+    public NodeHandle remove (int idx) {
+    	NodeHandle obj = super.remove(idx);
         if (obj == null)
             return null;
         rebuildBorders((NodeHandle) obj);
@@ -385,8 +385,8 @@ public class UpdateableSubnodeList extends OrderedSubnodeList {
      * checks if the borders have to be rebuilt because of the removed or 
      * the added NodeHandle.
      */
-    public Object set(int idx, Object obj) {
-        Object prevObj = super.set(idx, obj);
+    public NodeHandle set(int idx, NodeHandle obj) {
+    	NodeHandle prevObj = super.set(idx, obj);
         rebuildBorders((NodeHandle) prevObj);
         updateBorders((NodeHandle) obj);
         return prevObj;

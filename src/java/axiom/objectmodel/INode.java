@@ -231,7 +231,7 @@ public interface INode extends INodeState, IPathElement {
      *
      * @return ...
      */
-    public int contains(INode node);
+    public boolean contains(INode node);
 
     /**
      *
