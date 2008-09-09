@@ -2,10 +2,11 @@
 	<div><strong>{+new Link().toFile("index.html").withText("Global Objects and Functions")+}</strong></div>
 	<div><strong>{+new Link().toFile("extensions.html").withText("Prototype Extensions")+}</strong></div>
 	<if test="publish.currentClass != ''">
-		<div class="lastclass"><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
+		<div><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
 	<else/>
-		<div class="lastclass"><strong>Built-in Prototypes</strong></div>
+		<div><strong>Built-in Prototypes</strong></div>
 	</if>
+	<div class="lastclass"><strong>{+new Link().toFile("hooks.html").withText("Hooks")+}</strong></div>
 </div>
 
 <div class="classbox">
