@@ -8,3 +8,6 @@ log
 alldoc.js
 test-config
 ./db
+launcher.jar
+lib/axiom.jar
+lib/js.zip
