@@ -5,7 +5,8 @@
 		<div><strong>Global Objects and Functions</strong></div>
 	</if>
 	<div><strong>{+new Link().toFile("extensions.html").withText("Prototype Extensions")+}</strong></div>
-	<div class="lastclass"><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
+	<div><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
+	<div class="lastclass"><strong>{+new Link().toFile("hooks.html").withText("Hooks")+}</strong></div>
 </div>
 <div class="classbox">
 <h2>Objects</h2>
@@ -14,7 +15,7 @@
 	<li>{!
 		if(thisClass.alias == publish.currentClass){
 			output += thisClass.alias;
-		}
+		}	
 		else{
 			output += new Link().toClass(thisClass.alias);
 		}
