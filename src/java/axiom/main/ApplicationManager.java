@@ -28,11 +28,7 @@ import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.servlet.*;
 
 import axiom.framework.core.*;
-import axiom.framework.repository.FileRepository;
-import axiom.framework.repository.Repository;
-import axiom.framework.repository.ZipRepository;
 import axiom.util.ResourceProperties;
-import axiom.util.StringUtils;
 
 import java.io.*;
 import java.rmi.*;
@@ -103,7 +99,7 @@ public class ApplicationManager implements XmlRpcHandler {
         try {
         	ArrayList<AppDescriptor> descriptors = new ArrayList<AppDescriptor>();
         	
-        	File[] apps = new File(this.server.getAxiomHome(), "apps").listFiles();
+        	File[] apps = this.server.getAppsHome().listFiles();
         	for (int i = 0; i < apps.length; i++) {
         		File appPropsFile = new File(apps[i], "app.properties");
         		if (!appPropsFile.exists() || !appPropsFile.canRead()) {
@@ -118,7 +114,6 @@ public class ApplicationManager implements XmlRpcHandler {
         		if (this.applications.get(name) != null) {
         			continue; // this application is already registered with Axiom
         		}
-        		
         		AppDescriptor desc = new AppDescriptor(name);
                 desc.start();
                 descriptors.add(desc);
@@ -275,7 +270,7 @@ public class ApplicationManager implements XmlRpcHandler {
          */
         AppDescriptor(String name) {
             appName = name;
-            this.appDir = new File("apps/" + name);
+            this.appDir = new File(server.getAppsHome(), name);
         }
         
         private void init() {
@@ -417,7 +412,7 @@ public class ApplicationManager implements XmlRpcHandler {
                     if(this.app.getProperty("enableRequestLog") == null 
                     		|| Boolean.parseBoolean(app.getProperty("enableRequestLog"))){
 	                    RequestLogHandler requestLogHandler = new RequestLogHandler();
-	                    NCSARequestLog requestLog = new NCSARequestLog("log/axiom." + app.getName() + ".request.log");
+	                    NCSARequestLog requestLog = new NCSARequestLog(app.getLogDir() + "/" + app.getRequestLogName());
 	                    requestLog.setRetainDays(1);
 	                    requestLog.setAppend(true);
 	                    requestLog.setExtended(false);

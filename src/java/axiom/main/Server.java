@@ -24,23 +24,16 @@ package axiom.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xmlrpc.*;
 import org.mortbay.util.ByteArrayISO8859Writer;
-import org.mortbay.util.IO;
 import org.mortbay.util.MultiException;
-import org.mortbay.util.StringUtil;
 import org.mortbay.xml.XmlConfiguration;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.HttpHeaders;
-import org.mortbay.jetty.HttpMethods;
 import org.mortbay.jetty.MimeTypes;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.handler.AbstractHandler;
-import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.RequestLogHandler;
 
@@ -53,7 +46,6 @@ import axiom.objectmodel.db.TransSource;
 import axiom.util.*;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -399,6 +391,22 @@ public class Server implements IPathElement, Runnable {
 
         logger.info("Setting Axiom Home to " + axiomHome);
 
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        handlers.setHandlers(new Handler[]{contexts, new AxiomHandler(), requestLogHandler});
+        if(this.sysProps.getProperty("enableRequestLog") == null 
+        		|| Boolean.parseBoolean(this.sysProps.getProperty("enableRequestLog"))){
+            String logDir = sysProps.getProperty("logdir", "log");
+    		String requestLogName = sysProps.getProperty("requestLog", "axiom.server.request.log");
+    		if(!requestLogName.endsWith(".log")){
+    			requestLogName += ".log";
+    		}
+            NCSARequestLog requestLog = new NCSARequestLog(logDir + "/" + requestLogName);
+            requestLog.setRetainDays(90);
+            requestLog.setAppend(true);
+            requestLog.setExtended(false);
+            requestLog.setLogTimeZone("GMT");
+            requestLogHandler.setRequestLog(requestLog);
+        } 
 
         // read db.properties file in Axiom home directory
         dbProps = new ResourceProperties();
@@ -594,22 +602,7 @@ public class Server implements IPathElement, Runnable {
                 	http = new org.mortbay.jetty.Server(Integer.valueOf(websrvPort).intValue());
 
                 }
-
-                RequestLogHandler requestLogHandler = new RequestLogHandler();
-//                handlers.setHandlers(new Handler[]{contexts, new DefaultHandler(), requestLogHandler});
-                handlers.setHandlers(new Handler[]{contexts, new AxiomHandler(), requestLogHandler});
                 http.setHandler(handlers);
-                
-                if(this.sysProps.getProperty("enableRequestLog") == null 
-                		|| Boolean.parseBoolean(this.sysProps.getProperty("enableRequestLog"))){
-	                NCSARequestLog requestLog = new NCSARequestLog("log/server" + ".request.log");
-	                requestLog.setRetainDays(90);
-	                requestLog.setAppend(true);
-	                requestLog.setExtended(false);
-	                requestLog.setLogTimeZone("GMT");
-	                requestLogHandler.setRequestLog(requestLog);
-                } 
-    		
     		}
  
             appManager = new ApplicationManager(this, 0);
@@ -699,23 +692,17 @@ public class Server implements IPathElement, Runnable {
             if (axiomLogging) {
                 // set up system properties for axiom.util.Logging
                 String logDir = sysProps.getProperty("logdir", "log");
-
                 if (!"console".equals(logDir)) {
                     // try to get the absolute logdir path
-
-                    // set up axiom.logdir system property
                     File dir = new File(logDir);
-                    if (!dir.isAbsolute()) {
-                        dir = new File(axiomHome, logDir);
-                    }
-
                     logDir = dir.getAbsolutePath();
                 }
+                // set up axiom.logdir system property
                 System.setProperty("axiom.logdir", logDir);
             }
-            logger = LogFactory.getLog("axiom.server");
+            logger = (axiom.util.Logger)LogFactory.getLog("axiom.server");
+            ((axiom.util.Logger)logger).setLogLevel(axiom.util.Logger.ERROR);
         }
-
         return logger;
     }
 
@@ -898,7 +885,7 @@ public class Server implements IPathElement, Runnable {
 				writer.write("</BODY></HTML>");
 			}
 			else{
-			    File f = new File(axiomHome + "/apps", fileName);
+			    File f = new File(getAppsHome(), fileName);
 			    if(f.exists() && f.canRead() && f.isFile()) {
 			    	FileReader fr = new FileReader(f);
 			    	int c = 0;
