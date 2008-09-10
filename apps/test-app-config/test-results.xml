@@ -1,0 +1,3 @@
+<testsuite errors="0" failures="0" name="AxiomTestSuite" tests="1" time="0.016">
+  <testcase name="global.app_settings_suite.test_dbdir" time="0"/>
+</testsuite>

@@ -1421,5 +1421,22 @@ public class ApplicationBean implements Serializable {
         }
         return qb;
     }
-   
+
+    /**
+     * The absolue path to the log directory of the application.
+     * @type String
+     */
+    public String getLogDir() {
+        File f = new File(app.getLogDir());
+
+        return f.getAbsolutePath();
+    }
+
+    /**
+     * The absolue path to the db directory of the application.
+     * @type String
+     */
+    public String getDbDir() {
+        return app.getDbDir().getAbsolutePath();
+    }
 }

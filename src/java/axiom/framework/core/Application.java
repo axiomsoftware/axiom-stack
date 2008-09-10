@@ -48,7 +48,6 @@ import axiom.main.Server;
 import axiom.objectmodel.*;
 import axiom.objectmodel.db.*;
 import axiom.scripting.rhino.AxiomObject;
-import axiom.scripting.rhino.GlobalObject;
 import axiom.scripting.rhino.QueryBean;
 import axiom.scripting.rhino.RhinoCore;
 import axiom.scripting.rhino.RhinoEngine;
@@ -155,7 +154,8 @@ public final class Application implements IPathElement, Runnable {
 	String eventLogName;
 	String accessLogName;
 	String errorLogName;
-
+	String requestLogName;
+	
 	// A transient node that is shared among all evaluators
 	protected INode cachenode;
 
@@ -343,6 +343,11 @@ public final class Application implements IPathElement, Runnable {
 		eventLogName = props.getProperty("eventLog", 
 				new StringBuffer("axiom.").append(name).toString());
 		errorLogName = props.getProperty("errorLog");
+		requestLogName = props.getProperty("requestLog",
+				new StringBuffer("axiom.").append(name).append(".request.log").toString());
+		if(!requestLogName.endsWith(".log")){
+			requestLogName += ".log";
+		}
 
 		// insert xml declarations into rendered tal?
 		omitXmlDecl = props.containsKey("omitxmldeclaration")?(new Boolean((String)props.get("omitXmlDeclaration"))).booleanValue():true;
@@ -413,7 +418,7 @@ public final class Application implements IPathElement, Runnable {
 				throw new IOException(e.getMessage());
 			}
 		}
-		
+	
 	}
 	
 	private Repository[] getAppRepositories() {
@@ -702,7 +707,8 @@ public final class Application implements IPathElement, Runnable {
                 defurl.append(port).append("/").append(TransSource.TRANSACTIONS_DB_NAME).append("_" + name);
                 dbprops.put("_default.url", defurl.toString());
             } else {
-                File db = Server.getServer().getDbHome();
+            	File db = dbDir;
+
                 if (!db.exists() || !db.isDirectory()) {
                     db.mkdir();
                 }
@@ -710,7 +716,7 @@ public final class Application implements IPathElement, Runnable {
                 if (!path.endsWith(File.separator)) {
                     path += File.separator;
                 }
-                path += getName() + File.separator + TransSource.TRANSACTIONS_DB_DIR;
+                path += TransSource.TRANSACTIONS_DB_DIR;
                 
                 db = new File(path);
                 if (!path.endsWith(File.separator)) {
@@ -1754,6 +1760,10 @@ public final class Application implements IPathElement, Runnable {
 	Log getErrorLog() {
 		if (errorLog == null && errorLogName != null) {
 			errorLog = getLogger(errorLogName);
+			// set log level for event log in case it is a axiom.util.Logger
+			if (errorLog instanceof Logger) {
+				((Logger) errorLog).setLogLevel(debug ? Logger.DEBUG : Logger.INFO);
+			}
 			return errorLog;
 		}
 		
@@ -2194,18 +2204,17 @@ public final class Application implements IPathElement, Runnable {
 					}
 				}
 			}
-
-			logDir = props.getProperty("logdir", "log");
-			if (System.getProperty("axiom.logdir") == null) {
-				// set up axiom.logdir system property in case we're using it
-				// FIXME: this sets a global System property, should be per-app
+			logDir = props.getProperty("logdir");
+			if (logDir != null) {
 				File dir = new File(logDir);
 				System.setProperty("axiom.logdir", dir.getAbsolutePath());
+			} else {
+				logDir = "log";
 			}
             
             String repos = props.getProperty("db.blob.dir");
             if (repos == null) {
-                File dir = new File(this.dbDir, "blob");
+            	File dir = new File(this.dbDir, "blob");
                 if (!dir.exists() || !dir.isDirectory()) {
                     if (!dir.mkdir()) {
                         throw new IllegalArgumentException("Could not create the blob dir for " + this.name);
@@ -2213,7 +2222,7 @@ public final class Application implements IPathElement, Runnable {
                 }
                 repos = dir.getPath();
             } else {
-            	File dir = new File(this.appDir, repos);
+            	File dir = new File(repos);
             	if (!dir.exists() || !dir.isDirectory()) {
                     if (!dir.mkdir()) {
                         throw new IllegalArgumentException("Could not create the blob dir for " + this.name);
@@ -2803,9 +2812,9 @@ public final class Application implements IPathElement, Runnable {
 
     private void updateDbLocation(String appName){
     	try{
-    		File oldDbDir = new File(Server.getServer().getDbHome(), TransSource.TRANSACTIONS_DB_DIR + "_" + appName);
+    		File oldDbDir = new File(dbDir, TransSource.TRANSACTIONS_DB_DIR + "_" + appName);
     		if(oldDbDir.exists()){
-    			File appDbDir = new File(Server.getServer().getDbHome(), appName);
+    			File appDbDir = new File(dbDir, appName);
     			if(appDbDir.exists()){
     				File appTransDbDir = new File(appDbDir, TransSource.TRANSACTIONS_DB_DIR);
     				if(!appTransDbDir.exists()){
@@ -2823,6 +2832,14 @@ public final class Application implements IPathElement, Runnable {
     	catch(Exception e){
     		System.out.println("Error in updateDb: " + e);
     	}
+    }
+    
+    public String getLogDir(){
+    	return logDir;
+    }
+    
+    public String getRequestLogName(){
+    	return requestLogName;
     }
     
 }
