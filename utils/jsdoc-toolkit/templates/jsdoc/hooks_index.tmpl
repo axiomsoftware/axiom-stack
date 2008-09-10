@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+	<title>Axiom Stack - Learn</title>	
+		<link href="css/global.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<body class="section learn">
+		<div id="wrapper">
+			<div class="innerwrap">
+				<div class="header">
+					<div class="nav">
+						<a href="http://www.axiomstack.com/" rel="home">Home</a> | 
+						<span>
+							<a href="http://www.axiomstack.com/about/">ABOUT</a><span> |</span>
+						</span>
+						<span>
+							<a class="current" href="http://www.axiomstack.com/learn/">LEARN</a><span> |</span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/download/">DOWNLOAD</a><span> |</span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/formus/">FORUMS</a><span> |</span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/contact/">CONTACT US</a><span> |</span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/company/">COMPANY</a>
+						</span>
+					</div>
+					<div class="logo">
+						<a href="http://www.axiomstack.com/"><img alt="Axiom Stack" src="images/logo.gif" title="Axiom Stack"/></a>
+					</div>
+					<div class="headlines">
+						<h1>Documentation</h1>
+						<h2>tutorials, references and technical specifications</h2>
+					</div>
+				</div>
+				<div class="main">
+					<div id="bodyContent">
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			{+publish.classesIndex+}
+			<!-- end publish.classesIndex -->
+		</div>
+		{! Link.base = ""; !}
+		<div id="content">
+
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+			  Hooks
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+			  Here there be hooks, lad.
+			</p>
+
+<!-- ============================== methods summary ======================== -->
+
+            <for each="bucket" in="data.methods">
+
+				{!var ownMethods = bucket.sort(makeSortby("name")); !}
+				<if test="ownMethods.length">
+				  <table class="summaryTable" cellspacing="0" summary="A summary of the functions documented in the class {+data.alias+}.">
+					<caption>{+($bucket_key == '_global_' ? 'Global' : $bucket_key)+} Hooks</caption>
+					<thead>
+					  <tr>
+						<th scope="col">Function Attributes</th>
+						<th scope="col">Function Name and Description</th>
+					  </tr>
+					</thead>
+					<tbody>
+					  <for each="member" in="ownMethods">
+						<tr>
+						  <td class="attributes">{!
+							if (member.isPrivate) output += "&lt;private&gt; ";
+							if (member.isInner) output += "&lt;inner&gt; ";
+							if (member.isStatic) output += "&lt;static&gt; ";
+							{#if(!member.isPrivate && !member.isInner && !member.isStatic){#}
+							var retType = "";
+							for each(ret in member.returns){
+							if(ret.title.equalsIgnoreCase('return') && ret.type == '' && ret.desc.equalsIgnoreCase('void')){
+							retType = 'void';
+							} else if(ret.title.equalsIgnoreCase('return')){
+							retType = ret.type;
+							}
+							}
+							if(retType == 'void' || retType == ''){
+							output += 'void';
+							} else {
+							output += new Link().toClass(retType);
+							}
+							{#}#}
+							!}&nbsp;</td>
+						  <td class="nameDescription">
+							<div class="fixedFont"><if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if>
+							  <b>{+ ('<a href="#'+member.name+'">'+ member.name +'</a>') +}</b>{+makeSignature(member.params)+}
+							</div>
+							<div class="description">{+resolveLinks(summarize(member.desc))+}</div>
+						  </td>
+						</tr>
+					  </for>
+					</tbody>
+				  </table>
+				</if>
+				
+			</for>
+
+<!-- ============================== method details ========================= -->		
+            <for each="bucket" in="data.methods">
+
+				{!var ownMethods = bucket.sort(makeSortby("name")); !}
+
+				<div class="sectionTitle">
+					{+ ($bucket_key == '_global_' ? 'Global' : $bucket_key)+} Hooks Detail
+				</div>
+				<for each="member" in="ownMethods">
+					<a name="{+Link.symbolNameToLinkName(member)+}"> </a>
+					<div class="fixedFont">{!
+						if (member.isPrivate) output += "&lt;private&gt; ";
+						if (member.isInner) output += "&lt;inner&gt; ";
+						if (member.isStatic) output += "&lt;static&gt; ";
+					!}
+					
+					<if test="member.type"><span class="light">{{+new Link().toSymbol(member.type)+}}</span></if>
+					<if test="member.isStatic && member.memberOf != '_global_'"><span class="light">{+member.memberOf+}.</span></if><b>{+member.name+}</b>{+makeSignature(member.params)+}
+				
+					</div>
+					<div class="description">
+						{+resolveLinks(member.desc)+}
+						<if test="member.author"><br /><i>Author: </i>{+member.author+}.</if>
+					</div>
+					
+					<if test="member.example">
+					<pre class="code">{+member.example+}</pre>
+					</if>
+					
+					
+						<if test="member.params && member.params.length">
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							<for each="item" in="member.params">
+								<dt>
+									{+((item.type)?"<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type))+"}</span> " : "")+}<b>{+item.name+}</b>
+									<if test="item.isOptional"><i>Optional<if test="item.defaultValue">, Default: {+item.defaultValue+}</if></i></if>
+								</dt>
+								<dd>{+resolveLinks(item.desc)+}</dd>
+							</for>
+							</dl>
+						</if>
+						<if test="member.deprecated && member.deprecated.length">
+							<dl class="detailList">
+							<dt class="heading">Deprecated:</dt>
+							<dt>
+								{+member.deprecated+}
+							</dt>
+							</dl>
+						</if>
+						<if test="member.since && member.since.length">
+							<dl class="detailList">
+							  <dt class="heading">Since:</dt>
+								<dd>{+ member.since +}</dd>
+							</dl>
+							</dl>
+						</if>
+						<if test="member.exceptions && member.exceptions.length">
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							<for each="item" in="member.exceptions">
+								<dt>
+									{+((item.type)?"<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type))+"}</span> " : "")+} <b>{+item.name+}</b>
+								</dt>
+								<dd>{+resolveLinks(item.desc)+}</dd>
+							</for>
+							</dl>
+						</if>
+						<if test="member.returns && member.returns.length">
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							<for each="item" in="member.returns">
+								<dd>{+((item.type)?"<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type))+"}</span> " : "")+}{+resolveLinks(item.desc)+}</dd>
+							</for>
+							</dl>
+						</if>
+						<if test="member.requires && member.requires.length">
+							<dl class="detailList">
+							<dt class="heading">Requires:</dt>
+							<for each="item" in="member.requires">
+								<dd>{+ resolveLinks(item) +}</dd>
+							</for>
+							</dl>
+						</if>
+						<if test="member.see && member.see.length">
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							<for each="item" in="member.see">
+								<dd>{+ new Link().toSymbol(item) +}</dd>
+							</for>
+							</dl>
+						</if>
+
+					<if test="!$member_last"><hr /></if>
+				</for>
+			</for>
+			
+			<hr />
+		</div>
+
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			<if test="JSDOC.opt.D.copyright">&copy;{+JSDOC.opt.D.copyright+}<br /></if>
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> {+JSDOC.VERSION+} on {+new Date()+}
+		</div>
+					</div>
+				</div>
+			</div>	
+			<div id="footer">
+				<div class="innerwrap">
+					<div class="nav">
+						<a href="http://www.axiomstack.com/" rel="home">Home</a>
+						<span>
+							<a href="http://www.axiomstack.com/about/">ABOUT</a><span> </span>
+						</span>
+						<span>
+							<a class="current" href="http://www.axiomstack.com/learn/">LEARN</a><span> </span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/download/">DOWNLOAD</a><span> </span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/forums/">FORUMS</a><span> </span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/contact/">CONTACT US</a><span> </span>
+						</span>
+						<span>
+							<a href="http://www.axiomstack.com/company/">COMPANY</a>
+						</span>
+					</div>
+					<div class="vcard">
+						<span class="fn">Axiom Software, Inc.</span>
+						<div class="adr">
+							<div class="street-address">11480 Commerce Park Drive, Third Floor</div>
+							<span class="locality">Reston</span>, 
+							<span class="region">Virginia</span> 
+							<span class="postal-code">20191</span>
+						</div>
+					</div>
+					<div class="legal">&copy; 2008 Axiom Software, Inc. All Rights Reserved<span>|</span><a href="http://www.axiomstack.com/license-agreement">License Agreement &amp; Privacy Policy</a></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
