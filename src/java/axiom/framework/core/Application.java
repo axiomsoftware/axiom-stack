@@ -322,13 +322,17 @@ public final class Application implements IPathElement, Runnable {
 		
 		String dbdir = props.getProperty("dbdir");
 		if (dbdir != null) {
-			dbDir = new File(dbdir); 
+			dbDir = new File(dbdir);
+			if(!dbDir.isAbsolute()){
+				dbDir = new File(server.getAxiomHome(), dbdir);
+			}
 		} else {
 			dbDir = new File(server.getDbHome(), name);
 		}
 		if (!dbDir.exists()) {
 			dbDir.mkdirs();
 		}
+		
 		
 		updateDbLocation(name);
 		
@@ -713,7 +717,8 @@ public final class Application implements IPathElement, Runnable {
                     db.mkdir();
                 }
                 String path = db.getPath();
-                if (!path.endsWith(File.separator)) {
+//              String path = db.getAbsolutePath();
+              if (!path.endsWith(File.separator)) {
                     path += File.separator;
                 }
                 path += TransSource.TRANSACTIONS_DB_DIR;
@@ -2223,8 +2228,11 @@ public final class Application implements IPathElement, Runnable {
                 repos = dir.getPath();
             } else {
             	File dir = new File(repos);
+            	if(!dir.isAbsolute()){
+            		dir = new File(axiomHome, repos);
+            	}
             	if (!dir.exists() || !dir.isDirectory()) {
-                    if (!dir.mkdir()) {
+                    if (!dir.mkdirs()) {
                         throw new IllegalArgumentException("Could not create the blob dir for " + this.name);
                     }
                 }
