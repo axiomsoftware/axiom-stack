@@ -47,7 +47,8 @@
 		<delete dir="${build.dir}"/>
 		<delete dir="${jsdoc.dir}"/>
 		<delete dir="${javadoc.dir}"/>
-<!--		<delete dir="${test-config.dir}"/>-->
+		<delete dir="${test-config.dir}/app"/>
+		<delete dir="${test-config.dir}/server"/>
 	</target>
 
 	<target name="build" depends="clean, init">
@@ -200,6 +201,9 @@
 			<fileset dir="${apps.dir}/test-app-config"  excludes="server.properties"/>
 		</copy>
 
+		<move file="${test-app.dir}/apps/test-app-config/app.properties.run"
+			tofile="${test-app.dir}/apps/test-app-config/app.properties"/>
+		
 		<copy todir="${test-app.dir}/">
 			<fileset file="${apps.dir}/test-app-config/server.properties"/>
 		</copy>
@@ -217,13 +221,12 @@
 			<param name="jar.home.dir" value="${test-app.dir}"/>
 			<param name="jar.lib.dir" value="${test-app.dir}/lib"/>
 		</antcall>
-<!--
+
 		<java jar="${test-app.dir}/launcher.jar" fork="true" timeout="150000">
 			<sysproperty key="file.encoding" value="UTF-8"/>
 			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
 			<arg line="-w 8081 -h ${test-app.dir}"/>
 		</java>
--->			
 	</target>
 	
 	<target name="test-server-config" depends="clean">
@@ -240,6 +243,9 @@
 		<copy todir="${test-server.dir}/applications/test-server-config">
 			<fileset dir="${apps.dir}/test-server-config" excludes="server.properties"/>
 		</copy>
+
+		<move file="${test-server.dir}/applications/test-server-config/app.properties.run"
+			tofile="${test-server.dir}/applications/test-server-config/app.properties"/>
 
 		<copy todir="${test-server.dir}/">
 			<fileset file="${apps.dir}/test-server-config/server.properties"/>
@@ -258,14 +264,13 @@
 			<param name="jar.home.dir" value="${test-server.dir}"/>
 			<param name="jar.lib.dir" value="${test-server.dir}/lib"/>
 		</antcall>
-<!--		
+
 		<java jar="${test-server.dir}/launcher.jar" fork="true" timeout="150000">
 			<sysproperty key="file.encoding" value="UTF-8"/>
 			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
 			<arg line="-w 8081 -h ${test-server.dir}"/>
 		</java>
--->		
+
 	</target>
-	
 	
 </project>
