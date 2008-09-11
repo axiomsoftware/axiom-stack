@@ -1788,6 +1788,7 @@ public class LuceneManager{
 				query.add(append, BooleanClause.Occur.MUST);
 			}
 			
+			app.logEvent("**** SORT = " + sort);
 			hits = searcher.search(query, sort);
 			
 			int size = hits.length();
