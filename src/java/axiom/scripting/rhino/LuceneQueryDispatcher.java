@@ -1556,7 +1556,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         }
         
         int _layer = getLayer(options);
-		
+        
         final int mode; 
         if (_layer > -1) {
         	mode = _layer;
@@ -1567,6 +1567,16 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         	} else {
         		mode = DbKey.LIVE_LAYER;
         	}
+        }
+        
+        int maxResults = Integer.MAX_VALUE;
+        try {
+        	maxResults = getMaxResults(options);
+        } catch (Exception e) {
+        	maxResults = Integer.MAX_VALUE;
+        }
+        if (maxResults < 0) {
+        	maxResults = Integer.MAX_VALUE;
         }
         
         ArrayList protos = new ArrayList();
@@ -1580,9 +1590,15 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 		parseFilterIntoQuery(theFilter, primary, props);
 
         NodeManager nmgr = app.getNodeManager();
-        HashMap node_map = new HashMap();
+        ArrayList node_list = new ArrayList();
+        HashSet encountered_keys = new HashSet();
+        int list_count = 0;
         
         for (int i = 0; i < size; i++) {
+        	if (node_list.size() >= maxResults) {
+        		break;
+        	}
+        	
             Key[] node_keys = null;
             try {
                 node_keys = (direction == 0 ? 
@@ -1602,6 +1618,10 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             
             int length = node_keys.length;
             for (int j = 0; j < length; j++) {
+            	if (encountered_keys.contains(node_keys[j])) {
+            		continue;
+            	}
+            	
                 Node curr = null;
                 try {
                     curr = nmgr.getNode(node_keys[j]);
@@ -1613,18 +1633,22 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
                 
                 if (curr != null) {
                     if (global != null) {
-                        node_map.put(node_keys[j], Context.toObject(curr, global));
+                        node_list.add(Context.toObject(curr, global));
                     } else {
-                        node_map.put(node_keys[j], curr);
+                        node_list.add(curr);
                     }
+                    if (node_list.size() >= maxResults) {
+                    	break;
+                    }
+                    encountered_keys.add(node_keys[j]);
                 }
             } 
         }
         
         if (global != null) {
-            return Context.getCurrentContext().newArray(core.global, node_map.values().toArray());
+            return Context.getCurrentContext().newArray(core.global, node_list.toArray());
         } else {
-            return node_map.values().toArray();
+            return node_list.toArray();
         }
     }
 
@@ -1685,6 +1709,16 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         		mode = DbKey.LIVE_LAYER;
         	}
         }
+        
+        int maxResults = Integer.MAX_VALUE;
+        try {
+        	maxResults = getMaxResults(options);
+        } catch (Exception e) {
+        	maxResults = Integer.MAX_VALUE;
+        }
+        if (maxResults < 0) {
+        	maxResults = Integer.MAX_VALUE;
+        }
 
         ArrayList protos = new ArrayList();
         if (prototypes != null && prototypes != Scriptable.NOT_FOUND) {
@@ -1717,6 +1751,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             }
             
             count += node_keys.length;
+            
+            if (count >= maxResults) {
+            	count = maxResults;
+            	break;
+            }
         }
         
         return count;
