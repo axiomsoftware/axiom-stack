@@ -191,6 +191,15 @@ public class FileObject extends AxiomObject {
     }
     
     /**
+     * Set the file name on this File object.
+     * 
+     * @param {String} filename The file name to assign to this File object.
+     */
+    public void jsFunction_setFileName(String filename) {
+    	this.put(FILE_NAME, this, filename);
+    }
+    
+    /**
      * Get the extracted textual content from this File.  For example, the text contained
      * in an MS Word document.
      * 

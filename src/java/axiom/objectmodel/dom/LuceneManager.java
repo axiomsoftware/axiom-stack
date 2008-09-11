@@ -1671,7 +1671,8 @@ public class LuceneManager{
 		doc.add(new Field(key, v, store, Field.Index.TOKENIZED));
 	}
 
-	public Key[] getTargetNodeIds(final String id, final int mode, ArrayList protos, BooleanQuery append) 
+	public Key[] getTargetNodeIds(final String id, final int mode, ArrayList protos, 
+			BooleanQuery append, Sort sort) 
 	throws Exception {
 		IndexSearcher searcher = null;
 		Document doc = null;
@@ -1759,7 +1760,8 @@ public class LuceneManager{
 		return value.substring(0, value.indexOf(NULL_DELIM));
 	}
 
-	public Key[] getSourceNodeIds(final String id, final int mode, ArrayList protos, BooleanQuery append) 
+	public Key[] getSourceNodeIds(final String id, final int mode, ArrayList protos, 
+			BooleanQuery append, Sort sort) 
 	throws Exception {
 		IndexSearcher searcher = null;
 		Hits hits = null;
@@ -1786,7 +1788,8 @@ public class LuceneManager{
 				query.add(append, BooleanClause.Occur.MUST);
 			}
 			
-			hits = searcher.search(query);
+			app.logEvent("**** SORT = " + sort);
+			hits = searcher.search(query, sort);
 			
 			int size = hits.length();
 			keys = new Key[size];
