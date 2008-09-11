@@ -1583,8 +1583,10 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             Key[] node_keys = null;
             try {
                 node_keys = (direction == 0 ? 
-                    lmgr.getTargetNodeIds(objects.get(i).toString(), mode, protos, primary) :
-                    lmgr.getSourceNodeIds(objects.get(i).toString(), mode, protos, primary));
+                    lmgr.getTargetNodeIds(objects.get(i).toString(), mode, protos, primary, 
+                            getLuceneSort(getSortObject(options))) :
+                    lmgr.getSourceNodeIds(objects.get(i).toString(), mode, protos, primary, 
+                            getLuceneSort(getSortObject(options))));
             } catch (Exception ex) {
                 node_keys = null;
                 app.logError(ErrorReporter.errorMsg(this.getClass(), "getDirectionalNodesFor") 
@@ -1696,8 +1698,10 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             Key[] node_keys = null;
             try {
                 node_keys = (direction == 0 ? 
-                    lmgr.getTargetNodeIds(objects.get(i).toString(), mode, protos, primary) :
-                    lmgr.getSourceNodeIds(objects.get(i).toString(), mode, protos, primary));
+                    lmgr.getTargetNodeIds(objects.get(i).toString(), mode, protos, primary,
+                            getLuceneSort(getSortObject(options))) :
+                    lmgr.getSourceNodeIds(objects.get(i).toString(), mode, protos, primary, 
+                            getLuceneSort(getSortObject(options))));
             } catch (Exception ex) {
             	ex.printStackTrace();
                 node_keys = null;
