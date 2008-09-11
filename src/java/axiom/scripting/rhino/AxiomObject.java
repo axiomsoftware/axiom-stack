@@ -3077,7 +3077,14 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
                      }
                  }
 
-                 Object ret = ((Function) f).call(cx, scope, scope, fargs);
+                 Function func = null;
+                 try {
+                	 func = (Function) f;
+                 } catch (Exception e) {
+                	 throw new RuntimeException("Unable to load TAL, check that tal.js exists in the lib directory");
+                 }
+                 
+                 Object ret = func.call(cx, scope, scope, fargs);
                  result = Context.toObject(ret, scope);
 			 }
              
