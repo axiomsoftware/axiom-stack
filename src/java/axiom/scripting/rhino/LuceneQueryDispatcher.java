@@ -776,6 +776,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 	}
 	
     private Sort getLuceneSort(SortObject sort) {
+    	if (sort == null) {
+    		return null;
+    	}
         QuerySortField[] fields = sort.getSortFields();
         if (fields == null) {
             return null;
