@@ -166,8 +166,75 @@
 			var id = app.getObjects(['LuceneKitchenSink'])[0]._id;
 			var objects = app.getObjects(['LuceneKitchenSink'], {_id:parseInt(id)});
 			Assert.assertEquals('app.getObjects(["LuceneKitchenSink"],{_id:7}) [getObjects_by_integer_id] failed', 1, objects.length);
+	    },
+		test_getSources_with_options_asc_sort: function() {
+	    	var maxResults = 2;
+	    	var sort = new Sort({'untokenized':'asc'});
+	    	
+	    	var target = new LuceneKitchenSink();
+	    	target.id = "target";
+	    	target.untokenized = "target";
+	    	root.add(target);
+	    	
+	    	var o1 = new LuceneKitchenSink();
+	    	o1.untokenized = "second";
+	    	o1.id = "second";
+	    	root.add(o1);
+	    	o1.ref1 = new Reference(target);
+	    	
+	    	var o2 = new LuceneKitchenSink();
+	    	o2.untokenized = "third";
+	    	o2.id = "third";
+	    	root.add(o2);
+	    	o2.ref1 = new Reference(target);
+	    	
+	    	var o3 = new LuceneKitchenSink();
+	    	o3.untokenized = "first";
+	    	o3.id = "first";
+	    	root.add(o3);
+	    	o3.ref1 = new Reference(target);
+	    	
+	    	var objects = app.getSources(src, ['LuceneKitchenSink'], {}, {sort: sort, maxlength: maxResults});
+	    	
+	    	Assert.assertTrue('app.getSources(src, ["LuceneKitchenSink"], {}, {sort: sort, maxResults: maxResults}) [getSources_with_options_asc_sort] failed', 
+					objects.length == 2);
+	    	Assert.assertTrue('app.getSources(src, ["LuceneKitchenSink"], {}, {sort: sort, maxResults: maxResults}) [getSources_with_options_asc_sort] failed', 
+					objects[0].untokenized == 'first');
+	    },
+	    test_getSources_with_options_desc_sort: function() {
+	    	var maxResults = 2;
+	    	var sort = new Sort({'untokenized':'desc'});
+	    	
+	    	var target = new LuceneKitchenSink();
+	    	target.id = "target";
+	    	target.untokenized = "target";
+	    	root.add(target);
+	    	
+	    	var o1 = new LuceneKitchenSink();
+	    	o1.untokenized = "second";
+	    	o1.id = "second";
+	    	root.add(o1);
+	    	o1.ref1 = new Reference(target);
+	    	
+	    	var o2 = new LuceneKitchenSink();
+	    	o2.untokenized = "third";
+	    	o2.id = "third";
+	    	root.add(o2);
+	    	o2.ref1 = new Reference(target);
+	    	
+	    	var o3 = new LuceneKitchenSink();
+	    	o3.untokenized = "first";
+	    	o3.id = "first";
+	    	root.add(o3);
+	    	o3.ref1 = new Reference(target);
+	    	
+	    	var objects = app.getSources(src, ['LuceneKitchenSink'], {}, {sort: sort, maxlength: maxResults});
+	    	
+	    	Assert.assertTrue('app.getSources(src, ["LuceneKitchenSink"], {}, {sort: sort, maxResults: maxResults}) [getSources_with_options_desc_sort] failed', 
+					objects.length == 2);
+	    	Assert.assertTrue('app.getSources(src, ["LuceneKitchenSink"], {}, {sort: sort, maxResults: maxResults}) [getSources_with_options_desc_sort] failed', 
+					objects[0].untokenized == 'third');
 	    }
-	
 	},
 
 	AxiomObject_suite: {
