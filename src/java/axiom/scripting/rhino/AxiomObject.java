@@ -2517,34 +2517,19 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 }
 
 	 /**
-	  * Remove a child object from this object's children collection.  Note that this 
-	  * function behaves differently in the two cases:<br><br>
-	  * 
-	  * If this function is called on an object that is stored in the primary storage, and
-	  * the child object is not inserted as a child anywhere else before the transaction is
+	  * Remove a child object from this object's children collection.   
+	  * If the child object is not inserted as a child anywhere else before the transaction is
 	  * completed in Axiom, then the child object automatically gets deleted from the 
-	  * database. For example,<br><br>
+	  * database. 
 	  * 
-	  * <code>this.remove(child)</code> // deletes child from the database unless it is 
-	  * 								   added somewhere else in the same transaction <br><br>
-	  * 
-	  * If this function is called on an object that is stored in a relational database,
-	  * then this function behaves like a delete method.  That is, it must be called with
-	  * no arguments, and this object itself is marked for deletion.  At the end of the
-	  * transaction, it is deleted from the relational database in which it is stored.
-	  * For example,<br><br>
-	  * 
-	  * <code>this.remove()</code> // deletes this object from the relational database 
-	  * 						      its stored in, you can only call remove() with no 
-	  * 							  arguments if it is a relationally backed object<br><br>
-	  *                      
 	  * @param {AxiomObject} [child] The child object to remove from this object's children
 	  * @returns {Boolean} Whether the operation was a success or not
 	  */ 
 	 public boolean jsFunction_remove(Object child) throws Exception{
 		 if(child == null || child == Undefined.instance){
-			 return this.remove();
+			 throw new Exception(".remove requires an object to delete");
 		 }
+
 		 boolean success = this.removeChild(child);
 
 		 if (success) { 
@@ -3130,4 +3115,32 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	     return "LIVE";
 	 }
 
+	 /**
+	  * Deletes the current object it's children, if this object
+	  * is not inserted as a child anywhere else before the transaction is
+	  * completed in Axiom, then this object and it's children are automatically deleted 
+	  * from the database. 
+	  *                      
+	  * @returns {Boolean} Whether the operation was a success or not
+	  */ 
+
+	 public boolean jsFunction_del() throws Exception{
+		 boolean success = this.node.remove();
+
+		 if (success) { 
+			 String name;
+			 AxiomObject parent;
+			 if (!"axiomobject".equals(this.node.getPrototype().toLowerCase())) {
+				 this.calcComputedProps("_children");
+			 } else if ((name = node.getName()) != null &&
+					 (parent = (AxiomObject) this.getInternalProperty("_parent")) != null) {
+				 parent.calcComputedProps(name);
+			 } 
+             this.calcComputedProps("_parent");
+		 }
+
+		 return success;
+	}
+	 
+	 
 }
