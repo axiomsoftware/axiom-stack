@@ -63,8 +63,8 @@
 			<param name="version" value="${java_version}"/>
 		</antcall>		
 
-		<antcall target="jsdoc"/>
-		<antcall target="javadoc"/>
+		<!-- <antcall target="jsdoc"/>-->
+		<!-- <antcall target="javadoc"/>-->
 	</target>
 
 	<target name="compile" depends="init">
