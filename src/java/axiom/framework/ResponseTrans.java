@@ -231,16 +231,18 @@ public final class ResponseTrans extends Writer implements Serializable {
         	if (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList")) {
         	    // allow bare ampersands within title tags and urls
                 String result = XmlUtils.objectToXMLString(jsobj);
-                Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);
-                StringBuffer newResult = new StringBuffer();
-                while(urlAndTitleMatcher.find()){
-                    urlAndTitleMatcher.appendReplacement(newResult, urlAndTitleMatcher.group(0).replaceAll("&amp;", "&").replaceAll("\\$", "\\\\\\$"));
+                if(this.contentType.startsWith("text/html")){
+                	Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);
+                	StringBuffer newResult = new StringBuffer();
+                	while(urlAndTitleMatcher.find()){
+                		urlAndTitleMatcher.appendReplacement(newResult, urlAndTitleMatcher.group(0).replaceAll("&amp;", "&").replaceAll("\\$", "\\\\\\$"));
+                	}
+                	urlAndTitleMatcher.appendTail(newResult);
+                	result = newResult.toString();
+
+                	// fix self closing tags
+                    result = result.replaceAll("\\<(?!img|br|hr|input|frame|link|meta|param)(\\w+)([^\\<]*)/\\>","<$1$2></$1>");
                 }
-                urlAndTitleMatcher.appendTail(newResult);
-                result = newResult.toString();
-                
-                // fix self closing tags
-                result = result.replaceAll("\\<(?!img|br|hr|input|frame|link|meta|param)(\\w+)([^\\<]*)/\\>","<$1$2></$1>");
         		String doctype = app.getProperty("doctype");
         		this.write(((doctype != null)?doctype+"\n":"\n")+result);
         	} else if (className.equalsIgnoreCase("String")) {
