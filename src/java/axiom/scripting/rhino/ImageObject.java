@@ -500,7 +500,6 @@ public class ImageObject extends FileObject {
 	}
 
 	protected double[] computeResizeScale(int nw, int nh, int iw, int ih) {
-		// this code keeps thumbnail ratio same as original image
 		double widthScale = (double) nw / (double) iw;
 		double heightScale = (double) nh / (double) ih;
 		
