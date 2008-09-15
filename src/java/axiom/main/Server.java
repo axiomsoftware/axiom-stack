@@ -454,6 +454,7 @@ public class Server implements IPathElement, Runnable {
                 System.out.println("Starting H2 TCP Server on port " + h2port);
             }
         } catch (Exception sqle) {
+        	logger.error(ErrorReporter.errorMsg(this.getClass(), "init"), sqle);
             throw new RuntimeException("FATAL ERROR::Could not start the default " +
                     "H2 database server, " + sqle.getMessage());
         }
@@ -596,6 +597,7 @@ public class Server implements IPathElement, Runnable {
                         config.configure(http);
                     } catch (Exception ex) { 
                         ex.printStackTrace();
+                    	logger.error(ErrorReporter.errorMsg(this.getClass(), "run"), ex);
                         throw new RuntimeException("Could not setup the web server, errors in axiom-config.xml");
                     }
                 } else {
@@ -611,6 +613,7 @@ public class Server implements IPathElement, Runnable {
             shutdownhook = new AxiomShutdownHook();
             Runtime.getRuntime().addShutdownHook(shutdownhook);
         } catch (Exception x) {
+        	logger.error(ErrorReporter.errorMsg(this.getClass(), "run"), x);
             throw new RuntimeException("Error setting up Server", x);
         }
         // set the security manager.
@@ -626,6 +629,7 @@ public class Server implements IPathElement, Runnable {
                 logger.info("Setting security manager to " + secManClass);
             }
         } catch (Exception x) {
+        	logger.error(ErrorReporter.errorMsg(this.getClass(), "run"), x);
             logger.error("Error setting security manager", x);
         }
 
@@ -634,10 +638,12 @@ public class Server implements IPathElement, Runnable {
             try {
                 http.start();
             } catch (MultiException m) {
+            	logger.error(ErrorReporter.errorMsg(this.getClass(), "run"), m);
                 throw new RuntimeException("Error starting embedded web server", m);
             }
             catch(Exception e){
             	System.out.println(e);
+            	logger.error(ErrorReporter.errorMsg(this.getClass(), "run"), e);
                 throw new RuntimeException("Error starting embedded web server", e);
             }
         }
