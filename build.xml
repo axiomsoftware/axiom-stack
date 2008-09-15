@@ -63,9 +63,6 @@
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
 		</antcall>		
-
-		<antcall target="jsdoc"/>
-		<antcall target="javadoc"/>
 	</target>
 
 	<target name="compile" depends="init">
@@ -134,6 +131,14 @@
 	</target>
 
 	<target name="jsdoc" depends="compile">
+		<condition property="doc.dir"
+			value="${docdir}"
+			else="${jsdoc.dir}">
+			<and>
+				<isset property="docdir"/>
+			</and>
+		</condition>
+		
 		<javadoc 
 			doclet="axiom.util.JSDoclet" 
 			docletpath="${build.dir}/classes/" 
@@ -145,9 +150,17 @@
 		</javadoc>
 
 		<java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
-			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${jsdoc.dir} alldoc.js ${src.dir}/js/Global ${src.dir}/js-for-doc/"/>
+			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${doc.dir} alldoc.js ${src.dir}/js/Global ${src.dir}/js-for-doc/"/>
 		</java>
 		
+		<copy todir="${doc.dir}/css">
+			<fileset dir="${utils.dir}/jsdoc-toolkit/templates/jsdoc/static/css"/>
+		</copy>
+		
+		<copy todir="${doc.dir}/images">
+			<fileset dir="${utils.dir}/jsdoc-toolkit/templates/jsdoc/static/images"/>
+		</copy>
+
 		<delete file="alldoc.js"/>
 	</target>
 
@@ -223,6 +236,69 @@
 		<antcall target="test-util">
 			<param name="appname" value="test-server-config"/>
 			<param name="appdir" value="applications"/>
+		</antcall>
+	</target>
+	
+	<target name="release">
+
+		<condition property="ver">
+			<isset property="axiom_version"/>
+		</condition>
+		<fail message="To build a release, 'version' must be set" unless="ver"/>
+
+		<exec executable="release.sh">
+		    <!--<arg value="release.sh"/>-->
+		    <arg value="${axiom_version}"/>
+		</exec>
+
+		<mkdir dir="${release.dir}"/>
+
+		<copy todir="${release.dir}">
+			<fileset dir="${home.dir}" 
+				includes="start.bat, 
+					start.sh, 
+					build.xml, 
+					license.txt, 
+					README.txt, 
+					server.properties"/>
+		</copy>
+		
+		<copy todir="${release.dir}/src">
+			<fileset dir="${src.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/lib">
+			<fileset dir="${lib.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/apps">
+			<fileset dir="${apps.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/utils">
+			<fileset dir="${utils.dir}"/>
+		</copy>
+		
+		<copy todir="${release.dir}/examples">
+			<fileset dir="${examples.dir}"/>
+		</copy>
+
+		<condition property="java_version"
+			value="${env.JAVA_VERSION}"
+			else="${java.version.default}">
+			<and>
+				<isset property="env.JAVA_VERSION"/>
+			</and>
+		</condition>
+
+		<antcall target="jar">
+			<param name="version" value="${java_version}"/>
+			<param name="jar.home.dir" value="${release.dir}"/>
+			<param name="jar.lib.dir" value="${release.dir}/lib"/>
+		</antcall>
+
+		<antcall target="jsdoc">
+			<param name="docdir" value="${release.dir}/doc"/>
 		</antcall>
 	</target>
 	
