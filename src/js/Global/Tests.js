@@ -141,3 +141,36 @@ axiom.Test.XMLReport = function(results) {
 	}
 	return markup;
 }
+
+
+axiom.Test.buildXMLReport = function(results, resultFile){
+	var file = null;
+	try{
+		file = new axiom.SystemFile(resultFile);
+		
+		if(!file.exists()){
+			axiom.SystemFile.writeToFile(axiom.Test.XMLReport(results),	resultFile);
+		} else {
+			var testxml = new XMLList(axiom.SystemFile.readFromFile(resultFile));
+
+			results.errors = parseInt(results.errors, 10) + parseInt(testxml.@errors, 10);
+			results.failures = parseInt(results.failures, 10) + parseInt(testxml.@failures, 10);
+			results.total_time = parseFloat(results.total_time, 10) + parseFloat(testxml.@time, 10);
+
+			for each(result in testxml.*){
+				var testcase = {name:result.@name.toString(), time:parseFloat(result.@time)};
+				for each(failure in result.*){
+					testcase.failure = new AssertionFailedError(failure.@message.toString(), failure.@type.toString());
+				}
+				results.test_results.push(testcase);
+			}
+			axiom.SystemFile.writeToFile(axiom.Test.XMLReport(results), resultFile);
+		}
+	} catch(e){
+		app.log(e);
+	} finally{
+		if(file != null){
+			file.close();
+		}
+	}
+}
