@@ -773,9 +773,12 @@ public class Server implements IPathElement, Runnable {
      */
     public File getAppsHome() {
         String appHome = sysProps.getProperty("appHome", "");
-
         if (appHome.trim().length() != 0) {
-            return new File(appHome);
+        	File file = new File(appHome);
+        	if(!file.isAbsolute()){
+        		file = new File(axiomHome, appHome);
+        	}
+            return file;
         } else {
             return new File(axiomHome, "apps");
         }
@@ -788,9 +791,12 @@ public class Server implements IPathElement, Runnable {
      */
     public File getDbHome() {
         String dbHome = sysProps.getProperty("dbHome", "");
-
         if (dbHome.trim().length() != 0) {
-            return new File(dbHome);
+        	File file = new File(dbHome);
+        	if(!file.isAbsolute()){
+        		file = new File(axiomHome, dbHome);
+        	}
+            return file;
         } else {
             return new File(axiomHome, "db");
         }
