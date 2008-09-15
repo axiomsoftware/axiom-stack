@@ -20,8 +20,8 @@
  */
 
 /**
- * The global TAL function for rendering TAL/TALE documents.  This is called within 
- * <code> AxiomObject.renderTAL() </code>, and thus, would generally not be called 
+ * The global TAL function for rendering TAL/TALE documents.  This is called within
+ * <code> AxiomObject.renderTAL() </code>, and thus, would generally not be called
  * directly by the application programmer.
  *
  * @param {XML} taldoc A TAL document as a JavaScript XML object
@@ -149,9 +149,10 @@ TAL.TALE = function (n, data, tal) {
                 var r=new RegExp('\\'+tn+'\\{([^}]+)\\}|\\'+tn+'(\\w+)','g');
                 delete n.@tal::text;
                 for each(var t in n.text()){
+					var text_str = t.toXMLString();
                     n.replace(t.childIndex(),
-                              new XMLList(t.toXMLString().replace(r,
-	                function(m,m1,m2){return TAL.func(data, m1||m2)})));
+                              new XMLList(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})) + (/\s$/.test(text_str) ? ' ' : '')
+							 );
             }
         }
         if((tn=n.@tal::omit).length()) {
