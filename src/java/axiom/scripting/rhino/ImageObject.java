@@ -23,12 +23,12 @@ package axiom.scripting.rhino;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.awt.image.renderable.ParameterBlock;
-import java.awt.image.renderable.RenderableImage;
 
 import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
+import javax.media.jai.operator.FileLoadDescriptor;
+import javax.imageio.ImageIO;
+import java.awt.RenderingHints;
 
 import org.mozilla.javascript.*;
 
@@ -384,22 +384,68 @@ public class ImageObject extends FileObject {
         }
         
         String cmd = core.app.getProperty("imagemagick");
-        if (cmd == null) {
-            cmd = "convert";
-        } else if (!cmd.endsWith("convert")) {
-            if (!cmd.endsWith(File.separator)) {
-                cmd += File.separator;
-            }
-            cmd += "convert";
-        }
-
-        StringBuffer command = new StringBuffer(cmd);
-        command.append(" -geometry ");
-        command.append(thumbWidth).append("x").append(thumbHeight);
-        command.append(" ").append(srcPath);
-        command.append(" ").append(dstPath);
+        boolean success = false;
         
-        if (exec(command.toString())) {
+        if (cmd == null) {
+        	RenderedOp resizedImage = this.resize(thumbWidth, thumbHeight, FileLoadDescriptor.create(srcPath, null, null, null), false);	//Don't like the pre-calculated scaling. Recalculate it.
+            String type = dstPath.substring(dstPath.lastIndexOf(".")+1);
+            
+            //JAI doesn't natively support GIF encoding, but Java ImageIO does.
+            if (type.toLowerCase().equals("gif")) {
+            	File dst = new File(dstPath);
+        		//if the file doesn't exist, create it and make sure we can write to it.
+                if (!dst.exists()) {
+                	try {
+                		dst.createNewFile();
+                	} catch (IOException ioe) {
+                        this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to create tmp img at \""+dstPath+"\".", ioe);
+                	}
+                }
+                if (!dst.canWrite()) {
+                	dst.setWritable(true);
+                }
+                
+                try {
+                    ImageIO.write(resizedImage, type.toUpperCase(), dst);
+                 } catch (IOException ioe) {
+                     this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to write image data to \""+dstPath+"\".", ioe);
+                 }
+                 
+                 //clean up file handle
+                 dst = null;
+            } else {
+            	if (type.toLowerCase().equals("jpg")) {
+            		type = "jpeg";
+            	}
+            	
+            	JAI.create("filestore", resizedImage, dstPath, type);
+            }
+
+            if (resizedImage != null && new File(dstPath).exists()) {
+            	success = true;
+            }
+
+            //JAI Cleanup
+            resizedImage.dispose();
+            resizedImage = null;
+            type = null;
+         } else {
+        	 if (!cmd.endsWith("convert")) {
+        		 if (!cmd.endsWith(File.separator)) {
+        			 cmd += File.separator;
+        		 }
+        		 cmd += "convert";
+        	 }
+
+	        StringBuffer command = new StringBuffer(cmd);
+	        command.append(" -geometry ");
+	        command.append(thumbWidth).append("x").append(thumbHeight);
+	        command.append(" ").append(srcPath);
+	        command.append(" ").append(dstPath);
+	        success = exec(command.toString());
+    	}
+    
+        if (success) {
             return new int[] { thumbWidth, thumbHeight };
         }
         
@@ -430,29 +476,37 @@ public class ImageObject extends FileObject {
         
         return (exitStatus == 0);
     }
-    
-	protected PlanarImage resize(int thumbWidth, int thumbHeight, RenderedOp image,
-                                    boolean scaleComputed) {
-	    if (!scaleComputed) {
-	        int imageWidth = image.getWidth();
-	        int imageHeight = image.getHeight();
-	        
-	        int[] dims = computeResizedDimensions(thumbWidth, thumbHeight, imageWidth, imageHeight);
-	        thumbWidth = dims[0];
-            thumbHeight = dims[1];
-	    }
-        
-        ParameterBlock pb = new ParameterBlock();
-        pb.addSource(image);
-        RenderableImage ren = JAI.createRenderable("renderable", pb);
-        pb = new ParameterBlock();
-        pb.addSource(ren);
-        PlanarImage dst = (PlanarImage)ren.createScaledRendering(thumbWidth, thumbHeight, null);
-        ren = null;
-        
-        return dst;
+	
+	protected RenderedOp resize(int thumbWidth, int thumbHeight, RenderedOp image, boolean scaleComputed) {
+		double scale = 1.0;
+		if (!scaleComputed) {
+			int imageWidth = image.getWidth();
+			int imageHeight = image.getHeight();
+		
+			scale = computeEvenResizeScale(thumbWidth, thumbHeight, imageWidth, imageHeight);
+		}
+		
+		RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		return JAI.create("SubsampleAverage", image, scale, scale, qualityHints);
 	}
-    
+
+	protected double computeEvenResizeScale(int nw, int nh, int iw, int ih) {
+		double[] scales = this.computeResizeScale(nw, nh, iw, ih);
+		if (scales[0] > scales[1]) {
+			return scales[0];
+		} else {
+			return scales[1];
+		}
+	}
+
+	protected double[] computeResizeScale(int nw, int nh, int iw, int ih) {
+		// this code keeps thumbnail ratio same as original image
+		double widthScale = (double) nw / (double) iw;
+		double heightScale = (double) nh / (double) ih;
+		
+		return new double[] { widthScale, heightScale };
+	}
+
 	protected int[] computeResizedDimensions(int nw, int nh, int iw, int ih) {
 	    int[] dims = new int[2];
 
