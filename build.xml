@@ -49,6 +49,7 @@
 		<delete dir="${jsdoc.dir}"/>
 		<delete dir="${javadoc.dir}"/>
 		<delete dir="${test-config.dir}"/>
+		<delete dir="${release.dir}"/>
 	</target>
 
 	<target name="build" depends="clean, init">
@@ -245,12 +246,11 @@
 			<isset property="axiom_version"/>
 		</condition>
 		<fail message="To build a release, 'version' must be set" unless="ver"/>
-
+<!--
 		<exec executable="./release.sh">
-		    <!--<arg value="release.sh"/>-->
 		    <arg value="${axiom_version}"/>
 		</exec>
-
+-->
 		<mkdir dir="${release.dir}"/>
 
 		<copy todir="${release.dir}">
@@ -260,7 +260,8 @@
 					build.xml, 
 					license.txt, 
 					README.txt, 
-					server.properties"/>
+					server.properties,
+					release.sh"/>
 		</copy>
 		
 		<copy todir="${release.dir}/src">
@@ -300,6 +301,11 @@
 		<antcall target="jsdoc">
 			<param name="docdir" value="${release.dir}/doc"/>
 		</antcall>
+		
+		 <zip destfile="${home.dir}/axiom-stack-${axiom_version}.zip"
+		       basedir="${release.dir}"/>
+
+		<delete dir="${release.dir}"/>
 	</target>
 	
 </project>
