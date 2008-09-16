@@ -246,7 +246,7 @@
 		</condition>
 		<fail message="To build a release, 'version' must be set" unless="ver"/>
 
-		<exec executable="release.sh">
+		<exec executable="./release.sh">
 		    <!--<arg value="release.sh"/>-->
 		    <arg value="${axiom_version}"/>
 		</exec>
