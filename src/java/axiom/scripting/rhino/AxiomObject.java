@@ -1502,7 +1502,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		} else {
 		    value = (String) map.remove(LuceneManager.ACCESSNAME);
 		}
-
 		if (value != null) {
 		    if (aname != null) {
 		    	INode parent = this.node.getParent();
@@ -1525,7 +1524,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		        _idAccess = true;
 		    }
 		}
-
+		
 		Object setParentTo = null, v;
 		if ((v = map.get(LuceneManager.LOCATION)) != null) {
 			Object avalue = setValueTo != null ? setValueTo : this.jsFunction_accessvalue();
@@ -1553,7 +1552,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			this.put(setNameTo, this, setValueTo);
 		}
 		if (setParentTo != null) {
-			this.setParent(setParentTo);
+			try{
+				this.setParent(setParentTo);
+			} catch(Exception e){
+				emsgs.put(LuceneManager.LOCATION, emsgs, e.getMessage());
+				return;				
+			}
             this.calcComputedProps("_parent");
 		}
 
@@ -2050,8 +2054,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return newvalue;
 	}
 
-	protected boolean setParent(Object parent) {
-
+	protected boolean setParent(Object parent) throws Exception{
 	    checkNode();
 
 	    INode newparent = null;
@@ -2080,6 +2083,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        if ((currparent = node.getParent()) != null) {
 	            if (areNodesEqual(newparent, currparent)) {
 	                doTheAdd = false;
+	            } else if(childAccessNameExists(newparent)){
+		            throw new Exception("Adding " + node.getName() + " to " + newparent.getName() + " would cause an accessname conflict.");
 	            } else {
 	            	currparent.removeNode(node);
 	            	((AxiomObject) core.getNodeWrapper(currparent)).calcComputedProps("_children");
@@ -2096,6 +2101,20 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	    }
 
 	    return false;
+	}
+	
+	private boolean childAccessNameExists(INode newparent){
+    	String aname = this.computeAccessname(this);
+    	if(aname != null){
+        	String anameValue = node.getString(aname);
+        	if(anameValue != null){
+	        	INode child = (INode) newparent.getChildElement(anameValue);
+	        	if(child != null){
+	        		return true;
+	        	}
+        	}    		
+    	}
+		return false;
 	}
     
 	protected static boolean areNodesEqual(INode n1, INode n2) {
