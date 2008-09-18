@@ -38,6 +38,8 @@ import axiom.objectmodel.INode;
  * in the application's blob directory. 
  * 
  * @jsconstructor File
+ * @param {MimePart|String} object Object to build File object from
+ * @param {Boolean} [extractText] Turns off text extraction 
  */
 public class FileObject extends AxiomObject {
     
