@@ -2572,7 +2572,15 @@ public final class Application implements IPathElement, Runnable {
     }
     
     public QueryBean getQueryBean() {
-        return this.qbean;
+        QueryBean qb = this.qbean;
+        RequestEvaluator reqev = this.getCurrentRequestEvaluator();
+        if (reqev != null) {
+            RhinoEngine re = (RhinoEngine) reqev.scriptingEngine;
+            qb.setRhinoCore(re.getCore());
+        } else {
+            qb.setRhinoCore(null);
+        }
+        return qb;
     }
     
     public String[][] getRewriteRules() {

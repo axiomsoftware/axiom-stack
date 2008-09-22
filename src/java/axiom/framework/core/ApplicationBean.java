@@ -1411,15 +1411,7 @@ public class ApplicationBean implements Serializable {
     }
     
     private QueryBean getQueryBean() {
-        QueryBean qb = this.app.qbean;
-        RequestEvaluator reqev = this.app.getCurrentRequestEvaluator();
-        if (reqev != null) {
-            RhinoEngine re = (RhinoEngine) reqev.scriptingEngine;
-            qb.setRhinoCore(re.getCore());
-        } else {
-            qb.setRhinoCore(null);
-        }
-        return qb;
+    	return app.getQueryBean();
     }
 
     /**

@@ -583,7 +583,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 */
 	public Scriptable jsFunction_getChildren(Object prototype, Object filter, Object optional) {
 
-	    Scriptable ret;
+		Scriptable ret;
 	    if (prototype == Undefined.instance && 
 	            filter == Undefined.instance &&
 	            optional == Undefined.instance) {
@@ -599,7 +599,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        	else{
 	        		options = Context.getCurrentContext().newObject(this.core.getScope());	        		
 	        	}
-				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/");
+				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/*");
 
 				ret = this.core.app.getQueryBean().objects(prototype, filter, options);
 	        } catch (Exception ex) {
