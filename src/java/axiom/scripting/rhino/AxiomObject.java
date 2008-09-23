@@ -599,7 +599,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        	else{
 	        		options = Context.getCurrentContext().newObject(this.core.getScope());	        		
 	        	}
-				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/*");
+	        	String path = this.jsFunction_getPath();
+	        	path = path.equals("/") ? path + "*" : path + "/*";
+
+	        	options.put(LuceneQueryDispatcher.PATH_FIELD, options, path);
 
 				ret = this.core.app.getQueryBean().objects(prototype, filter, options);
 	        } catch (Exception ex) {
@@ -649,7 +652,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        	} else {
 	        		options = Context.getCurrentContext().newObject(this.core.getScope());	        		
 	        	}
-				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/");
+	        	String path = this.jsFunction_getPath();
+	        	path = path.equals("/") ? path + "*" : path + "/*";
+				options.put(LuceneQueryDispatcher.PATH_FIELD, options, path);
 				
 				ret = this.core.app.getQueryBean().getHitCount(prototype, filter, options);
 	        } catch (Exception ex) {
@@ -2465,12 +2470,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 if (app.getBaseURI().equals("/")) {
 			 return href;
 		 }
-
 		 int a = href.indexOf('/', 1);
 		 if (a == -1) { 
-			 return null; 
+			 return "/"; 
 		 }		
-
 		 return href.substring(a);
 	 }
 
