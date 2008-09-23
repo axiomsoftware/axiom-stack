@@ -13,3 +13,5 @@ lib/axiom.jar
 lib/js.zip
 ./test
 ./release
+modules
+apps/idealliance
