@@ -246,11 +246,11 @@
 			<isset property="axiom_version"/>
 		</condition>
 		<fail message="To build a release, 'version' must be set" unless="ver"/>
-<!--
+
 		<exec executable="./release.sh">
 		    <arg value="${axiom_version}"/>
 		</exec>
--->
+
 		<mkdir dir="${release.dir}"/>
 
 		<copy todir="${release.dir}">
