@@ -417,6 +417,14 @@
 			var removed = root.get("axiomobject_remove_test");
 
 			Assert.assertNull("AxiomObject.remove() failed", removed);
+		},
+		test_AxiomObject_root_getChildrenWithPrototype: function() {
+			app.log('FUCL');
+			app.log(root.getPath());
+			var index = 5;
+			_add_kitchen_sinks('LuceneKitchenSink', index);
+			var children = root.getChildren('LuceneKitchenSink');
+			Assert.assertEquals("AxiomObject.test_AxiomObject_root_getChildrenWithPrototype() failed", 5, children.length);
 		}
 	}
 }
