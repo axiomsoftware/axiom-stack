@@ -185,7 +185,7 @@ public class FileObject extends AxiomObject {
      */
     public String jsFunction_getContentType() {
         Object ret = this.get(CONTENT_TYPE, this);
-        if (ret != null) {
+        if (ret != null && !(ret == Scriptable.NOT_FOUND)) {
             return ret.toString();
         } else {
             return null;
@@ -209,7 +209,7 @@ public class FileObject extends AxiomObject {
      */
     public String jsFunction_getContent() {
         Object ret = this.get(CONTENT, this);
-        if (ret != null) {
+        if (ret != null && !(ret == Scriptable.NOT_FOUND)) {
             return ret.toString();
         } else {
             return null;
@@ -223,7 +223,7 @@ public class FileObject extends AxiomObject {
      */
     public String jsFunction_getFileName() {
         Object ret = this.get(FILE_NAME, this);
-        if (ret != null) {
+        if (ret != null && !(ret == Scriptable.NOT_FOUND)) {
             return ret.toString();
         } else {
             return null;

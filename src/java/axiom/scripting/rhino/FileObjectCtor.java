@@ -284,7 +284,16 @@ public class FileObjectCtor extends FunctionObject {
     }
     
     private static boolean isTextFile(String fileExt) {
-        return fileExt.indexOf(".") > -1;
+        int idx = fileExt.lastIndexOf(".");
+        String ext = idx > 0 ? fileExt.substring(idx + 1).trim().toLowerCase() : null;
+
+    	if(ext.equals("txt") || ext.equals("properties") || ext.equals("java") || 
+    			ext.equals("html") || ext.equals("xml") || ext.equals("css")){
+    		return true;
+    	} else {
+    		return false;
+    	}
+
     }
     
     private static String extractText(FileInputStream fis) {
