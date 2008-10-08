@@ -2160,7 +2160,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * <code>bar</code> is of prototype Y, then <code>this.getAncestor("Y")</code> will
 	 * return <code>bar</code>.
 	 * 
-	 * @param {String} [prototype] The prototype to look for on the ancestor hierarchy,
+	 * @param {String | Array} [prototype] The prototype to look for on the ancestor hierarchy,
 	 *                             if not specified, it just returns the 
 	 *                             <code>_parent</code> of this object
 	 * @param {Boolean} [includeThis] Whether to include this object in the ancestor
@@ -2168,7 +2168,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * @returns {AxiomObject} The first AxiomObject in the hierarchy of this object matching
 	 *                       the given object prototype
 	 */
-	public Object jsFunction_getAncestor(String prototype, Object includeThis) {
+	public Object jsFunction_getAncestor(Object prototype, Object includeThis) {
 		if (node != null) {
 			checkNode();
 
@@ -2188,13 +2188,30 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				n = node.getParent();
 			}
 
-			prototype = prototype.toLowerCase();
-			while (n != null) {
-				if (prototype.equals(n.getPrototype().toLowerCase())) {
-					return Context.toObject(n, core.global);
-				}
-				n = n.getParent();
+
+			ArrayList<String> prototype_array = new ArrayList<String>();
+			if (prototype instanceof NativeArray) {
+				final NativeArray na = (NativeArray)prototype;
+	            final int length = (int)na.getLength();
+	            if(length > 0) {
+		            for (int i = 0; i < length; i++) {
+		                Object o = na.get(i, na);
+		                if (o instanceof String) {
+		                    String proto = o.toString().toLowerCase();
+		                    prototype_array.add(proto);
+		                }
+		            }
+	            }
+			} else if (prototype instanceof String) {
+				prototype_array.add(prototype.toString().toLowerCase());
 			}
+	            
+		    while (n != null) {
+		        if (prototype_array.contains(n.getPrototype().toLowerCase())) {
+		        	return Context.toObject(n, core.global);
+		        }
+		        n = n.getParent();
+		    }
 		}
 
 		return null;
