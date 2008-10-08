@@ -294,7 +294,7 @@ axiom.Zip = function (file) {
 }
 
 /**
- * Constructor for axiom.Zip.Content, an object that maintains a table of contents and file tree of 
+ * Constructor for axiom.Zip.Content, an object that maintains a table of contents and file tree of
  * the .zip file.
  * @constructor
  */
@@ -358,19 +358,19 @@ axiom.Zip.Entry = function(entry) {
 	 * @type Number
 	 */
 	this.size = entry.getSize();
-	
+
 	/**
 	 * Last modification timestamp of the entry or null.
 	 * @type Date
 	 */
     this.time = entry.getTime() ? new Date(entry.getTime()) : null;
-	
+
 	/**
 	 * True in case entry is a directory, false otherwise.
 	 * @type Boolean
 	 */
     this.isDirectory = entry.isDirectory();
-	
+
 	/**
 	 * A java.lang.Byte[] containing the data of the entry.
 	 * @type java.lang.Byte[]
@@ -385,11 +385,25 @@ axiom.Zip.Entry = function(entry) {
 
 /**
  * Extract all files in a ByteArray passed as argument and return them as an Axiom.Zip.Content object.
- * @param {java.lang.Byte[]} zipData A java.lang.Byte[] containing the data of the .zip file
+ * @param {java.lang.InputStream | java.lang.Byte[]} stream Either a java.lang.InputStream, sub-classes included, or a java.lang.Byte[] containing the data of the .zip file
  * @returns {axiom.Zip.Content} An instance of axiom.Zip.Content
  */
-axiom.Zip.extractData = function(zipData) {
-    var zInStream = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zipData));
+axiom.Zip.extractData = function(stream) {
+    if (!stream) {
+	return null;
+    };
+
+    if (!(stream instanceof Packages.java.io.InputStream)) {
+	app.log("not stream");
+	stream = new java.io.ByteArrayInputStream(stream);
+    };
+
+    var zInStream = new java.util.zip.ZipInputStream(stream);
+
+    if (!zInStream) {
+	return null;
+    };
+
     var result = new axiom.Zip.Content();
 
     var entry;

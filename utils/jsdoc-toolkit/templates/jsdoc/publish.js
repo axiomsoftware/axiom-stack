@@ -72,7 +72,7 @@ function publish(symbolSet) {
 	var hooksObjects = symbols.filter(isHook).sort(makeSortby("alias"));
 	var extensionObjects = symbols.filter(isExtension).sort(makeSortby("alias"));
 	var builtinObjects = symbols.filter(isBuiltin).sort(makeSortby("alias"));
-	for each(obj in builtinObjects){
+	for each(var obj in builtinObjects){
 		obj.methods = obj.methods.filter(function($){return !isHook($);});
 	}
 
@@ -81,7 +81,7 @@ function publish(symbolSet) {
 
 	for(var i = 0; i < globalObjects.length; i++){
 		if(globalObjects[i].alias == '_global_'){
-			index = i;
+			//index = i;
 			globalObjects[i].methods = globalObjects[i].methods.filter(function($){ return !isHook($); });
 			for each(method in globalObjects[i].methods){
 				globalObjects.methods.push(method.alias);
