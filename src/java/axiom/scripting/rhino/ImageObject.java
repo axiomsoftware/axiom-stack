@@ -198,6 +198,26 @@ public class ImageObject extends FileObject {
     }
     
     /**
+     * Take an object from the scripting layer and convert it to an int.
+     * @param obj
+     * @return int 
+     */
+    private int toInt(Object obj){
+        int result = 0;
+    	if (obj instanceof String) {
+            result = Integer.parseInt((String) obj);
+        } else if (obj instanceof Number) {
+            result = ((Number) obj).intValue();
+        } else if (obj instanceof Scriptable) {
+            Scriptable sobj = (Scriptable) obj;
+            if (sobj.getClassName().equals("Number")) {
+                result = (int) ScriptRuntime.toNumber(sobj);
+            }
+        }
+    	return result;
+    }
+    
+    /**
      * Creates and returns a new Image object that is a rendering of this Image object.
      * The input object defines the rendering parameters of the new Image object.  
      * Imagemagick's convert program is used to create a scaled bounding box of 
@@ -214,85 +234,102 @@ public class ImageObject extends FileObject {
         }
         
         Scriptable s = (Scriptable) input;
-        Object maxw = s.get("maxWidth", s);
-        Object maxh = s.get("maxHeight", s);
-        if (maxw == null || maxw == Scriptable.NOT_FOUND || maxh == null || maxh == Scriptable.NOT_FOUND) {
-            throw new RuntimeException("render(), maxWidth/maxHeight not specified.");
-        }
+        int maxWidth = toInt(s.get("maxWidth", s));
+        int maxHeight = toInt(s.get("maxHeight", s));
         
-        int w = 0, h = 0;
-        if (maxw instanceof String) {
-            w = Integer.parseInt((String) maxw);
-        } else if (maxw instanceof Number) {
-            w = ((Number) maxw).intValue();
-        } else if (maxw instanceof Scriptable) {
-            Scriptable mw = (Scriptable) maxw;
-            if (mw.getClassName().equals("Number")) {
-                w = (int) ScriptRuntime.toNumber(mw);
-            }
-        }
-        if (maxh instanceof String) {
-            h = Integer.parseInt((String) maxh);
-        } else if (maxh instanceof Number) {
-            h = ((Number) maxh).intValue();
-        } else if (maxh instanceof Scriptable) {
-            Scriptable mh = (Scriptable) maxh;
-            if (mh.getClassName().equals("Number")) {
-                h = (int) ScriptRuntime.toNumber(mh);
-            }
-        }
-        
-        int cw = (int) node.getInteger(WIDTH);
-        int ch = (int) node.getInteger(HEIGHT);
+        int cropWidth = toInt(s.get("cropWidth", s));
+        int cropHeight = toInt(s.get("cropHeight", s));
+        int cropXOffset = toInt(s.get("cropXOffset", s));
+        int cropYOffset = toInt(s.get("cropYOffset", s));
 
-        if (w > 0 && h > 0 && cw > 0 && ch > 0) {
-            int[] dims = this.computeResizedDimensions(w, h, cw, ch);
-            String aname = dims[0] + "x" + dims[1];
-            Object o = null;
-            try{
-	            o = this.jsFunction_get(aname);
-	            if (o instanceof ImageObject) {
-	                return (ImageObject) o;
-	            }
-            } catch(Exception e) {
-            	
-            }
+        int currentWidth = (int) node.getInteger(WIDTH);
+        int currentHeight = (int) node.getInteger(HEIGHT);
+        
+        String aname = null;
+        if (maxWidth > 0 && maxHeight > 0 && currentWidth > 0 && currentHeight > 0) {
+            int[] dims = this.computeResizedDimensions(maxWidth, maxHeight, currentWidth, currentHeight);
+            aname = dims[0] + "x" + dims[1];
+            maxWidth = dims[0];
+            maxHeight = dims[1];
+        } else if(cropWidth > 0 && cropHeight > 0 ){
+        	aname = cropWidth + "x" + cropHeight+"_"+cropXOffset+"x"+cropYOffset;
+        } else {
+        	throw new RuntimeException("render(), invalid parameter set.");
+        }
+
+        Object o = this.jsFunction_get(aname);
+        if (o instanceof ImageObject) {
+        	return (ImageObject) o;
+        }
 	            
-            try {
-                synchronized (this) {
-                    while (this.convertOps.contains(aname)) {
-                        this.wait();
-                    }
-                    this.convertOps.add(aname);
+        try {
+        	synchronized (this) {
+        		while (this.convertOps.contains(aname)) {
+        			this.wait();
+        		}
+        		this.convertOps.add(aname);
+        	}
+
+        	o = ((axiom.objectmodel.db.Node) this.node).getChildElement(aname, true);
+        	if (o instanceof Node) {
+        		return (ImageObject) Context.toObject(o, this.core.global);
+        	}
+
+        	ImageObject computedImg = null; 
+        	String[] paths = getPaths();
+    		String imgPath = paths[0];
+    		String tmpPath = paths[1];
+    		String fileName = node.getString(FileObject.FILE_NAME);
+
+    		try{
+                File tmpFile = new File(tmpPath);
+                int[] dims = null;
+                if(maxWidth > 0 && maxHeight > 0){
+                	dims = this.resize(maxWidth, maxHeight, (int) this.node.getInteger(WIDTH), 
+                								(int) this.node.getInteger(HEIGHT), imgPath,
+                								tmpPath, true);
+                } else {
+            		dims = this.crop(cropWidth, cropHeight, cropXOffset, cropYOffset, imgPath, tmpPath);
+            	}
+                
+                if (dims == null) {
+                    throw new Exception("ImageObject.render(), resizing the image failed.");
                 }
                 
-                try {
-                	o = ((axiom.objectmodel.db.Node) this.node).getChildElement(aname, true);
-	                if (o instanceof Node) {
-	                    return (ImageObject) Context.toObject(o, this.core.global);
-	                }
-                } catch(Exception e){
-                	
-                }
+                final String protoname = "Image";
+                INode node = new axiom.objectmodel.db.Node(protoname, protoname, core.app.getWrappedNodeManager());
+                computedImg = new ImageObject("Image", core, node, core.getPrototype(protoname), true);
+                
+                node.setString(FileObject.FILE_NAME, fileName);
+                node.setString(FileObject.ACCESSNAME, FileObjectCtor.generateAccessName(fileName));
+                node.setString(FileObject.CONTENT_TYPE, this.node.getString(FileObject.CONTENT_TYPE));
+                node.setJavaObject(FileObject.SELF, computedImg);
+                node.setInteger(ImageObject.WIDTH, dims[0]);
+                node.setInteger(ImageObject.HEIGHT, dims[1]);
+                node.setString(FileObject.RENDERED_CONTENT, "true");
+                
+                node.setInteger(FileObject.FILE_SIZE, tmpFile.length());
+                computedImg.tmpPath = tmpPath;
+            } catch (Exception ex) {
+            	throw new RuntimeException("ImageObject.jsfunction_bound(): Could not write the image to temporary storage, " + ex.getMessage());
+            } 
 
-                ImageObject computedImg = this.bound(dims[0], dims[1], true);
-                if (computedImg != null) {
-                    this.jsFunction_addThumbnail(computedImg, null);
-                    return computedImg;
-                }
-            } finally {
-                synchronized (this) {
-                    this.convertOps.remove(aname);
-                    this.notifyAll();
-                }
-            }
+        	if (computedImg != null) {
+        		this.jsFunction_addThumbnail(computedImg, null);
+        		return computedImg;
+        	}
+        } finally {
+        	synchronized (this) {
+        		this.convertOps.remove(aname);
+        		this.notifyAll();
+        	}
         }
         
         return null;
     }
     
-	public ImageObject bound(int w, int h, boolean scaleComputed) {
-		String fileName = node.getString(FileObject.FILE_NAME);
+    private String[] getPaths(){
+    	String fileName = node.getString(FileObject.FILE_NAME);
 		String imgPath = null;
 		Object tmpObj = node.get(FileObject.SELF);
 		if (tmpObj != null) {
@@ -310,58 +347,19 @@ public class ImageObject extends FileObject {
 			imgPath = repos + node.getID();
         }
 		imgPath = FileObjectCtor.normalizePath(imgPath);
-       
-        ImageObject scaledImgObj = null;
-        try {
-            String tmpPath = (String) FileObject.tmpDirs.get(core.app.getName());
-            String tmpFileName = FileObjectCtor.generateTmpFileName(fileName, tmpPath);
-            if (!tmpPath.endsWith(File.separator)) {
-                tmpPath += File.separator;
-            }
-            tmpPath += tmpFileName;
-            tmpPath = FileObjectCtor.normalizePath(tmpPath);
-            File tmpFile = new File(tmpPath);
-            
-            int[] dims = this.resizeImg(w, h, (int) this.node.getInteger(WIDTH), 
-                                        (int) this.node.getInteger(HEIGHT), imgPath,
-                                        tmpPath, scaleComputed);
-            
-            if (dims == null) {
-                throw new Exception("ImageObject.bound(), resizing the image failed.");
-            }
-            
-            final String protoname = "Image";
-            INode node = new axiom.objectmodel.db.Node(protoname, protoname, core.app.getWrappedNodeManager());
-            scaledImgObj = new ImageObject("Image", core, node, core.getPrototype(protoname), true);
-            
-            node.setString(FileObject.FILE_NAME, fileName);
-            node.setString(FileObject.ACCESSNAME, FileObjectCtor.generateAccessName(fileName));
-            node.setString(FileObject.CONTENT_TYPE, this.node.getString(FileObject.CONTENT_TYPE));
-            node.setJavaObject(FileObject.SELF, scaledImgObj);
-            node.setInteger(ImageObject.WIDTH, dims[0]);
-            node.setInteger(ImageObject.HEIGHT, dims[1]);
-            node.setInteger(ImageObject.REQUESTED_WIDTH, w);
-            node.setInteger(ImageObject.REQUESTED_HEIGHT, h);
-            node.setString(FileObject.RENDERED_CONTENT, "true");
-            
-            node.setInteger(FileObject.FILE_SIZE, tmpFile.length());
-            scaledImgObj.tmpPath = tmpPath;
-        } catch (Exception ex) {
-        	throw new RuntimeException("ImageObject.jsfunction_bound(): Could not write the image to temporary storage, " + ex.getMessage());
-        } 
-
-		return scaledImgObj;
-	}
-	
-    protected int[] resizeImg(int thumbWidth, int thumbHeight, int imageWidth, 
-                                int imageHeight, String srcPath, String dstPath, 
-                                boolean scaleComputed) {
-        if (!scaleComputed) {            
-            int[] dims = computeResizedDimensions(thumbWidth, thumbHeight, imageWidth, imageHeight);
-            thumbWidth = dims[0];
-            thumbHeight = dims[1];
-        }
         
+        String tmpPath = (String) FileObject.tmpDirs.get(core.app.getName());
+        String tmpFileName = FileObjectCtor.generateTmpFileName(fileName, tmpPath);
+        if (!tmpPath.endsWith(File.separator)) {
+        	tmpPath += File.separator;
+        }
+        tmpPath += tmpFileName;
+        tmpPath = FileObjectCtor.normalizePath(tmpPath);
+    	
+        return new String[]{imgPath, tmpPath};
+    }
+    
+	protected String[] escapePaths(String srcPath, String dstPath){
         srcPath = srcPath.trim();
         dstPath = dstPath.trim();
         String os = System.getProperty("os.name").toLowerCase();
@@ -384,6 +382,54 @@ public class ImageObject extends FileObject {
             }
             dstPath = buff.toString();
         }
+        return new String[]{srcPath, dstPath};
+	}
+
+	protected int[] crop(int width, int height, int offsetx, int offsety, String srcPath, String dstPath){
+        String[] paths = escapePaths(srcPath, dstPath);
+        srcPath = paths[0];
+        dstPath = paths[1];
+        boolean success = false;	
+        
+        String cmd = core.app.getProperty("imagemagick");
+        if(cmd == null){
+        	return null;
+        } else {
+        	 if (!cmd.endsWith("convert")) {
+        		 if (!cmd.endsWith(File.separator)) {
+        			 cmd += File.separator;
+        		 }
+        		 cmd += "convert";
+        	 }
+
+
+	        StringBuffer command = new StringBuffer(cmd);
+	        command.append(" -crop ");
+	        command.append(width).append("x").append(height).append("+").append(offsetx).append("+").append(offsety).append("!");
+	        command.append(" ").append(srcPath);
+	        command.append(" ").append(dstPath);
+	        success = exec(command.toString());
+    	}
+    
+        if (success) {
+            return new int[] { width, height };
+        }
+        
+        return null;
+	}
+	
+    protected int[] resize(int thumbWidth, int thumbHeight, int imageWidth, 
+                                int imageHeight, String srcPath, String dstPath, 
+                                boolean scaleComputed) {
+        if (!scaleComputed) {            
+            int[] dims = computeResizedDimensions(thumbWidth, thumbHeight, imageWidth, imageHeight);
+            thumbWidth = dims[0];
+            thumbHeight = dims[1];
+        }
+        
+        String[] paths = escapePaths(srcPath, dstPath);
+        srcPath = paths[0];
+        dstPath = paths[1];
         
         String cmd = core.app.getProperty("imagemagick");
         boolean success = false;

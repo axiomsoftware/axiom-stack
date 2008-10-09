@@ -10,7 +10,7 @@
 </div>
 <div class="classbox">
   <for each="bucket" in="data.methods">
-	<h2>{+($bucket_key == '_global_' ? 'Global' : $bucket_key)+}</h2>
+	<h3>{+($bucket_key == '_global_' ? 'Global' : $bucket_key)+}</h3>
 	<ul class="classList">
 	  <for each="method" in="bucket">
 		<li>{!
@@ -20,5 +20,5 @@
 		  !}</li>
 	  </for>
 	</ul>
-  </for> 
+  </for>
 </div>
