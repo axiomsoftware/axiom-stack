@@ -40,6 +40,8 @@ this._test = {
 	},
 	teardown: function(){
 		app.log('db outer teardown');
+		var c = root.getChildren();
+		app.log(c.length);
 		if(true){
 		var conn = null;
 		var ps = null;
@@ -84,6 +86,11 @@ this._test = {
 		},
 		teardown: function(){
 			app.log('database teardown');
+if(false){
+			for each(var child in root.getChildren()){
+				root.remove(child)
+			}
+} else {
 			var dbks = app.getObjects('DatabaseKitchenSink');
 			for(var i = 0; i < dbks.length; i++){
 				dbks[i].del();
@@ -92,6 +99,8 @@ this._test = {
 			for(var i = 0; i < dbks.length; i++){
 				dbks[i].del();
 			}
+}
+			//res.commit();
 		},
 		test_getObjects_no_params: function(){
 			var index = 10;
@@ -182,6 +191,9 @@ this._test = {
 			_add_kitchen_sinks('DatabaseKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['DatabaseKitchenSink'], {}, {sort:sort});
+			app.log('******');
+			app.log(objects.toSource());
+			app.log(objects.length);
 			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {sort:sort}) failed', 
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
