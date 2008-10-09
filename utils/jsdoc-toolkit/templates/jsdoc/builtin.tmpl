@@ -1,56 +1,56 @@
 <div class="classbox">
-	<div><strong>{+new Link().toFile("index.html").withText("Global Objects and Functions")+}</strong></div>
-	<div><strong>{+new Link().toFile("extensions.html").withText("Prototype Extensions")+}</strong></div>
-	<if test="publish.currentClass != ''">
-		<div><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
-	<else/>
-		<div><strong>Built-in Prototypes</strong></div>
-	</if>
-	<div class="lastclass"><strong>{+new Link().toFile("hooks.html").withText("Hooks")+}</strong></div>
+  <div><strong>{+new Link().toFile("index.html").withText("Global Objects and Functions")+}</strong></div>
+  <div><strong>{+new Link().toFile("extensions.html").withText("Prototype Extensions")+}</strong></div>
+  <if test="publish.currentClass != ''">
+    <div><strong>{+new Link().toFile("builtin.html").withText("Built-in Prototypes")+}</strong></div>
+    <else/>
+    <div><strong>Built-in Prototypes</strong></div>
+  </if>
+  <div class="lastclass"><strong>{+new Link().toFile("hooks.html").withText("Hooks")+}</strong></div>
 </div>
 
 <div class="classbox">
-<h2>Instantiable Objects</h2>
-<ul class="classList">
-	<for each="obj" in="data">
-	{!
-		if(!obj.srcFile.equalsIgnoreCase('alldoc.js') && obj.is("CONSTRUCTOR")){
-			if(obj.alias == publish.currentClass){
-				output += '<li>' + obj.alias + '</li>';
-			}
-			else{
-				output += '<li>' + new Link().toClass(obj.alias) + '</li>';
-			}
-		} else {
-			for each(tag in obj.comment.tags){
-				if(tag.title.equalsIgnoreCase("jsconstructor")){
-					if(obj.alias == publish.currentClass){
-						output += '<li>' + obj.alias + '</li>';
-					}
-					else{
-						output += '<li>' + new Link().toClass(obj.alias) + '</li>';
-					}
-				}
-			}
-		}
-	!}
-	</for>
-</ul>
-<h2>Uninstantiable Objects</h2>
-<ul class="classList">
-	<for each="obj" in="data">
-	{!
-		for each(tag in obj.comment.tags){
-			if(tag.title.equalsIgnoreCase("jsnoconstructor")){
-				if(obj.alias == publish.currentClass){
-					output += '<li>' + obj.alias + '</li>';
-				}
-				else{
-					output += '<li>' + new Link().toClass(obj.alias) + '</li>';
-				}
-			}
-		}
-	!}
-	</for>
-</ul>
+  <h4>Instantiable Objects</h4>
+  <ul class="classList">
+    <for each="obj" in="data">
+      {!
+      if(!obj.srcFile.equalsIgnoreCase('alldoc.js') && obj.is("CONSTRUCTOR")){
+      if(obj.alias == publish.currentClass){
+      output += '<li>' + obj.alias + '</li>';
+      }
+      else{
+      output += '<li>' + new Link().toClass(obj.alias) + '</li>';
+      }
+      } else {
+      for each(tag in obj.comment.tags){
+      if(tag.title.equalsIgnoreCase("jsconstructor")){
+      if(obj.alias == publish.currentClass){
+      output += '<li>' + obj.alias + '</li>';
+      }
+      else{
+      output += '<li>' + new Link().toClass(obj.alias) + '</li>';
+      }
+      }
+      }
+      }
+      !}
+    </for>
+  </ul>
+  <h4>Uninstantiable Objects</h4>
+  <ul class="classList">
+    <for each="obj" in="data">
+      {!
+      for each(tag in obj.comment.tags){
+      if(tag.title.equalsIgnoreCase("jsnoconstructor")){
+      if(obj.alias == publish.currentClass){
+      output += '<li>' + obj.alias + '</li>';
+      }
+      else{
+      output += '<li>' + new Link().toClass(obj.alias) + '</li>';
+      }
+      }
+      }
+      !}
+    </for>
+  </ul>
 </div>
