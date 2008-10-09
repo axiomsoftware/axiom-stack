@@ -32,7 +32,7 @@
 function TAL(doc, data) {
     var tal = new Namespace('tal', 'http://axiomstack.com/tale');
     TAL.Scope.prototype = data;
-    local_data = new TAL.Scope();
+    var local_data = new TAL.Scope();
 	default xml namespace = doc.namespace('');
 	if(doc.namespace('tal')==tal) {
         TAL.TALE(doc, local_data, tal);
@@ -114,6 +114,8 @@ TAL.TALE = function (n, data, tal) {
             n.replace('*', <kill tal:omit="true" tal:repeat={tn} xmlns:tal={tal.uri}>{n.*}</kill>);
         }
        if((tn=n.@tal::['content-if']).length()) {
+	   TAL.Scope.prototype = data;
+           data = new TAL.Scope();
             var r = TAL.func(data, tn);
             if(r) {
                 n.replace('*', r);
@@ -137,11 +139,15 @@ TAL.TALE = function (n, data, tal) {
                 delete n.@tal::attr;
         }
         if((tn=n.@tal::content).length()) {
+	    TAL.Scope.prototype = data;
+            data = new TAL.Scope();
                 n.replace('*', TAL.func(data, tn));
                 delete n.@tal::content;
 
         }
         if((tn=n.@tal::replace).length()) {
+	    TAL.Scope.prototype = data;
+            data = new TAL.Scope();
                 n.parent().replace(n.childIndex(), TAL.func(data, tn));
                 return;
         }
