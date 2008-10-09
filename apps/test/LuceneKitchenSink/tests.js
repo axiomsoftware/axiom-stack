@@ -419,12 +419,39 @@
 			Assert.assertNull("AxiomObject.remove() failed", removed);
 		},
 		test_AxiomObject_root_getChildrenWithPrototype: function() {
-			app.log('FUCL');
-			app.log(root.getPath());
 			var index = 5;
 			_add_kitchen_sinks('LuceneKitchenSink', index);
 			var children = root.getChildren('LuceneKitchenSink');
 			Assert.assertEquals("AxiomObject.test_AxiomObject_root_getChildrenWithPrototype() failed", 5, children.length);
 		}
+	},
+	Performance_suite: {
+		setup: function(){
+			app.log('Performance suite setup');
+		},
+		teardown: function(){
+			app.log('Performance suite teardown');
+			for each(var child in root.getChildren()){
+				root.remove(child)
+			}
+		},
+		test_Performance_1000_objects_insert: function() {
+			app.log('this test');
+			var num = 1000;
+			var start = new Date();
+			var slowspeed = 75;
+			for(var i = 0; i < num; i++){
+				var ks = new LuceneKitchenSink();
+				ks.id = 'testks' + i;
+				ks.title = 'testtitle ' + i;
+				root.add(ks);
+			}
+			res.commit();
+			var now = new Date();
+			var persec = num / ((now.getTime()-start.getTime()) / 1000);
+			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
+			Assert.assertTrue("test_Performance_1000_objects_insert failed", persec > slowspeed);			
+		}		
 	}
 }
+	
