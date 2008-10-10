@@ -104,14 +104,14 @@ _test = {
 			var sources = app.getSources(ks3, "LuceneKitchenSink", new Filter({title: "kitchen sink 2"}));
 			Assert.assertEquals("app.getSources() (filter) failed", ks2, sources[0]);
 		},
-		
+
 		test_getSourceCount: function() {
 			var ks = new LuceneKitchenSink();
 			ks.title = "target kitchen sink";
 			ks.id = "target kitchen sink";
 			root.add(ks);
 			res.commit();
-			
+
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
@@ -125,7 +125,7 @@ _test = {
 			ks.id = "target kitchen sink";
 			root.add(ks);
 			res.commit();
-			
+
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
@@ -139,7 +139,7 @@ _test = {
 			ks.id = "target kitchen sink";
 			root.add(ks);
 			res.commit();
-			
+
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
@@ -165,7 +165,7 @@ _test = {
 			res.commit();
 
 			var refs = app.getReferences(ks1,ks2);
-			Assert.assertEquals("app.getReferences() failed", 1, refs.length);
+			Assert.assertEquals("app.getReferences() failed", 2, refs.length); //Because compute3 computes a reference for ref1, there should be two references to ks2
 		},
 
 		test_getTargets: function() {
@@ -239,7 +239,7 @@ _test = {
 			res.commit();
 
 			var count = app.getTargetCount(ks1);
-			Assert.assertEquals("app.getTargetCount() failed", 2, count);
+			Assert.assertEquals("app.getTargetCount() failed", 3, count); //Should have 3 here because of  a computed reference
 		},
 
 		test_getTargetCount_prototype: function() {
@@ -266,7 +266,7 @@ _test = {
 			res.commit();
 
 			var count = app.getTargetCount(ks1, "LuceneKitchenSink");
-			Assert.assertEquals("app.getTargetCount() (prototype) failed", 2, count);
+			Assert.assertEquals("app.getTargetCount() (prototype) failed", 3, count); //Should have 3 here because of a computed reference
 		}
 
 	},
@@ -484,21 +484,21 @@ _test = {
 			var filter = new Filter({tokenized:"dogs cats"});
 			var target = root.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("Filter Test getTargetCount (filter, tokenized) 1 failed", 3, results); //Results should be 3 because of computed references.
 		},
 
 		test_getTargetCount_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
 			var target = root.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 1 failed", 3, results);
 		},
 
 		test_getTargetCount_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
 			var target = root.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, untokenized) 1 failed", 1, results);
+			Assert.assertEquals("Filter Test getTargetCount (filter, untokenized) 1 failed", 2, results); //Results should be 2 because of computed references.
 		},
 
 		test_getTargetCount_filter_tokenized2: function() {
@@ -512,7 +512,7 @@ _test = {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
 			var target = root.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 2 failed", 2, results);
+			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 2 failed", 3, results);
 		},
 
 		test_getTargetCount_filter_untokenized2: function() {
