@@ -83,14 +83,13 @@ this._test = {
 	app_getObjects_suite: {
 		setup: function(){
 			app.log('database setup');
+			var dph = new DatabasePlaceHolder();
+			dph.id = 'dph';
+			root.add(dph);
+			res.commit();
 		},
 		teardown: function(){
 			app.log('database teardown');
-if(false){
-			for each(var child in root.getChildren()){
-				root.remove(child)
-			}
-} else {
 			var dbks = app.getObjects('DatabaseKitchenSink');
 			for(var i = 0; i < dbks.length; i++){
 				dbks[i].del();
@@ -99,110 +98,107 @@ if(false){
 			for(var i = 0; i < dbks.length; i++){
 				dbks[i].del();
 			}
-}
-			//res.commit();
 		},
-		test_getObjects_no_params: function(){
-			var index = 10;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects() failed', app.getObjects().length, index+1); // +1 for Root object
+		getPlaceHolder: function(){
+ 			return app.getObjects('DatabasePlaceHolder', {id:'dph'})[0]; 
 		},
 		test_getObjects_one_proto: function(){
 			var index = 10;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertEquals('app.getObjects("DatabaseKitchenSink") failed', app.getObjects('DatabaseKitchenSink').length, index); 
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_one_proto failed', app.getObjects('DatabaseKitchenSink').length, index); 
 		},
 		test_getObjects_two_protos: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			_add_landfills('DatabaseLandFill', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink", "DatabaseLandFill"]) failed', app.getObjects(['DatabaseKitchenSink', 'DatabaseLandFill']).length == (index * 2));
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			_add_landfills(this.getPlaceHolder(), 'DatabaseLandFill', index);
+			Assert.assertEquals('test_getObjects_two_protos failed', app.getObjects(['DatabaseKitchenSink', 'DatabaseLandFill']).length, (index * 2));
 		},
 		test_getObjects_bad_protos: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects("SomeBadProto") failed', app.getObjects('SomeBadProto').length == 0);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_bad_protos failed', app.getObjects('SomeBadProto').length, 0);
 		},
 		test_getObjects_empty_filter: function(){
 			var index = 10;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}) failed', app.getObjects(['DatabaseKitchenSink'], {}).length == index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_empty_filter failed', app.getObjects(['DatabaseKitchenSink'], {}).length, index);
 		},
 		test_getObjects_one_filter: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects("DatabaseKitchenSink") failed', app.getObjects(['DatabaseKitchenSink'], {id:'ks1'}).length == 1);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_one_filter failed', app.getObjects(['DatabaseKitchenSink'], {id:'ks1'}).length, 1);
 		},
 		test_getObjects_two_filters: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {id:"ks1", title:"title 1"}) failed', app.getObjects(['DatabaseKitchenSink'], {id:'ks1', title:'title 1'}).length == 1);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_two_filters failed', app.getObjects(['DatabaseKitchenSink'], {id:'ks1', title:'title 1'}).length, 1);
 		},
 		test_getObjects_no_result_filter: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {id:"nothere"}) failed', app.getObjects(['DatabaseKitchenSink'], {id:'nothere'}).length == 0);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_no_result_filter failed', app.getObjects(['DatabaseKitchenSink'], {id:'nothere'}).length, 0);
 		},
 		test_getObjects_empty_filter_params: function(){
 			var index = 10;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {}) failed', app.getObjects(['DatabaseKitchenSink'], {}, {}).length == index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_empty_filter_params failed', app.getObjects(['DatabaseKitchenSink'], {}, {}).length, index);
 		},
 		test_getObjects_max_length: function(){
 			var index = 10;
 			var length = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {maxlength:5}) failed', app.getObjects(['DatabaseKitchenSink'], {}, {maxlength:length}).length == length);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_max_length failed', app.getObjects(['DatabaseKitchenSink'], {}, {maxlength:length}).length, length);
 		},
 		test_getObjects_max_length_greater_than_total_objs: function(){
 			var index = 3;
 			var length = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {maxlength:3}) failed', app.getObjects(['DatabaseKitchenSink'], {}, {maxlength:length}).length == index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
+			Assert.assertEquals('test_getObjects_max_length_greater_than_total_objs failed', app.getObjects(['DatabaseKitchenSink'], {}, {maxlength:length}).length, index);
 		},
 		test_getObjects_sort_object_asc: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['DatabaseKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {sort:sort}) failed', 
+			Assert.assertTrue('test_getObjects_sort_object_asc failed', 
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4');
 		},
 		test_getObjects_sort_object_desc: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['DatabaseKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {sort:sort}) failed', 
+			Assert.assertTrue('test_getObjects_sort_object_desc failed', 
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_max_length_sort_object_asc: function(){
 			var index = 10;
 			var maxlength = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['DatabaseKitchenSink'], {}, {sort:sort, maxlength:maxlength});
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {sort:sort, maxlength:maxlength}) failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_asc failed', 
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4' &&
 				objects.length == maxlength);
 		},
 		test_getObjects_max_length_sort_object_desc: function(){
 			var index = 5;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['DatabaseKitchenSink'], {}, {sort:sort});
-			app.log('******');
-			app.log(objects.toSource());
-			app.log(objects.length);
-			Assert.assertTrue('app.getObjects(["DatabaseKitchenSink"], {}, {sort:sort}) failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_desc failed', 
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_by_integer_id: function() {
 			var index = 10;
-			_add_kitchen_sinks('DatabaseKitchenSink', index);
+			_add_kitchen_sinks(this.getPlaceHolder(), 'DatabaseKitchenSink', index);
 			var id = app.getObjects(['DatabaseKitchenSink'])[0]._id;
 			var objects = app.getObjects(['DatabaseKitchenSink'], {_id:parseInt(id)});
-			Assert.assertEquals('app.getObjects(["DatabaseKitchenSink"],{_id:7}) [getObjects_by_integer_id] failed', 1, objects.length);
+			Assert.assertEquals('test_getObjects_by_integer_id failed', 1, objects.length);
 	    }
 	}
 }
+/*
+	}
+}
+*/
