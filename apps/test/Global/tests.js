@@ -8,6 +8,10 @@ _test = {
 	app_suite: {
 		setup: function() {
 			app.log("Global app_suite Setup");
+			var lph = new LucenePlaceHolder();
+			lph.id = 'lph';
+			root.add(lph);
+			res.commit();
 		},
 		teardown: function() {
 			app.log("Global app_suite Teardown");
@@ -15,59 +19,61 @@ _test = {
 				root.remove(child)
 			}
 		},
-
+		getPlaceHolder: function(){
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+		},
 		_add_referring_kitchen_sinks: function(num, obj) {
+			var lph = this.getPlaceHolder();
 			for(var i = 0; i < num; i++){
 				var ks = new LuceneKitchenSink();
-				root.add(ks);
+				lph.add(ks);
 				ks.id = "kitchen_sink_" + i;
 				ks.title = "kitchen sink " + i;
 				ks.ref1 = new Reference(obj);
 			}
 			res.commit();
 		},
-
 		test_getName: function() {
-			Assert.assertEquals("app.getName() failed", "test", app.getName());
+			Assert.assertEquals("test_getName failed", "test", app.getName());
 		},
-
 		test_getSources: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
 			res.commit();
 
 			var sources = app.getSources(ks2);
-			Assert.assertEquals("app.getSources() failed", ks1, sources[0]);
+			Assert.assertEquals("test_getSources failed", ks1, sources[0]);
 		},
-
 		test_getSources_prototype: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			var ks3 = new LuceneKitchenSink();
 			ks3.title = "kitchen sink 3";
 			ks3.id = "kitchen_sink_3";
-			root.add(ks3);
+			lph.add(ks3);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks3);
@@ -75,26 +81,26 @@ _test = {
 			res.commit();
 
 			var sources = app.getSources(ks3, "LuceneKitchenSink");
-			Assert.assertEquals("app.getSources() (prototype) failed", 2, sources.length);
+			Assert.assertEquals("test_getSources_prototype failed", 2, sources.length);
 		},
-
 		test_getSources_filter: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			var ks3 = new LuceneKitchenSink();
 			ks3.title = "kitchen sink 3";
 			ks3.id = "kitchen_sink_3";
-			root.add(ks3);
+			lph.add(ks3);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks3);
@@ -102,109 +108,108 @@ _test = {
 			res.commit();
 
 			var sources = app.getSources(ks3, "LuceneKitchenSink", new Filter({title: "kitchen sink 2"}));
-			Assert.assertEquals("app.getSources() (filter) failed", ks2, sources[0]);
+			Assert.assertEquals("test_getSources_filter failed", ks2, sources[0]);
 		},
-		
 		test_getSourceCount: function() {
+			var lph = this.getPlaceHolder();
 			var ks = new LuceneKitchenSink();
 			ks.title = "target kitchen sink";
 			ks.id = "target kitchen sink";
-			root.add(ks);
+			lph.add(ks);
 			res.commit();
 			
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
 			var count = app.getSourceCount(ks);
-			Assert.assertEquals("app.getSourceCount() failed", num, count);
+			Assert.assertEquals("test_getSourceCount failed", num, count);
 		},
-
 		test_getSourceCount_prototype: function() {
+			var lph = this.getPlaceHolder();
 			var ks = new LuceneKitchenSink();
 			ks.title = "target kitchen sink";
 			ks.id = "target kitchen sink";
-			root.add(ks);
+			lph.add(ks);
 			res.commit();
 			
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
 			var count = app.getSourceCount(ks, "LuceneKitchenSink");
-			Assert.assertEquals("app.getSourceCount() (prototype) failed", num, count);
+			Assert.assertEquals("test_getSourceCount_prototype failed", num, count);
 		},
-
 		test_getSourceCount_filter: function() {
+			var lph = this.getPlaceHolder();
 			var ks = new LuceneKitchenSink();
 			ks.title = "target kitchen sink";
 			ks.id = "target kitchen sink";
-			root.add(ks);
+			lph.add(ks);
 			res.commit();
 			
 			var num = 5;
 			this._add_referring_kitchen_sinks(num,ks);
 
 			var count = app.getSourceCount(ks, "LuceneKitchenSink", new Filter({title:"kitchen sink 2"}));
-			Assert.assertEquals("app.getSourceCount() (filter) failed", 1, count);
+			Assert.assertEquals("test_getSourceCount_filter failed", 1, count);
 		},
-
-
 		test_getReferences: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
 			res.commit();
 
 			var refs = app.getReferences(ks1,ks2);
-			Assert.assertEquals("app.getReferences() failed", 1, refs.length);
+			Assert.assertEquals("test_getReferences failed", 1, refs.length);
 		},
-
 		test_getTargets: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
 			res.commit();
 
 			var targets = app.getTargets(ks1);
-			Assert.assertEquals("app.getTargets() failed", ks2, targets[0]);
+			Assert.assertEquals("test_getTargets failed", ks2, targets[0]);
 		},
-
 		test_getTargets_prototype: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			var ks3 = new LuceneKitchenSink();
 			ks3.title = "kitchen sink 3";
 			ks3.id = "kitchen_sink_3";
-			root.add(ks3);
+			lph.add(ks3);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
@@ -212,26 +217,26 @@ _test = {
 			res.commit();
 
 			var targets = app.getTargets(ks1, "LuceneKitchenSink");
-			Assert.assertEquals("app.getTargets() (prototype) failed", 2, targets.length);
+			Assert.assertEquals("test_getTargets_prototype failed", 2, targets.length);
 		},
-
 		test_getTargetCount: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			var ks3 = new LuceneKitchenSink();
 			ks3.title = "kitchen sink 3";
 			ks3.id = "kitchen_sink_3";
-			root.add(ks3);
+			lph.add(ks3);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
@@ -239,26 +244,26 @@ _test = {
 			res.commit();
 
 			var count = app.getTargetCount(ks1);
-			Assert.assertEquals("app.getTargetCount() failed", 2, count);
+			Assert.assertEquals("test_getTargetCount failed", 2, count);
 		},
-
 		test_getTargetCount_prototype: function() {
+			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "kitchen sink 1";
 			ks1.id = "kitchen_sink_1";
-			root.add(ks1);
+			lph.add(ks1);
 			res.commit();
 
 			var ks2 = new LuceneKitchenSink();
 			ks2.title = "kitchen sink 2";
 			ks2.id = "kitchen_sink_2";
-			root.add(ks2);
+			lph.add(ks2);
 			res.commit();
 
 			var ks3 = new LuceneKitchenSink();
 			ks3.title = "kitchen sink 3";
 			ks3.id = "kitchen_sink_3";
-			root.add(ks3);
+			lph.add(ks3);
 			res.commit();
 
 			ks1.ref1 = new Reference(ks2);
@@ -266,19 +271,24 @@ _test = {
 			res.commit();
 
 			var count = app.getTargetCount(ks1, "LuceneKitchenSink");
-			Assert.assertEquals("app.getTargetCount() (prototype) failed", 2, count);
+			Assert.assertEquals("test_getTargetCount_prototype failed", 2, count);
 		}
-
 	},
 	filter_suite: {
 		setup: function() {
 			app.log("Global filter_suite Setup");
+			var lph = new LucenePlaceHolder();
+			lph.id = 'lph';
+			root.add(lph);
+			res.commit();
+			lph = this.getPlaceHolder();
+
 			var obj1 = new LuceneKitchenSink();
 			obj1.title = "obj1";
 			obj1.id = "obj1";
 			obj1.tokenized = "dogs cats";
 			obj1.untokenized = "dogs cats";
-			root.add(obj1);
+			lph.add(obj1);
 			res.commit();
 
 			var obj2 = new LuceneKitchenSink();
@@ -286,13 +296,13 @@ _test = {
 			obj2.id = "obj2";
 			obj2.tokenized = "dogs cats mice";
 			obj2.untokenized = "dogs cats mice";
-			root.add(obj2);
+			lph.add(obj2);
 			res.commit();
 
 			var sourcesobj = new LuceneKitchenSink();
 			sourcesobj.title = "sourcesobj";
 			sourcesobj.id = "sourcesobj";
-			root.add(sourcesobj);
+			lph.add(sourcesobj);
 			res.commit();
 
 			obj1.ref1 = new Reference(sourcesobj);
@@ -302,7 +312,7 @@ _test = {
 			var targetsobj = new LuceneKitchenSink();
 			targetsobj.title = "targetsobj";
 			targetsobj.id = "targetsobj";
-			root.add(targetsobj);
+			lph.add(targetsobj);
 			res.commit();
 
 			targetsobj.ref1 = new Reference(obj1);
@@ -315,211 +325,206 @@ _test = {
 				root.remove(child)
 			}
 		},
-
+		getPlaceHolder: function(){
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+		},
 		test_getObjects_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getObjects_filter_tokenized1 failed", 2, results.length);
 		},
-
 		test_getObjects_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (native filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getObjects_native_filter_tokenized1 failed", 2, results.length);
 		},
-
 		test_getObjects_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (filter, untokenized) 1 failed", 1, results.length);
+			Assert.assertEquals("test_getObjects_filter_untokenized1 failed", 1, results.length);
 		},
-
 		test_getObjects_filter_tokenized2: function() {
 			var filter = new Filter({tokenized:"dogs cats mice"});
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (filter, tokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getObjects_filter_tokenized2 failed", 1, results.length);
 		},
-
 		test_getObjects_native_filter_tokenized2: function() {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (native filter, tokenized) 2 failed", 2, results.length);
+			Assert.assertEquals("test_getObjects_native_filter_tokenized2 failed", 2, results.length);
 		},
-
 		test_getObjects_filter_untokenized2: function() {
 			var filter = new Filter({untokenized:"dogs cats mice"});
 			var results = app.getObjects("LuceneKitchenSink", filter);
-			Assert.assertEquals("Filter Test getObjects (filter, untokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getObjects_filter_untokenized2 failed", 1, results.length);
 		},
-
 		test_getSources_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getSources_filter_tokenized1 failed", 2, results.length);
 		},
-
 		test_getSources_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (native filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getSources_native_filter_tokenized1 failed", 2, results.length);
 		},
-
-
 		test_getSources_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (filter, untokenized) 1 failed", 1, results.length);
+			Assert.assertEquals("test_getSources_filter_untokenized1 failed", 1, results.length);
 		},
-
 		test_getSources_filter_tokenized2: function() {
 			var filter = new Filter({tokenized:"dogs cats mice"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (filter, tokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getSources_filter_tokenized2 failed", 1, results.length);
 		},
-
 		test_getSources_native_filter_tokenized2: function() {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (native filter, tokenized) 2 failed", 2, results.length);
+			Assert.assertEquals("test_getSources_native_filter_tokenized2 failed", 2, results.length);
 		},
-
 		test_getSources_filter_untokenized2: function() {
 			var filter = new Filter({untokenized:"dogs cats mice"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSources(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSources (filter, untokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getSources_filter_untokenized2 failed", 1, results.length);
 		},
-
 		test_getSourceCount_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("test_getSourceCount_filter_tokenized1 failed", 2, results);
 		},
-
-
 		test_getSourceCount_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (native filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("test_getSourceCount_native_filter_tokenized1 failed", 2, results);
 		},
-
 		test_getSourceCount_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (filter, untokenized) 1 failed", 1, results);
+			Assert.assertEquals("test_getSourceCount_filter_untokenized1 failed", 1, results);
 		},
-
 		test_getSourceCount_filter_tokenized2: function() {
 			var filter = new Filter({tokenized:"dogs cats mice"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (filter, tokenized) 2 failed", 1, results);
+			Assert.assertEquals("test_getSourceCount_filter_tokenized2 failed", 1, results);
 		},
-
 		test_getSourceCount_native_filter_tokenized2: function() {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (native filter, tokenized) 2 failed", 2, results);
+			Assert.assertEquals("test_getSourceCount_native_filter_tokenized2 failed", 2, results);
 		},
-
 		test_getSourceCount_filter_untokenized2: function() {
 			var filter = new Filter({untokenized:"dogs cats mice"});
-			var sources = root.get("sourcesobj");
+			var lph = this.getPlaceHolder();
+			var sources = lph.get("sourcesobj");
 			var results = app.getSourceCount(sources,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getSourceCount (filter, untokenized) 2 failed", 1, results);
+			Assert.assertEquals("test_getSourceCount_filter_untokenized2 failed", 1, results);
 		},
-
 		test_getTargets_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getTargets_filter_tokenized1 failed", 2, results.length);
 		},
-
 		test_getTargets_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (native filter, tokenized) 1 failed", 2, results.length);
+			Assert.assertEquals("test_getTargets_native_filter_tokenized1 failed", 2, results.length);
 		},
-
 		test_getTargets_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (filter, untokenized) 1 failed", 1, results.length);
+			Assert.assertEquals("test_getTargets_filter_untokenized1 failed", 1, results.length);
 		},
-
 		test_getTargets_filter_tokenized2: function() {
 			var filter = new Filter({tokenized:"dogs cats mice"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (filter, tokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getTargets_filter_tokenized2 failed", 1, results.length);
 		},
-
 		test_getTargets_native_filter_tokenized2: function() {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (native filter, tokenized) 2 failed", 2, results.length);
+			Assert.assertEquals("test_getTargets_native_filter_tokenized2 failed", 2, results.length);
 		},
-
 		test_getTargets_filter_untokenized2: function() {
 			var filter = new Filter({untokenized:"dogs cats mice"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargets(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargets (filter, untokenized) 2 failed", 1, results.length);
+			Assert.assertEquals("test_getTargets_filter_untokenized2 failed", 1, results.length);
 		},
-
 		test_getTargetCount_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("test_getTargetCount_filter_tokenized1 failed", 2, results);
 		},
-
 		test_getTargetCount_native_filter_tokenized1: function() {
 			var filter = new NativeFilter("tokenized:dogs cats");
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 1 failed", 2, results);
+			Assert.assertEquals("test_getTargetCount_native_filter_tokenized1 failed", 2, results);
 		},
-
 		test_getTargetCount_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, untokenized) 1 failed", 1, results);
+			Assert.assertEquals("test_getTargetCount_filter_untokenized1 failed", 1, results);
 		},
-
 		test_getTargetCount_filter_tokenized2: function() {
 			var filter = new Filter({tokenized:"dogs cats mice"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, tokenized) 2 failed", 1, results);
+			Assert.assertEquals("test_getTargetCount_filter_tokenized2 failed", 1, results);
 		},
-
 		test_getTargetCount_native_filter_tokenized2: function() {
 			var filter = new NativeFilter("tokenized:dogs cats mice");
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (native filter, tokenized) 2 failed", 2, results);
+			Assert.assertEquals("test_getTargetCount_native_filter_tokenized2 failed", 2, results);
 		},
-
 		test_getTargetCount_filter_untokenized2: function() {
 			var filter = new Filter({untokenized:"dogs cats mice"});
-			var target = root.get("targetsobj");
+			var lph = this.getPlaceHolder();
+			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
-			Assert.assertEquals("Filter Test getTargetCount (filter, untokenized) 2 failed", 1, results);
+			Assert.assertEquals("test_getTargetCount_filter_untokenized2 failed", 1, results);
 		},
-	}
+	}	
 }
