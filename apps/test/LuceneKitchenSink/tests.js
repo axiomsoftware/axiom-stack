@@ -163,9 +163,7 @@ this._test = {
 			var filter = {id:'ks5'};
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var objects = app.getObjects(['LuceneKitchenSink'], filter, {path:path, sort:sort});
-			Assert.assertEquals('test_getObjects_filter_path_sort_asc failed', 
-				objects.length, 1);
-
+			Assert.assertEquals('test_getObjects_filter_path_sort_asc failed', objects.length, 1);
 		},
 		test_getObjects_by_integer_id: function() {
 			var index = 10;
@@ -303,6 +301,40 @@ this._test = {
 			var obj = lph.getById(_id);
 			Assert.assertEquals("test_AxiomObject_getById failed", ks, obj);
 		},
+		test_AxiomObject_computeProperty: function() {
+			var lph = this.getPlaceHolder();
+			var ks = new LuceneKitchenSink();
+			ks.title = "AxiomObject Compute Property Test";
+			ks.id = "axiomobject_compute_property_test";
+			lph.add(ks);
+			res.commit();
+			Assert.assertNotNull("AxiomObject.compute failed", ks.compute1);
+		},
+		test_AxiomObject_computeMultipleProperties: function() {
+			var lph = this.getPlaceHolder();
+			var ks = new LuceneKitchenSink();
+			ks.title = "AxiomObject Compute Multiple Property Test";
+			ks.id = "axiomobject_compute_multiple_property_test";
+			lph.add(ks);
+			res.commit();
+
+			Assert.assertEquals("AxiomObject.compute on multiple properties failed", ks.compute1, ks.compute2);
+		},
+		test_AxiomObject_computeReference: function() {
+			var lph = this.getPlaceHolder();
+			var ks0 = new LuceneKitchenSink();
+			ks0.title = "AxiomObject Compute Reference Test 0";
+			ks0.id = "axiomobject_compute_reference_test_0";
+			lph.add(ks0);
+			res.commit();
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject Compute Reference Test 1";
+			ks1.id = "axiomobject_compute_reference_test_1";
+			lph.add(ks1);
+			ks0.ref1 = new Reference(ks1);
+			res.commit();
+			Assert.assertTrue("AxiomObject.compute on Reference failed", (ks0.compute3 instanceof Reference));
+		},
 		//TODO: getChildren() tests
 		test_AxiomObject_getChildCount: function() {
 			var lph = this.getPlaceHolder();
@@ -318,7 +350,6 @@ this._test = {
 			var count = lph.getChildCount(["LuceneKitchenSink"],{id:"ks5"});
 			Assert.assertEquals("test_AxiomObject_getChildCount_with_params failed", 1, count);
 		},
-
 		test_AxiomObject_getParentPath: function() {
 			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
@@ -352,7 +383,7 @@ this._test = {
 			lph.add(ks);
 			res.commit();
 
-			// If you change the schema of LuceneKitchenSink, make sure you update this line:
+			// If you change the schema of LuceneKitchenSink, make sure you update this line (computed properties are ok to leave out if they are not dependent on properties being set in this test):
 			var expected = ["creator", "lastmodifiedby", "title", "id"].sort();
 
 			var props = ks.getPropertyNames().sort();
@@ -516,7 +547,6 @@ this._test = {
  			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
 		},
 		test_Performance_1000_objects_insert: function() {
-			app.log('this test');
 			var lph = this.getPlaceHolder();
 			var num = 1000;
 			var start = new Date();
@@ -530,8 +560,8 @@ this._test = {
 			res.commit();
 			var now = new Date();
 			var persec = num / ((now.getTime()-start.getTime()) / 1000);
-			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed", persec > slowspeed);			
+//			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
+			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);			
 		}		
 	}
 }
