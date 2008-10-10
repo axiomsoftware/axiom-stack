@@ -217,7 +217,7 @@ return parts.join('');
  */
 TAL.getPathExpr = function(data, path) {
     var original_path = path;
-    var path = path.split("/");
+    path = path.split("/");
     var value = data;
     var old_value;
     for(var j=0; j< path.length; j++) {
@@ -227,7 +227,7 @@ TAL.getPathExpr = function(data, path) {
         switch(typeof value) {
         case "undefined":
             // support backwards compatible clown scoping
-            var func = data['this'][path[j]]
+            var func = data['this'][path[j]];
             if(func && typeof func == "function"){
                 return [true, func.call(data['this'], data)];
             }
@@ -283,7 +283,7 @@ TAL.expr = function (data, value) {
         } else if(javascript) {
 			return (new Function('path','data','return ' + term)).call(data['this'],function (path){ return TAL.getPathExpr(data, TAL.stringExpr(data, path))[1]; }, data);
         }
-        result = TAL.getPathExpr(data, TAL.stringExpr(data, term));
+        var result = TAL.getPathExpr(data, TAL.stringExpr(data, term));
         if(!result[1] && i+1 < terms.length ){
             continue;
         }
@@ -329,7 +329,7 @@ TAL.TAL = function(n, data, globalData, tal) {
 
         var repeat_lambda = function(i){
             TAL.Scope.prototype = data;
-            repeat_data = new TAL.Scope();
+            var repeat_data = new TAL.Scope();
             repeat_data['repeat'][nx[1]] = new TAL.Repeat(i, c);
             repeat_data[nx[1]] = v[i];
             p.insertChildBefore(n, n.copy());
