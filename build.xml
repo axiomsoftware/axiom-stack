@@ -229,7 +229,7 @@
 		<antcall target="test-util">
 			<param name="appname" value="test"/>
 		</antcall>
-<!--
+
 		<antcall target="test-util">
 			<param name="appname" value="test-app-config"/>
 		</antcall>
@@ -238,7 +238,7 @@
 			<param name="appname" value="test-server-config"/>
 			<param name="appdir" value="applications"/>
 		</antcall>
--->		
+
 	</target>
 	
 	<target name="release">
