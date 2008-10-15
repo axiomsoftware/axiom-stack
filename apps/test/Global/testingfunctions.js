@@ -1,18 +1,18 @@
-function _add_kitchen_sinks(prototype, index){
+function _add_kitchen_sinks(parent, prototype, index){
 	for(var i = 0; i < index; i++){
 		var ks = new global[prototype]();
 		ks.id = 'ks' + i;
 		ks.title = 'title ' + i;
-		root.add(ks);
+		parent.add(ks);
 	}
 	res.commit();
 }
 
-function _add_landfills(prototype, index){
+function _add_landfills(parent, prototype, index){
 	for(var i = 0; i < index; i++){
 		var lf = new global[prototype]();
 		lf.id = 'lf' + i;
-		root.add(lf);
+		parent.add(lf);
 	}
 	res.commit();
 }

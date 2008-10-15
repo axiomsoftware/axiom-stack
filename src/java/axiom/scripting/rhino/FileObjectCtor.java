@@ -28,6 +28,8 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.mozilla.javascript.*;
 
+import eu.medsea.util.MimeUtil;
+
 import axiom.framework.ErrorReporter;
 import axiom.framework.core.Application;
 import axiom.objectmodel.INode;
@@ -148,7 +150,11 @@ public class FileObjectCtor extends FunctionObject {
                 fobj.tmpPath = tmpdir + filename; 
                                 
                 node.setInteger(FileObject.FILE_SIZE, mp.contentLength);
-                node.setString(FileObject.CONTENT_TYPE, mp.contentType);
+                String mimetype = mp.contentType;
+                if (mimetype == null || mimetype.equals("application/octet-stream")) {
+                	mimetype = MimeUtil.getMimeType(new File(fobj.tmpPath));
+                }
+                node.setString(FileObject.CONTENT_TYPE, mimetype);
                 node.setString(FileObject.RENDERED_CONTENT, "false");
                 node.setJavaObject(FileObject.SELF, fobj);
                 node.setString(FileObject.FILE_UPLOAD, "true");
