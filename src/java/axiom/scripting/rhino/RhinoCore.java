@@ -377,13 +377,10 @@ public final class RhinoCore implements ScopeProvider {
         }
 
         // loop through the prototype's code elements and evaluate them
-        ArrayList code = prototype.getCodeResourceList();
-        final int size = code.size();
-        for (int i = 0; i < size; i++) {
-            evaluate(type, (Resource) code.get(i));
-        }
+        evaluate(type, prototype);
         loadCompiledCode(type, prototype.getName());
         type.commitCompilation();
+
     }
     
     private void loadTemplates(Application app) throws Exception {
@@ -976,54 +973,107 @@ public final class RhinoCore implements ScopeProvider {
         }
 	}	
     
-    private synchronized void evaluate (TypeInfo type, Resource code) {
-        // get the current context
-        Context cx = Context.getCurrentContext();
-        // unregister the per-thread scope while evaluating
-        Object threadScope = cx.getThreadLocal("threadscope");
-        cx.removeThreadLocal("threadscope");
-
-        String sourceName = code.getName();
+    private synchronized void evaluate (TypeInfo type, Prototype proto) {
+        ArrayList<Resource> code = proto.getCodeResourceList();
+        ArrayList<Resource> talFiles = new ArrayList<Resource>();
         Reader reader = null;
+        String sourceName = null;
+        Scriptable op = type.objProto;
+        for (int i = 0; i < code.size(); i++) {
+            // get the current context
+            Context cx = Context.getCurrentContext();
+            // unregister the per-thread scope while evaluating
+            Object threadScope = cx.getThreadLocal("threadscope");
+            cx.removeThreadLocal("threadscope");
 
-        try {
-            Scriptable op = type.objProto;
-
-            // do the update, evaluating the file
-            if (sourceName.endsWith(".js")) {
-                reader = new InputStreamReader(code.getInputStream());
-            } else if (sourceName.endsWith(".tal")) {
-            	reader = new StringReader(ResourceConverter.convertTal(code));
-            } 
-            cx.evaluateReader(op, reader, sourceName, 1, null);
-        } catch (Exception e) {
-            app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
-            		+ "Error parsing file " + sourceName,  e);
-            // mark prototype as broken
-            if (type.error == null) {
-                type.error = e.getMessage();
-                if (type.error == null || e instanceof EcmaError) {
-                    type.error = e.toString();
+            try{
+        		Resource resource = code.get(i);
+        		sourceName = resource.getName();
+                // do the update, evaluating the file
+                if (sourceName.endsWith(".js")) {
+                    reader = new InputStreamReader(resource.getInputStream());
+                    cx.evaluateReader(op, reader, sourceName, 1, null);
+                } else if (sourceName.endsWith(".tal")) {
+                	//reader = new StringReader(ResourceConverter.convertTal(resource));
+                	talFiles.add(code.get(i));
                 }
-                if ("global".equals(type.frameworkProto.getLowerCaseName())) {
-                    globalError = type.error;
+        	} catch (Exception e) {
+                app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
+                		+ "Error parsing file " + sourceName,  e);
+                // mark prototype as broken
+                if (type.error == null) {
+                    type.error = e.getMessage();
+                    if (type.error == null || e instanceof EcmaError) {
+                        type.error = e.toString();
+                    }
+                    if ("global".equals(type.frameworkProto.getLowerCaseName())) {
+                        globalError = type.error;
+                    }
+                    wrappercache.clear();
                 }
-                wrappercache.clear();
-            }
-            // e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ignore) {
+                // e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignore) {
+                    }
                 }
-            }
-            if (threadScope != null) {
-                cx.putThreadLocal("threadscope", threadScope);
+                if (threadScope != null) {
+                    cx.putThreadLocal("threadscope", threadScope);
+                }
             }
         }
-    }
+        
+        for(int j = 0; j < talFiles.size(); j++){
+            // get the current context
+            Context cx = Context.getCurrentContext();
+            // unregister the per-thread scope while evaluating
+            Object threadScope = cx.getThreadLocal("threadscope");
+            cx.removeThreadLocal("threadscope");
 
+            try{
+            	Resource resource = talFiles.get(j);
+        		sourceName = resource.getName();
+        		String shortName = resource.getShortName();
+        		String shortTalName = shortName.substring(0, shortName.length() - 4);
+
+                Object func = ScriptableObject.getProperty(type.objProto, shortTalName);
+                if(!(func instanceof Function)){
+            		reader = new StringReader(ResourceConverter.convertTal(resource));
+            		cx.evaluateReader(op, reader, sourceName, 1, null);
+                } else {
+                    String prototpe = proto.getName();
+                	app.logError("WARNING, unable to load " + prototpe + "/" + shortName + " because a javascript function named " + shortTalName + " already exists for prototype " + prototpe);
+                }
+        	} catch(Exception e){
+                app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
+                		+ "Error parsing file " + sourceName,  e);
+                // mark prototype as broken
+                if (type.error == null) {
+                    type.error = e.getMessage();
+                    if (type.error == null || e instanceof EcmaError) {
+                        type.error = e.toString();
+                    }
+                    if ("global".equals(type.frameworkProto.getLowerCaseName())) {
+                        globalError = type.error;
+                    }
+                    wrappercache.clear();
+                }
+        	} finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignore) {
+                    }
+                }
+                if (threadScope != null) {
+                    cx.putThreadLocal("threadscope", threadScope);
+                }
+        	}
+        }
+    }
+    
     /**
      *  Return the global scope of this RhinoCore.
      */
