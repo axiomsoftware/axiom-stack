@@ -180,7 +180,11 @@ public class FileObjectCtor extends FunctionObject {
                 fobj.tmpPath = file.getAbsolutePath(); 
                                 
                 node.setInteger(FileObject.FILE_SIZE, file.length());
-                node.setString(FileObject.CONTENT_TYPE, guessContentType(file));
+                String mimetype = guessContentType(file);
+                if (mimetype == null || mimetype.equals("application/octet-stream")) {
+                	mimetype = MimeUtil.getMimeType(new File(fobj.tmpPath));
+                }
+                node.setString(FileObject.CONTENT_TYPE, mimetype);
                 node.setString(FileObject.RENDERED_CONTENT, "false");
                 node.setJavaObject(FileObject.SELF, fobj);
                 node.setString(FileObject.FILE_UPLOAD, "false");
