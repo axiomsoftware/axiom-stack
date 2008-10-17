@@ -192,12 +192,11 @@ public class FileObject extends AxiomObject {
         } else {
         	//Failover to mime-util
         	String mimetype = MimeUtil.getMimeType(new File(this.jsFunction_getPath()));
-        	if (mimetype != null) {
+        	if (mimetype != null && mimetype != "application/x-unknown-mime-type") {
         		return mimetype;
         	}
-        	
-            return null;
         }
+        return null;
     }
     
     /**

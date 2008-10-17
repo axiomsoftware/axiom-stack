@@ -153,6 +153,9 @@ public class FileObjectCtor extends FunctionObject {
                 String mimetype = mp.contentType;
                 if (mimetype == null || mimetype.equals("application/octet-stream")) {
                 	mimetype = MimeUtil.getMimeType(new File(fobj.tmpPath));
+                	if (mimetype == "application/x-unknown-mime-type") {
+                		mimetype = "application/octet-stream";
+                	}
                 }
                 node.setString(FileObject.CONTENT_TYPE, mimetype);
                 node.setString(FileObject.RENDERED_CONTENT, "false");
@@ -183,6 +186,9 @@ public class FileObjectCtor extends FunctionObject {
                 String mimetype = guessContentType(file);
                 if (mimetype == null || mimetype.equals("application/octet-stream")) {
                 	mimetype = MimeUtil.getMimeType(new File(fobj.tmpPath));
+                	if (mimetype == "application/x-unknown-mime-type") {
+                		mimetype = "application/octet-stream";
+                	}
                 }
                 node.setString(FileObject.CONTENT_TYPE, mimetype);
                 node.setString(FileObject.RENDERED_CONTENT, "false");
