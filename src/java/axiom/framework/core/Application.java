@@ -2257,7 +2257,13 @@ public final class Application implements IPathElement, Runnable {
             } else {
             	File dir = new File(repos);
             	if(!dir.isAbsolute()){
-            		dir = new File(axiomHome, repos);
+                	ResourceProperties appProps = new ResourceProperties(this, "app.properties");
+                	boolean definedInApp = appProps.getProperty("db.blob.dir") != null ? true : false;
+                	if(definedInApp){
+                		dir = new File(appDir, repos);
+                	} else {
+                		dir = new File(axiomHome, repos);                		
+                	}
             	}
             	if (!dir.exists() || !dir.isDirectory()) {
                     if (!dir.mkdirs()) {
