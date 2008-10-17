@@ -974,103 +974,79 @@ public final class RhinoCore implements ScopeProvider {
 	}	
     
     private synchronized void evaluate (TypeInfo type, Prototype proto) {
-        ArrayList<Resource> code = proto.getCodeResourceList();
-        ArrayList<Resource> talFiles = new ArrayList<Resource>();
         Reader reader = null;
         String sourceName = null;
-        Scriptable op = type.objProto;
-        for (int i = 0; i < code.size(); i++) {
-            // get the current context
-            Context cx = Context.getCurrentContext();
-            // unregister the per-thread scope while evaluating
-            Object threadScope = cx.getThreadLocal("threadscope");
-            cx.removeThreadLocal("threadscope");
 
-            try{
+        // get the current context
+        Context cx = Context.getCurrentContext();
+        Object threadScope = cx.getThreadLocal("threadscope");
+        cx.removeThreadLocal("threadscope");
+
+        try{
+            ArrayList<Resource> code = proto.getCodeResourceList();
+            ArrayList<Resource> talFiles = new ArrayList<Resource>();
+            Scriptable op = type.objProto;
+            Scriptable temp = cx.newObject(global); 
+        	
+	        for (int i = 0; i < code.size(); i++) {
         		Resource resource = code.get(i);
         		sourceName = resource.getName();
                 // do the update, evaluating the file
                 if (sourceName.endsWith(".js")) {
                     reader = new InputStreamReader(resource.getInputStream());
-                    cx.evaluateReader(op, reader, sourceName, 1, null);
+                    cx.evaluateReader(temp, reader, sourceName, 1, null);
                 } else if (sourceName.endsWith(".tal")) {
-                	//reader = new StringReader(ResourceConverter.convertTal(resource));
                 	talFiles.add(code.get(i));
                 }
-        	} catch (Exception e) {
-                app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
-                		+ "Error parsing file " + sourceName,  e);
-                // mark prototype as broken
-                if (type.error == null) {
-                    type.error = e.getMessage();
-                    if (type.error == null || e instanceof EcmaError) {
-                        type.error = e.toString();
-                    }
-                    if ("global".equals(type.frameworkProto.getLowerCaseName())) {
-                        globalError = type.error;
-                    }
-                    wrappercache.clear();
-                }
-                // e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ignore) {
-                    }
-                }
-                if (threadScope != null) {
-                    cx.putThreadLocal("threadscope", threadScope);
-                }
-            }
-        }
-        
-        for(int j = 0; j < talFiles.size(); j++){
-            // get the current context
-            Context cx = Context.getCurrentContext();
-            // unregister the per-thread scope while evaluating
-            Object threadScope = cx.getThreadLocal("threadscope");
-            cx.removeThreadLocal("threadscope");
-
-            try{
+	        }
+	        
+			for(int j = 0; j < talFiles.size(); j++){
             	Resource resource = talFiles.get(j);
         		sourceName = resource.getName();
         		String shortName = resource.getShortName();
         		String shortTalName = shortName.substring(0, shortName.length() - 4);
-
-                Object func = ScriptableObject.getProperty(type.objProto, shortTalName);
-                if(!(func instanceof Function)){
-            		reader = new StringReader(ResourceConverter.convertTal(resource));
-            		cx.evaluateReader(op, reader, sourceName, 1, null);
-                } else {
+        		Object exists = temp.get(shortTalName, temp);
+       		
+        		if(exists != null && exists != Scriptable.NOT_FOUND){
                     String prototpe = proto.getName();
                 	app.logError("WARNING, unable to load " + prototpe + "/" + shortName + " because a javascript function named " + shortTalName + " already exists for prototype " + prototpe);
+        		} else { 
+	        		reader = new StringReader(ResourceConverter.convertTal(resource));
+	        		cx.evaluateReader(op, reader, sourceName, 1, null);
+        		}
+	        }
+			
+			Object objs[] = temp.getIds();
+			for(int i = 0; i < objs.length; i++){
+				String name = objs[i].toString();
+				op.put(name, op, temp.get(name, temp));
+			}
+			
+        }
+        catch(Exception e){
+            app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
+            		+ "Error parsing file " + sourceName,  e);
+            // mark prototype as broken
+            if (type.error == null) {
+                type.error = e.getMessage();
+                if (type.error == null || e instanceof EcmaError) {
+                    type.error = e.toString();
                 }
-        	} catch(Exception e){
-                app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
-                		+ "Error parsing file " + sourceName,  e);
-                // mark prototype as broken
-                if (type.error == null) {
-                    type.error = e.getMessage();
-                    if (type.error == null || e instanceof EcmaError) {
-                        type.error = e.toString();
-                    }
-                    if ("global".equals(type.frameworkProto.getLowerCaseName())) {
-                        globalError = type.error;
-                    }
-                    wrappercache.clear();
+                if ("global".equals(type.frameworkProto.getLowerCaseName())) {
+                    globalError = type.error;
                 }
-        	} finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ignore) {
-                    }
+                wrappercache.clear();
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ignore) {
                 }
-                if (threadScope != null) {
-                    cx.putThreadLocal("threadscope", threadScope);
-                }
-        	}
+            }
+            if (threadScope != null) {
+                cx.putThreadLocal("threadscope", threadScope);
+            }
         }
     }
     
