@@ -865,7 +865,14 @@ public class Server implements IPathElement, Runnable {
         return "root";
     }
     
-
+    public ContextHandlerCollection getContexts(){
+    	return this.contexts;
+    }
+    
+    public HandlerCollection getHandlers(){
+    	return handlers;
+    }
+    
 	public class AxiomHandler extends AbstractHandler {
 		
 		private String fileName = "default.html";

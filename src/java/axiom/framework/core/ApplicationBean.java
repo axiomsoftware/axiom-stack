@@ -1431,4 +1431,23 @@ public class ApplicationBean implements Serializable {
     public String getDbDir() {
         return app.getDbDir().getAbsolutePath();
     }
+    
+   /**
+    * Stops the application. 
+    *
+    * @jsfunction
+    */
+   public void stop(){
+    	app.stop();
+    }
+    
+    /**
+     * Returns the Server object. 
+     *
+     * @jsfunction
+     * @returns {axiom.main.Server} Returns the Server object
+     */
+    public Server getServer(){
+    	return app.getServer();
+    }
 }
