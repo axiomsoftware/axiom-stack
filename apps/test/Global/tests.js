@@ -20,7 +20,7 @@ _test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		_add_referring_kitchen_sinks: function(num, obj) {
 			var lph = this.getPlaceHolder();
@@ -326,7 +326,7 @@ _test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_getObjects_filter_tokenized1: function() {
 			var filter = new Filter({tokenized:"dogs cats"});
@@ -526,5 +526,63 @@ _test = {
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
 			Assert.assertEquals("test_getTargetCount_filter_untokenized2 failed", 1, results);
 		},
-	}	
+	},
+    global_objects_suite: {
+	setup: function() {
+	    app.log("Global Objects Suite Setup");
+	},
+	teardown: function() {
+	    app.log("Global Objects Suite Teardown");
+	},
+	test_Array_unique: function() {
+	    var a = ['a','b','a','c','b','a','d'];
+
+	    var control = ['a','b','c','d'];
+	    Assert.assertEquals("test_Array_unique failed", control, a.unique());
+	},
+	test_Array_remove_index: function() {
+	    var a = ['a','b','c'];
+	    a.remove(0);
+	    Assert.assertEquals("test_Array_remove_index failed", -1, a.indexOf('a'));
+	},
+	test_Array_remove_index_return: function() {
+	    var a = ['a','b','c'];
+	    Assert.assertEquals("test_Array_remove_index_return failed", 'a', a.remove(0));
+	},
+	test_Array_remove_object: function() {
+	    var a = ['a','b','c'];
+	    a.remove('a');
+	    Assert.assertEquals("test_Array_remove_object failed", -1, a.indexOf('a'));
+	},
+	test_Array_remove_object_return: function() {
+	    var a = ['a','b','c'];
+	    Assert.assertEquals("test_Array_remove_object_return failed", 'a', a.remove('a'));
+	},
+	test_Array_contains: function() {
+	    var a = ['a','b','c'];
+	    Assert.assertTrue("test_Array_contains failed", a.contains('a'));
+	},
+	test_Array_lastIndexOf: function() {
+	    var a = ['a','b','c','a'];
+	    Assert.assertEquals("test_Array_lastIndexOf failed", 3, a.lastIndexOf('a'));
+	},
+	test_Array_indexOf: function() {
+	    var a = ['a','b','c','a'];
+	    Assert.assertEquals("test_Array_indexOf failed", 1, a.indexOf('b'));
+	},
+	test_Array_intersection: function() {
+	    var a = ['a','b','c','a'];
+	    var b = ['q','a','b','e','r'];
+
+	    var control = ['a','b'];
+	    Assert.assertEquals("test_Array_intersection failed", control, Array.intersection(a,b));
+	},
+	test_Array_union: function() {
+	    var a = ['a','b','c','a'];
+	    var b = ['q','a','b','e','r'];
+
+	    var control = ['a','b','c','e','q','r'];
+	    Assert.assertEquals("test_Array_union failed", control, Array.union(a,b));
+	}
+    }
 }
