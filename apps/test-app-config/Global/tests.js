@@ -22,7 +22,7 @@ _test = {
 			Assert.assertEquals("test_event_log_property() failed ", eventLog.isFile(), true);
 		},
 		test_db_blob_dir_property: function() {
-			var db_blob_dir = new axiom.SystemFile(app.serverDir + axiom.SystemFile.separator + app.getProperty("db.blob.dir"));
+			var db_blob_dir = new axiom.SystemFile(app.dir + axiom.SystemFile.separator + app.getProperty("db.blob.dir"));
 			Assert.assertEquals("test_db_blob_dir_property() failed ", db_blob_dir.isDirectory(), true);
 		},
 	}
