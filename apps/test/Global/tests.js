@@ -16,7 +16,7 @@ _test = {
 		teardown: function() {
 			app.log("Global app_suite Teardown");
 			for each(var child in root.getChildren()){
-				root.remove(child)
+				root.remove(child);
 			}
 		},
 		getPlaceHolder: function(){
@@ -322,7 +322,7 @@ _test = {
 		teardown: function() {
 			app.log("Global filter_suite Teardown");
 			for each(var child in root.getChildren()){
-				root.remove(child)
+				root.remove(child);
 			}
 		},
 		getPlaceHolder: function(){
@@ -506,6 +506,7 @@ _test = {
 			Assert.assertEquals("test_getTargetCount_filter_untokenized1 failed", 2, results); //Results should be 2 because of computed references.
 		},
 		test_getTargetCount_filter_tokenized2: function() {
+			// XXX
 			var filter = new Filter({tokenized:"dogs cats mice"});
 			var lph = this.getPlaceHolder();
 			var target = lph.get("targetsobj");
@@ -525,7 +526,7 @@ _test = {
 			var target = lph.get("targetsobj");
 			var results = app.getTargetCount(target,"LuceneKitchenSink",filter);
 			Assert.assertEquals("test_getTargetCount_filter_untokenized2 failed", 1, results);
-		},
+		}
 	},
     global_objects_suite: {
 	setup: function() {

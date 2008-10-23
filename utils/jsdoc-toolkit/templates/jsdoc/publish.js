@@ -81,9 +81,9 @@ function publish(symbolSet) {
 
 	for(var i = 0; i < globalObjects.length; i++){
 		if(globalObjects[i].alias == '_global_'){
-			//index = i;
+			//var index = i;
 			globalObjects[i].methods = globalObjects[i].methods.filter(function($){ return !isHook($); });
-			for each(method in globalObjects[i].methods){
+			for each(var method in globalObjects[i].methods){
 				globalObjects.methods.push(method.alias);
 			}
 			globalObjects.splice(i, 1);
@@ -114,7 +114,7 @@ function publish(symbolSet) {
 		var sidebarTemplate = "";
 		if(objType == 'global'){
 			publish.currentClass = objects[i].alias;
-			sidebarTemplate = globalTemplate.process(globalTemplate);
+			sidebarTemplate = globalTemplate.process(globalObjects);
 		} else if(objType == 'extension'){
 			publish.currentClass = objects[i].alias;
 			sidebarTemplate = extensionTemplate.process(extensionObjects);
