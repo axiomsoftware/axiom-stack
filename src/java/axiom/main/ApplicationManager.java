@@ -397,7 +397,7 @@ public class ApplicationManager implements XmlRpcHandler {
                     
                     ServletHandler sh = new ServletHandler();
                     sh.addServletWithMapping(holder, "/*");
-
+                    app.addContextPath(contextPath);
                     ContextHandler ch = new ContextHandler(server.contexts, contextPath);
                     ch.addHandler(sh);
 
@@ -452,6 +452,7 @@ public class ApplicationManager implements XmlRpcHandler {
                     								staticContent.getAbsolutePath());
                     		server.getLogger().info("Mounting static at " +
                     								staticMountpoint);
+                    		app.addContextPath(staticMountpoint.substring(0, staticMountpoint.length() - 2));
                     		ch = new ContextHandler(server.contexts, staticMountpoint.substring(0, staticMountpoint.length() - 2));
                             ResourceHandler rh = new ResourceHandler();
                             rh.setResourceBase(staticContent.getAbsolutePath());

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="axiom" default="all" basedir=".">
+<project name="stack-trunk" default="all" basedir=".">
     <!-- =================================================================== -->
     <!-- Initializes some variables                                          -->
     <!-- =================================================================== -->
@@ -220,7 +220,7 @@
 		<java jar="${test-app.dir}/launcher.jar" fork="true" timeout="150000">
 			<sysproperty key="file.encoding" value="UTF-8"/>
 			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
-			<arg line="-w 8081 -h ${test-app.dir}"/>
+			<arg line="-w 8082 -h ${test-app.dir}"/>
 		</java>
 
 	</target>
@@ -238,6 +238,7 @@
 			<param name="appname" value="test-server-config"/>
 			<param name="appdir" value="applications"/>
 		</antcall>
+
 	</target>
 	
 	<target name="release">

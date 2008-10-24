@@ -31,6 +31,8 @@ import axiom.framework.ResponseTrans;
 import axiom.framework.core.RequestEvaluator;
 import axiom.objectmodel.INode;
 
+import eu.medsea.util.MimeUtil;
+
 /**
  * File is a built-in prototype. It is instantiated by passing either 
  * a MimePart Object (as submitted via a multipart/formdata form post) or File System path 
@@ -188,8 +190,13 @@ public class FileObject extends AxiomObject {
         if (ret != null && !(ret == Scriptable.NOT_FOUND)) {
             return ret.toString();
         } else {
-            return null;
+        	//Failover to mime-util
+        	String mimetype = MimeUtil.getMimeType(new File(this.jsFunction_getPath()));
+        	if (mimetype != null && mimetype != "application/x-unknown-mime-type") {
+        		return mimetype;
+        	}
         }
+        return null;
     }
     
     /**

@@ -29,6 +29,9 @@ import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.handler.ContextHandler;
+import org.mortbay.jetty.handler.HandlerCollection;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
@@ -230,6 +233,11 @@ public final class Application implements IPathElement, Runnable {
     
     private ArrayList<String> extDbTypes = new ArrayList<String>();
     
+    private Server server = null;
+    
+    // Stores the context paths of the application
+    private ArrayList<String> contextPaths = new ArrayList<String>();
+    
 	/**
 	 *  Simple constructor for dead application instances.
 	 */
@@ -266,6 +274,8 @@ public final class Application implements IPathElement, Runnable {
 		}
 
 		this.name = name;
+		
+		this.server = server;
 
 		appDir = customAppDir;
 
@@ -831,6 +841,24 @@ public final class Application implements IPathElement, Runnable {
         AxiomDebugger.removeDebugger(this);
 
         releaseEvaluator(eval);
+        
+        Handler[] handlers = this.server.getContexts().getHandlers();
+        for(int i = 0; i < handlers.length; i++){
+	    	if(handlers[i] instanceof ContextHandler){
+	    		if(handlers[i] != null){
+	    			ContextHandler context = (ContextHandler)handlers[i];
+	    			if(this.contextPaths.contains(context.getContextPath())){
+	    				if(!context.isStopped()){
+	    					try{
+	    						context.stop();
+	    						context.destroy();
+	    					} catch(Exception e){ }
+	    				}
+	    			}
+	    		}
+	    	}
+        }
+        contextPaths.clear();
 	}
 
 	/**
@@ -2229,7 +2257,13 @@ public final class Application implements IPathElement, Runnable {
             } else {
             	File dir = new File(repos);
             	if(!dir.isAbsolute()){
-            		dir = new File(axiomHome, repos);
+                	ResourceProperties appProps = new ResourceProperties(this, "app.properties");
+                	boolean definedInApp = appProps.getProperty("db.blob.dir") != null ? true : false;
+                	if(definedInApp){
+                		dir = new File(appDir, repos);
+                	} else {
+                		dir = new File(axiomHome, repos);                		
+                	}
             	}
             	if (!dir.exists() || !dir.isDirectory()) {
                     if (!dir.mkdirs()) {
@@ -2857,5 +2891,12 @@ public final class Application implements IPathElement, Runnable {
     public String getRequestLogName(){
     	return requestLogName;
     }
+ 
+    public void addContextPath(String path){
+    	contextPaths.add(path);
+    }
     
+    public Server getServer(){
+    	return server;
+    }
 }

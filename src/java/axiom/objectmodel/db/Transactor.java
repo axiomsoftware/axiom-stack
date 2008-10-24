@@ -911,7 +911,7 @@ public class Transactor extends Thread {
                 join(1000);
             } catch (InterruptedException ir) {
                 // interrupted by other thread
-            	ir.printStackTrace();
+            	//ir.printStackTrace();
             }
         }
     }

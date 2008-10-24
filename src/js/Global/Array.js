@@ -18,7 +18,7 @@
 /**
  * Retrieve the union set of a bunch of arrays.
  *
- * @param {Array} (array1,array2,...) Rhe arrays to unify
+ * @param {Array} (array1,array2,...) The arrays to unify
  * @return {Array} The union set
  */
 Array.union = function() {
@@ -106,6 +106,51 @@ Array.prototype.contains = function(val) {
    if (this.indexOf(val) > -1)
       return true;
    return false;
+};
+
+
+/**
+ * Pass through elements and return an array with only unique elements
+ */
+Array.prototype.unique = function() {
+    var results = [];
+    if (typeof this == "string") {
+	results.push(this);
+    } else {
+	//can't rely on for each since that will convert objects(and functions)
+	for (var i = 0; i < this.length; i++) {
+	    var e = this[i];
+	    if (!(results.contains(e))) results.push(e);
+	}
+    }
+
+    return results;
+};
+
+/**
+ * Remove item at the specified index
+ *
+ * @param {Number|String} index Index of the element to remove from the array.
+ * @return {Object} Removed object
+ */
+Array.prototype.remove = function(index) {
+    if (!(typeof index == 'number')) {
+	index = parseInt(index, 10);
+    }
+
+    return this.splice(index, 1);
+};
+
+/**
+ * Remove object
+ *
+ * @param {Object} object Object to remove from the array
+ * @return {Object} Removed object
+ */
+Array.prototype.removeObject = function(object) {
+    var index = this.indexOf(object);
+    if (index >= 0) return this.remove(index);
+    return null;
 };
 
 
