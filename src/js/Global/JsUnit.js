@@ -74,13 +74,27 @@ Assert = {};
  */
 Assert.assertEquals = function( msg, expected, actual )
 {
+    var equiv = false;
     if( arguments.length == 2 )
     {
         actual = expected;
         expected = msg;
         msg = null;
+	equiv = true;
     }
-    if( expected != actual ){
+
+    if ( actual == expected ) {
+	equiv = true;
+    } else if ((typeof expected != "string" && typeof actual != "string") && (expected instanceof Array && actual instanceof Array) && (expected.length == actual.length)) {
+	for (var i = 0; i < expected.length; i++) {
+	    if (expected[i] != actual[i]) {
+		break;
+	    }
+	}
+	equiv = true;
+    }
+
+    if(!equiv){
 		Assert.fail( "Expected:[" + expected + "], but was:[" + actual + "]"
 				   , /*new CallStack()*/'', msg );
 	}

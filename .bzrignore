@@ -15,3 +15,5 @@ lib/js.zip
 ./release
 modules
 apps/idealliance
+apps/woot
+.DS_Store

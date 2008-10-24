@@ -377,13 +377,10 @@ public final class RhinoCore implements ScopeProvider {
         }
 
         // loop through the prototype's code elements and evaluate them
-        ArrayList code = prototype.getCodeResourceList();
-        final int size = code.size();
-        for (int i = 0; i < size; i++) {
-            evaluate(type, (Resource) code.get(i));
-        }
+        evaluate(type, prototype);
         loadCompiledCode(type, prototype.getName());
         type.commitCompilation();
+
     }
     
     private void loadTemplates(Application app) throws Exception {
@@ -976,27 +973,57 @@ public final class RhinoCore implements ScopeProvider {
         }
 	}	
     
-    private synchronized void evaluate (TypeInfo type, Resource code) {
+    private synchronized void evaluate (TypeInfo type, Prototype proto) {
+        Reader reader = null;
+        String sourceName = null;
+
         // get the current context
         Context cx = Context.getCurrentContext();
-        // unregister the per-thread scope while evaluating
         Object threadScope = cx.getThreadLocal("threadscope");
         cx.removeThreadLocal("threadscope");
 
-        String sourceName = code.getName();
-        Reader reader = null;
-
-        try {
+        try{
+            ArrayList<Resource> code = proto.getCodeResourceList();
+            ArrayList<Resource> talFiles = new ArrayList<Resource>();
             Scriptable op = type.objProto;
-
-            // do the update, evaluating the file
-            if (sourceName.endsWith(".js")) {
-                reader = new InputStreamReader(code.getInputStream());
-            } else if (sourceName.endsWith(".tal")) {
-            	reader = new StringReader(ResourceConverter.convertTal(code));
-            } 
-            cx.evaluateReader(op, reader, sourceName, 1, null);
-        } catch (Exception e) {
+            Scriptable temp = cx.newObject(global); 
+        	
+	        for (int i = 0; i < code.size(); i++) {
+        		Resource resource = code.get(i);
+        		sourceName = resource.getName();
+                // do the update, evaluating the file
+                if (sourceName.endsWith(".js")) {
+                    reader = new InputStreamReader(resource.getInputStream());
+                    cx.evaluateReader(temp, reader, sourceName, 1, null);
+                } else if (sourceName.endsWith(".tal")) {
+                	talFiles.add(code.get(i));
+                }
+	        }
+	        
+			for(int j = 0; j < talFiles.size(); j++){
+            	Resource resource = talFiles.get(j);
+        		sourceName = resource.getName();
+        		String shortName = resource.getShortName();
+        		String shortTalName = shortName.substring(0, shortName.length() - 4);
+        		Object exists = temp.get(shortTalName, temp);
+       		
+        		if(exists != null && exists != Scriptable.NOT_FOUND){
+                    String prototpe = proto.getName();
+                	app.logError("WARNING, unable to load " + prototpe + "/" + shortName + " because a javascript function named " + shortTalName + " already exists for prototype " + prototpe);
+        		} else { 
+	        		reader = new StringReader(ResourceConverter.convertTal(resource));
+	        		cx.evaluateReader(op, reader, sourceName, 1, null);
+        		}
+	        }
+			
+			Object objs[] = temp.getIds();
+			for(int i = 0; i < objs.length; i++){
+				String name = objs[i].toString();
+				op.put(name, op, temp.get(name, temp));
+			}
+			
+        }
+        catch(Exception e){
             app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
             		+ "Error parsing file " + sourceName,  e);
             // mark prototype as broken
@@ -1010,7 +1037,6 @@ public final class RhinoCore implements ScopeProvider {
                 }
                 wrappercache.clear();
             }
-            // e.printStackTrace();
         } finally {
             if (reader != null) {
                 try {
@@ -1023,7 +1049,7 @@ public final class RhinoCore implements ScopeProvider {
             }
         }
     }
-
+    
     /**
      *  Return the global scope of this RhinoCore.
      */
