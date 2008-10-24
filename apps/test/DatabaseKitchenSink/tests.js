@@ -86,11 +86,11 @@ this._test = {
 			app.log('database teardown');
 			var dbks = app.getObjects('DatabaseKitchenSink');
 			for(var i = 0; i < dbks.length; i++){
-				dbks[i].remove();
+				dbks[i].del();
 			}
 			var dbks = app.getObjects('DatabaseLandFill');
 			for(var i = 0; i < dbks.length; i++){
-				dbks[i].remove();
+				dbks[i].del();
 			}
 		},
 		test_getObjects_no_params: function(){

@@ -298,7 +298,7 @@
 			Assert.assertEquals("AxiomObject.edit() failed", "New Title", ks.title);
 		},
 
-		test_AxiomObject_getAncestor: function() {
+		test_AxiomObject_getAncestor_String: function() {
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "AxiomObject getAncestor Test1";
 			ks1.id = "axiomobject_getancestor_test1";
@@ -313,7 +313,7 @@
 			Assert.assertEquals("AxiomObject.getAncestor() failed", ks1, ancestor);
 		},
 
-		test_AxiomObject_getAncestor_inclusive: function() {
+		test_AxiomObject_getAncestor_String_inclusive: function() {
 			var ks1 = new LuceneKitchenSink();
 			ks1.title = "AxiomObject getAncestor Test1";
 			ks1.id = "axiomobject_getancestor_test1";
@@ -325,6 +325,36 @@
 			ks1.add(ks2);
 			res.commit();
 			var ancestor = ks2.getAncestor("LuceneKitchenSink",true);
+			Assert.assertEquals("AxiomObject.getAncestor() (inclusive) failed", ks2, ancestor);
+		},
+		
+		test_AxiomObject_getAncestor_Array: function() {
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject getAncestor Test1";
+			ks1.id = "axiomobject_getancestor_test1";
+			root.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject getAncestor Test2";
+			ks2.id = "axiomobject_getancestor_test2";
+			ks1.add(ks2);
+			res.commit();
+			var ancestor = ks2.getAncestor(["LuceneKitchenSink"]);
+			Assert.assertEquals("AxiomObject.getAncestor() failed", ks1, ancestor);
+		},
+
+		test_AxiomObject_getAncestor_Array_inclusive: function() {
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject getAncestor Test1";
+			ks1.id = "axiomobject_getancestor_test1";
+			root.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject getAncestor Test2";
+			ks2.id = "axiomobject_getancestor_test2";
+			ks1.add(ks2);
+			res.commit();
+			var ancestor = ks2.getAncestor(["LuceneKitchenSink"],true);
 			Assert.assertEquals("AxiomObject.getAncestor() (inclusive) failed", ks2, ancestor);
 		},
 
@@ -484,6 +514,14 @@
 			var removed = root.get("axiomobject_remove_test");
 
 			Assert.assertNull("AxiomObject.remove() failed", removed);
+		},
+		test_AxiomObject_root_getChildrenWithPrototype: function() {
+			app.log('FUCL');
+			app.log(root.getPath());
+			var index = 5;
+			_add_kitchen_sinks('LuceneKitchenSink', index);
+			var children = root.getChildren('LuceneKitchenSink');
+			Assert.assertEquals("AxiomObject.test_AxiomObject_root_getChildrenWithPrototype() failed", 5, children.length);
 		}
 	}
 }

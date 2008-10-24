@@ -40,7 +40,9 @@ public final class NodeHandle implements INodeState, Serializable {
     // the node's key
     private Key key;
 
-    /**
+	private transient int hashcode = 0;
+
+	/**
      *  Builds a handle for a node
      */
     public NodeHandle(Node node) {
@@ -146,4 +148,11 @@ public final class NodeHandle implements INodeState, Serializable {
             return "NodeHandle[" + key + "]";
         }
     }
+    
+	public int hashCode() {
+		if (hashcode == 0) {
+			hashcode = node == null ? 17 + (37 * key.hashCode()) : 17 + (37 * node.getID().hashCode());
+		}
+        return hashcode;
+	}
 }

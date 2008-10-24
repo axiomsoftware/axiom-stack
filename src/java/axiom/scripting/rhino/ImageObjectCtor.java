@@ -73,7 +73,11 @@ public class ImageObjectCtor extends FunctionObject {
     public static Object jsConstructor(Context cx, Object[] args,
                                        Function ctorObj, boolean inNewExpr)
                          throws Exception {
-        ImageObjectCtor ctor = (ImageObjectCtor) ctorObj;
+    	if(args == null || (args != null && args.length == 0)){
+    		throw new Exception("Invalid constructor parameters, new Image(String|Mimepart, [optional] Boolean)");
+    	}
+
+    	ImageObjectCtor ctor = (ImageObjectCtor) ctorObj;
         RhinoCore core = ctor.core;
         String protoname = ctor.getFunctionName();
                 

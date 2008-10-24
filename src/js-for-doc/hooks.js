@@ -81,7 +81,7 @@ AxiomObject.prototype.unauthorized = function() {
 
 /**
  * If defined, overrides the security settings defined in the prototype's security.properties.  To fall back on the
- * security.properties defined security settings, use the value from calling <prototype>.isAllowedDefault
+ * security.properties defined security settings, use the value from calling [prototype].isAllowedDefault
  * @param {String} action Name of the method the request would invoke.
  * @param {Array} roles Array of Strings representing the allowed roles for this method, as defined in the prototype's security.properties
  * @returns {Boolean} True if request should be allowed, false if it should be denied.
