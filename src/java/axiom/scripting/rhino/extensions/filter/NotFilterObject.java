@@ -41,36 +41,13 @@ import org.mozilla.javascript.*;
  * @param {Filter} filter The filter to execute the NOT operation on
  */
 public class NotFilterObject extends OpFilterObject {
-    
-    protected NotFilterObject() {
+	
+    protected NotFilterObject() throws Exception {
         super();
     }
 
     protected NotFilterObject(final Object[] args) throws Exception {
-        super();
-        filters = new IFilter[1];
-        if (args.length >= 1) {
-            if (args[0] instanceof IFilter)  {
-                filters[0] = (IFilter) args[0];
-            } else if (args[0] instanceof String) {
-                filters[0] = new NativeFilterObject(new Object[] {args[0]});
-            } else if (args[0] instanceof Scriptable) {
-                Scriptable s = (Scriptable) args[0];
-                if (s.getClassName().equals("String")) {
-                    filters[0] = new NativeFilterObject(new Object[] {s});
-                } else {
-                    filters[0] = new FilterObject(s, null, null);
-                }
-            } else {
-                throw new Exception("Parameter to the NotFilter constructor is not a valid filter.");
-            }
-            
-            if (args.length > 1 && args[1] instanceof Boolean) {
-                this.cached = ((Boolean) args[1]).booleanValue();
-            }
-        } else {
-            throw new Exception("No parameters specified to the NotFilter constructor.");
-        }
+        super(args);        
     }
     
     public String getClassName() {
@@ -90,7 +67,7 @@ public class NotFilterObject extends OpFilterObject {
         return new NotFilterObject(args);
     }
     
-    public static void init(Scriptable scope) {
+    public static void init(Scriptable scope) throws Exception {
         Method[] methods = NotFilterObject.class.getMethods();
         ScriptableObject proto = new NotFilterObject();
         proto.setPrototype(getObjectPrototype(scope));
