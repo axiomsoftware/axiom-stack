@@ -1,244 +1,163 @@
-body {margin:0; padding:0; background-color:#fff; font-size:1em;}
-a {text-decoration:none; color:#000000;}
+body {margin:0; padding:0; border-top:7px solid #669933; background:#fff; font-size:90%; font-family:"Georgia", "Times New Roman", sans-serif;}
+a {text-decoration:none; color:#79a738;}
 a:hover {text-decoration:underline;}
 img {border:0;}
-.clear {display:block; clear:both; float:none; height:0; line-height:0px; font-size:0px;}
+ul {margin:0 0 0 15px; padding:0;}
+ul li {list-style-image:url(http://www.axiomstack.com/static/images/li-bg.gif);}
+li a {color:#666;text-decoration:underline;}
+li a:hover {text-decoration:none;}
+h3, form fieldset legend{color:#79a738; font-size:1.4em; margin:0 0 9px 0; padding:0; font-weight:normal;}
+h3 a {color:#79a738; text-decoration:none;}
+h4 a {color:#666;}
+h5 {margin-bottom: 5px;}
 
-#wrapper {background:url(../images/sub_bg.gif) 0 0 repeat-x;}
+.contentwrap {margin:0px auto; width:768px; overflow:hidden;}
 
-.innerwrap {padding:0; width:770px; margin:0 auto;}
-.innerwrap h1 {font-family:"Georgia", "Times New Roman", sans-serif; font-size:1.6em; color:#fff; margin:35px 0 0 0; font-weight:normal;}
-.innerwrap h2 {margin:0 0 10px 0; font-family:"Georgia", "Times New Roman", sans-serif;	font-size:1.5em; color:#666666; padding-bottom:20px; font-weight:normal;}
-
-.header {height:225px; padding-top:30px; width:770px; overflow:hidden;}
-.header .nav {text-align:right; color:#acd579; font-size:0.8em; font-family:"Trebuchet MS", sans-serif; text-transform:uppercase; font-weight:bold;}
+.header {margin-top:20px; margin-bottom:20px; overflow:hidden;}
+.header .global_header {padding-bottom: 15px; overflow:hidden;}
+.header .nav {margin: 0; list-style: none; float:right; text-align:right; color:#acd579; font-size:0.8em; text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif;}
+.header .nav li {display: inline;}
 .header .nav a{color:#3f3f3f;}
 .header .nav a.current {color:#7aaa37;}
-.header .logo {margin-top:28px;}
-.header .headlines {margin-top:50px; width:770px; overflow:hidden;}
-.header .headlines h1, .header .headlines h2 {margin:0; padding:0; font-family:"Georgia","Times New Roman",serif; font-weight:normal;}
-.header .headlines h1 {font-size:28px; font-weight:normal; letter-spacing:0px;}
-.header .headlines h2 {font-size:25px; font-weight:normal; letter-spacing:0px; color:#999999;}
+.header .logo {float:left;}
+.header .headlines {margin:0; float:left; clear:both; }
+.header h1, .header h2 {margin:0; padding:0; font-weight:normal; letter-spacing:0px; }
+.header .headlines h1 {font-size:1.75em; color:#666;}
+.header .headlines h2 {font-size:1.25em; color:#999;}
+.header .search {float:right;}
+.header .search fieldset {border:none; float:left;}
 
-.innerwrap .main ul {list-style-type:none; margin:0 0 0 15px; padding:0 0 0 0;}
-.innerwrap .main ul li {list-style-image:url(../images/li-bg.gif); padding-top:3px;}
-.innerwrap .main .feature {background:url(../images/sub_bg.jpg) 0 100% no-repeat; padding:10px 30px 40px 10px; width:782px;}
-.innerwrap .main .feature h2{color:#6c9123; padding:0px;}
-.innerwrap .main .feature p {font-family:"Georgia", sans-serif; color:#000000; font-size:0.9em;}
-.innerwrap .main .feature ul {color:#666666; font-size:0.80em; font-family:"Trebuchet MS","Arial",sans-serif;}
-.innerwrap .main .feature .alt {color:#666666;}
-.innerwrap .main .feature .left {float:left; width:275px;}
-.innerwrap .main .feature .left div img {float:none; margin:0 0 25px 0; padding:0;}
-.innerwrap .main .feature .left div {clear:both; text-align:center; font-size:1.25em;}
-.innerwrap .main .feature .right {float:right; width:500px;}
+#footer {background:#669933; padding:20px 0; font-weight:bold;}
+#footer .nav {text-align: center; padding:0 0 14px 0; overflow:hidden; margin:0 auto;}
+#footer .nav dl {float:left; list-style:none; margin-left:15px; width:135px;}
+#footer .nav dt, #footer .nav dd {margin:0;padding:0;}
+#footer .nav .section {text-transform:uppercase; padding:0;}
+#footer .nav a {color:#fff; padding:0 15px 0 0; font-size:0.7em;text-decoration:underline;}
+#footer .nav a:hover {text-decoration:none;}
 
-.main {margin-top:60px;}
-.main .entry {padding:0px 30px 0px 30px; float:left;}
-.main .entry .l {float:left; width:170px; font-family:"georgia", sans-serif; font-weight:normal; color:#6c9123; font-size:1.3em; padding:10px 20px 0px 0px; text-align:center;}
+#footer .vcard, #footer .legal {font-size: .7em;}
+#footer .vcard {float:left; margin:0; padding:0 0 10px 0; color:#99cc33; }
+#footer .vcard * {display:inline;}
+#footer .legal {float:right; color:#99cc33;}
+#footer .legal span {padding:0 15px;}
+#footer .legal a {color:#000;}
 
-.innerwrap .main .entry .r h2 {color:#79a738; font-size:1.4em; padding:0px;}
+.navwrap {background:#669933; padding:15px 0 0 0; margin-bottom:25px;}
+.sub_nav {text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif; font-size:.85em;}
+.sub_nav li {list-style:none; float:left;}
+.sub_nav li a {margin:0; padding:0 15px; color:#fff; width:100%;}
+.sub_nav li.current {background:#fff url(http://www.axiomstack.com/static/images/homepage/rounded_left_nav.png) 0 0 no-repeat;}
+.sub_nav li.current a {color:#669933; background:url(http://www.axiomstack.com/static/images/homepage/rounded_right_nav.png) 100% 0 no-repeat;}
+.sub_nav li.last {border-right:none;}
 
-.main .entry .r {padding-bottom:30px; float:left; width:490px; font-family:"Georgia", sans-serif; font-weight:normal; font-size:0.9em; color:#666666; line-height:150%;}
-.main .entry .r a{color:#666666; text-decoration:underline;}
-.main .entry .r a:hover {text-decoration:none;}
+.page_content {padding:0; color:#666;}
+.page_content .feature, .release_notes div {overflow:hidden; padding:10px 30px 25px 10px; background:url(http://www.axiomstack.com/static/images/homepage/divider.jpg) 25% 100% no-repeat; margin-bottom: 25px;}
+.page_content .feature h3{color:#fff; padding:0;}
+.page_content .feature p {color:#000; font-size:0.9em;}
+.page_content .feature ul {color:#666; font-size:0.80em;}
+.page_content .feature .alt {color:#666;}
+.page_content .feature .img {float:left; margin-right: 10px;}
 
-.main .divider {height:2px; width:600px; clear:both; margin-bottom:30px; background:url(/static/images/homepage/divider.jpg) 0 0 no-repeat;}
+.main {margin-bottom:25px; overflow:hidden;}
 
-.title {font-size:1.3em; color:#666666; margin-bottom:30px; clear:both;}
+.pagination {overflow:hidden; float:right;}
+.pagination li {list-style:none; float:left; padding:0 2px;}
 
-.middleNav{position:absolute; top:254px; font-family:"Trebuchet MS", sans-serif; font-size:0.85em; text-transform:uppercase; font-weight:bold; color:#797c75; padding-top:5px;}
-.middleNav a {color:#797c75;}
-.middleNav span {margin:0px 5px 0px 5px; padding:5px 0px 0px 0px; float:left;}
-.middleNav span span.subNavPipe{float:none; padding:0px; margin-left:15px;}
-.middleNav .current {width:248px; background:url(../images/select.gif) bottom left no-repeat; background-color:#fff; padding-bottom:15px; text-align:center; float:left;}
-.middleNav .current a {color:#6c9123; text-decoration:none;}
-.middleNav .current a:hover {color:#a3bf6d;}
+.results p {font-size: .8em; margin:0;}
+.results a {display:block;}
+.results .direct {font-size: .7em;}
+.results li {margin-bottom:10px;}
 
-.main {color:#666666; padding-bottom:50px;}
-.main h3 {font-size:22px; font-family:"Georgia","Times New Roman",serif; margin:0 0 9px 0; padding:0; font-weight:normal;}
-.licensewrap {border:1px solid #cccccc; background:#e4f1d1; padding:6px; width:756px;}
-.license {border:solid 1px #cccccc; background:#ffffff; width:726px; height:430px; overflow:auto; padding:10px 14px; font-family:"Trebuchet MS","Arial",sans-serif; font-size:13px;}
+.api a {display:block;margin:0 0 3px 10px;font-size:.95em;}
+.summary {margin-bottom: 20px;}
+
+.licensewrap {border:1px solid #ccc; background:#e4f1d1; padding:6px; width:756px;}
+.license {border:solid 1px #ccc; background:#fff; width:726px; height:430px; overflow:auto; padding:10px 14px; font-size:13px;}
 .license h3, .license p {margin:3px 0 0 0; padding:0;}
-.license h3 {font-size:13px; font-family:"Trebuchet MS","Arial",sans-serif; font-weight:bold;}
+.license h3 {font-size:13px; font-weight:bold;}
 
-.contact .form {}
-.form #form_reg label {float:left; clear:both; margin:0 0 7px 0; padding:4px 10px; width:436px;}
-.contact .form label {clear:both; margin:0 0 7px 0; display:none;}
-.contact .form input, .contact .form button,
-.form #form_reg input, .form #form_reg button{clear:both; margin:0 0 7px 0; padding:4px 10px; width:436px; border:1px solid #cccccc; background:#e9e9e9;}
-.form ul.errors{color:#FF476C; list-style-position:outside; padding-left:18px;}
+#password_reset_form, .resetSuccessful {float:left; margin-bottom:100px; width:530px;}
+.forum #form_reg fieldset, .form #contact_us_form fieldset {padding:0px; border:none;}
+.form #form_reg label, .form #contact_us_form label, #password_reset_form label {color:#666; float:left; margin:0 0 7px 0; padding:4px 10px 4px 0px; text-align:right; width:130px;}
+#password_reset_form fieldset {padding:0px; margin:0px; float:left;}
+#password_reset_form label {width:auto;}
+.form #contact_us_form label {width:104px;}
+.contact .form label {clear:both; margin:0 0 7px 0;}
+.contact .form input, .contact .form button, .form #form_reg input, .form #form_reg button, #password_reset_form input{margin:0 0 7px 0; padding:4px 10px; width:364px; border:1px solid #ccc; background:#e9e9e9;}
+#password_reset_form input {margin-right:20px;}
+.form ul.errors{color:#FF476C; list-style-position:outside; padding-left:18px; margin-bottom:20px;}
 .form ul {padding-left:0; list-style-position:inside;}
 
-.contact .form .submit,  .form #form_reg .submit{width:456px; margin:13px 0 0 0;}
+.contact .form .submit, .form #form_reg .submit{float:left; margin:13px 0 0 144px; *width:88px; *margin-left:141px;}
+* html .contact .form .submit {margin:13px 0 0 72px;}
+* html .form #form_reg .submit {margin:13px 0 0 72px;}
+.contact .form .submit {margin:6px 0 0 116px; *width:auto;}
+* html .contact .form .submit {margin:6px 0 0 58px;}
 .contact .form .submit p {float:left; width:335px; font-size:0.8em; margin:0; padding:0;}
-.contact .form .submit input, .form #form_reg #submit{clear:none; float:right; text-align:center; cursor:pointer; margin:0; padding:0; background:url(/static/images/form-contact-submit.gif) 0 0 no-repeat; width:88px; height:27px; border:0; color:#ffffff;}
-
-#footer {clear:both; height:324px; background:url(../images/footer.gif) repeat-x; padding:30px 0 0 0; font-size:1em; font-family:"Trebuchet MS","Arial",sans-serif;}
-#footer .nav {padding:0 0 14px 0;}
-#footer .nav a {color:#000000; padding:0 15px 0 0; font-size:0.8em; font-family:"Trebuchet MS", sans-serif; text-transform:uppercase; font-weight:bold;}
-#footer .nav a.current {color:#ffffff;}
-#footer .nav a.current:hover {text-decoration:none;}
-
-#footer .vcard {clear:both; margin:0; padding:0 0 10px 0; color:#99cc33; font-size:0.85em; font-weight:bold;}
-#footer .vcard * {display:inline;}
-#footer .legal {color:#2e511e; font-size:0.85em; font-weight:bold;}
-#footer .legal span {padding:0 15px;}
-#footer .legal a {color:#000000;}
-
-.right .recentDisc ul{padding-left:18px;}
-
-/* For the forum layout*/
-.main .forum { width:815px;}
-.main .forum  fieldset {border:0px;padding:6px;}
-.main .forum .left {float:left;width:530px;color:#000;font-family:"Georgia", sans-serif; font-weight:normal; margin-bottom:30px;}
-.main .forum h2 {font-size:1.3em;}
-.main .forum .right {float:left; font-family:"Trebuchet MS", sans-serif; width:240px;}
-.main .forum .left .desc {font-size:0.8em;}
-.main .forum .left h3 {font-family:"Georgia", sans-serif; font-weight:normal; color:#93b157; font-size:1.7em; margin:0px 0px 5px 0px;}
-.main  .forum .left img {margin:0px 15px 5px 0px;float:left;}
-.main .forum .left .subscribe {margin:0 28px 20px 0; padding:0 0 0 18px; color:#FF476C;}
-.main .forum .left .topic {font-family:"Tahoma", sans-serif;font-size:1.0em;clear:both;width:500px;margin:10px 0px 10px 0px;}
-.main .forum .left .title {margin:0px;padding:0px;font-size:0.7em;}
-.main .forum .left .topic a {color:#93b157;text-decoration:none;}
-.main .forum .left .topic a:hover {text-decoration:underline;}
-.main .forum .left .topic h3 {font-family:"Georgia", sans-serif; font-weight:normal; color:#93b157; font-size:1.2em; margin:0px 0px 5px 0px;}
-.main .forum .left .topic img {margin:5px 10px 5px 10px;float:left;}
-.main .forum .left .topic .details {font-family:"Trebuchet MS", sans-serif; font-size:0.9em;color:#666666;}
-.main  .forum .left .topic .details  p {font-weight:normal;font-size:0.8em;margin:5px 10px 5px 10px;color:#000;}
-.main  .forum .right h2 { font-family:"Georgia", sans-serif; margin:0px 0px 10px 0px; font-size:1.4em; padding:0px; font-weight:normal;}
-.main .forum .right h3 { color:#93b157; font-size:1.2em;}
-.main .forum .right h4 a { text-decoration:none; font-size:0.9em; }
-.main .forum .right h4 a:hover { text-decoration:underline;}
-.main  .forum .right .signin{font-family:"Trebuchet MS", sans-serif;font-size:0.8em;color:#666666;margin-bottom:20px;}
-.main  .forum .right .signin input {background-color:#fff;border:1px solid #cccccc;color:#999999;font-family:"Trebuchet MS", sans-serif;}
-.main  .forum .right .signin .submit-button {background:url("/static/images/homepage/submit.jpg") no-repeat;width:88px;padding:5px;margin-top:10px;font-family:"Trebuchet MS", sans-serif;font-size:0.9em;text-transform:uppercase;letter-spacing:1px;font-weight:bold;color:#fff;border:0px;}
-.main  .forum .right a {color:#000;text-decoration:none;}
-.main  .forum .right a:hover {text-decoration:none;}
-.main .forum .right ul { padding:0px; margin:15px;}
-.main  .forum .right li.newbullet{list-style-image:url("/static/images/homepage/bullet.gif"); font-size:0.8em;font-family:"Trebuchet MS", sans-serif;}
-.main .forum .right li a { text-decoration:none;}
-.main .forum .right li a:hover { text-decoration:underline }
-.main  .forum .required {color:#9abf53;}
-.main .forum .newtopic {font-family:"Trebuchet MS", sans-serif;font-size:0.9em;}
-.main .forum .newtopic h2 { color:#666666;font-size:1.5em;padding:0px; font-weight:normal;}
-.main .forum .newtopic input, .newtopic textarea{border:1px solid #cccccc;}
-.main .forum .newtopicbutton {border:1px solid #729925;height:29px;  width:88px;font-family:"Trebuchet MS", sans-serif;font-weight:bold;padding:1px 5px 1px 5px; margin:5px;color:#fff;font-size:1.0em;background:url("/static/images/homepage/buttonbg.gif") repeat-x;}
-.main .forum .newtopicbutton2 {border:1px solid #729925; height:29px; font-family:"Trebuchet MS", sans-serif;font-weight:bold;color:#fff;background:url("/static/images/homepage/buttonbg.gif") repeat-x; padding:2px 5px 5px 5px;}
-/*\*/ html>body* .main .forum .newtopicbutton2 { height:20px;  font-size:1.0em; padding:3px; margin:0px;}
-.main .forum .left .r form fieldset .newtopicbutton2 {*padding:0; *height:30px; *width:30px;}
-.main .forum .forumtime {font-family:"Georgia", sans-serif; font-weight:normal; font-size:0.9em;color:#666666; clear:both; margin:0px 0px 15px 0px;}
-.main .forum .newtopic label { display:block;width:90px;float:left;}
-.main .forum .currenttopics {background-color:#e4f1d1;border:1px solid #cccccc;float:left;height:55px;width:500px;margin-bottom:0px; padding-bottom:0px;}
-.main .forum .marginFix {margin-bottom:15px;}
-.main .forum .ctBottom {height:30px;}
-.main .forum .currenttopics .l {font-family:"Georgia", sans-serif;color:#666666; width:260px; padding:15px 10px 0px 20px;float:left;font-size:1.3em; font-weight:normal;}
-.main .forum .currenttopics .l span { font-size:0.6em; font-family:"Trebuchet MS", sans-serif;}
-.main .forum .currenttopics .r {float:right;margin:0px;padding:10px 10px 0px 0px;}
-.main .forum .currentwrap {margin:10px;clear:both;}
-.main .forum .currenttopics .forumtopicsearch input { border:1px solid #cccccc;color:#666666;font-family:"Trebuchet MS", sans-serif;font-size:0.8em;}
-.main .forum .left .decor {border:1px solid #cccccc;color:#666666;font-family:"Trebuchet MS", sans-serif;font-size:0.8em;}
-.main .forum .left .intro { font-family:"Trebuchet MS", sans-serif; font-size:0.9em; color:#666666;}
-.main .forum .left .intro li { font-size:0.9em; }
-.main .forum .left .intro h2{ font-family:"Georgia", sans-serif; margin:0px 0px 0px 0px; font-size:1.5em; padding:0px; font-weight:normal;}
-.main .forum .left .intro h3{ font-family:"Trebuchet MS", sans-serif; margin:0px 0px 10px 0px; padding:0px; font-size:0.8em;  font-weight:normal; color:#666666;}
-.main .forum .actionbuttons { margin-bottom:15px; padding-right:35px; float:right; width:100%; *width:95%; text-align:right;}
-/*\*/ html>body* .main .forum .actionbuttons { width:85%; }
-.main .forum  .left .actionbuttons a:hover { text-decoration:none; }
-.main .forum .left .threadlist { background-color:#f4f9ed;border:1px solid #cccccc;float:left;width:500px;margin:10px 0px 0px 0px; padding-top:0px;}
-.forumtopic .main .forum .left .threadlist {margin-top:0px; border-top:none;}
-.main .forum .left .threadlist img {margin:5px 10px 1px 10px;float:left;}
-.main .forum .left .threadlist h3 {font-family:"Georgia", sans-serif;color:#93b157;font-size:1.2em;margin:5px 70px 1px 10px; font-weight:normal;}
-.main .forum .left .threadlist p {font-family:"Trebuchet MS", sans-serif; font-size:0.8em; color:#000; margin:5px 0px 0px 0px;  padding:0px 10px 0px 10px;}
-* html .main .forum .left .threadlist p {width:485px; padding-right:5px;}
-.main .forum .left .threadlist a { color:#93b157; text-decoration:none; }
-.main .forum .left .threadlist a:hover { text-decoration:underline; }
-.main .forum .left .threadlistsub { margin-bottom:20px; clear:both; width:500px; float:left; background-color:#f4f9ed; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc; border-right:1px solid #cccccc;}
-.main .forum .left .threadlistsub .left { padding:15px 0px 0px 15px; float:left; width:175px; font-family:"Trebuchet MS", sans-serif; font-size:0.7em; }
-.main .forum .left .threadlistsub .right { padding:15px; float:left; width:279px; font-family:"Trebuchet MS", sans-serif; font-size:0.7em; border-left:1px solid #cccccc;}
-.main .forum .left .threadlistsub2 { width:500px; clear:both; float:left; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc; border-right:1px solid #cccccc;}
-.main .forum .left .threadlistsub2 .left { padding:15px 0px 0px 15px; float:left; width:175px; font-family:"Trebuchet MS", sans-serif; font-size:0.7em;  }
-.main .forum .left .threadlistsub2 .right { padding:15px; float:left; width:279px; font-family:"Trebuchet MS", sans-serif; font-size:0.7em; border-left:1px solid #cccccc;}
-.main .forum .left .threadlist2 {background-color:#e4f1d1;border:1px solid #cccccc;float:left;height:64px;width:500px;margin:15px 0px 0px 0px;}
-.main .forum .left .threadlist2 img {margin:5px 10px 1px 10px;float:left;}
-.main .forum .left .threadlist2 h3 {font-family:"Georgia", sans-serif;color:#93b157;font-size:1.2em;margin:5px 0px 1px 0px; font-weight:normal;}
-.main .forum .left .threadlist2 p { font-family:"Trebuchet MS", sans-serif; font-size:0.8em; color:#000; margin:5px 0px 0px 0px;  padding:0px 10px 0px 10px;}
-* html .main .forum .left .threadlist2 p {width:485px; padding-right:5px;}
-.main .forum .left .threadlist2 a { color:#93b157; text-decoration:none; }
-.main .forum .left .reply { position:relative; float:right; top:10px; border:1px solid #729925;height:20px;font-family:"Trebuchet MS", sans-serif;font-weight:bold;color:#fff;background:url("/static/images/homepage/buttonbg.gif") repeat-x; margin-right:10px; padding:2px 5px 5px 5px;*padding:2px 5px 3px 5px;}
-.main .forum .left .reply a{ color:#fff; text-decoration:none; }
-.main .forum .left .reply a:hover { text-decoration:none; }
-.main .forum .left .threadlist2 a:hover { text-decoration:underline; }
-.main .forum .left .pagination { clear:both; }
-.main .forum .left .listnav { padding:5px 20px 5px 20px; background-color:#e4f1d1; color:#666666; width:775px; border:1px solid #cccccc; font-size:0.8em; font-family:"Trebuchet MS", sans-serif;}
-.main .forum .left .listnav a { color:#666666; text-decoration:none; }
-.main .forum .left .listnav a:hover { color:#666666; text-decoration:underline; }
-.main .forum .left .listnav .pagination { float:right; }
-.main .forum .left .searchresults { color:#666666; width:815px; font-family:"Trebuchet MS", sans-serif; font-size:0.8em; margin:5px 0px 5px 0px; }
-.main .forum .left .greenrow {background-color:#f4f9ed; border:1px solid #cccccc;; text-align:left;}
-.main .forum .left .searchresults th {padding-left:10px;}
-.main .forum .left .searchresults th a, .main .forum .left .searchresults th a :hover {color:#666666;}
-.main .forum .left .searchresults td  a {color:#666666; font-weight:bold;}
-.main .forum .left .searchresults td {padding-left:10px;}
-.main .forum .left .searchresults tr {height:30px;}
-.main .forum .left .pagination {font-family:"Trebuchet MS", sans-serif; color:#666666; clear:both;}
-.main .forum .left .pagination li {list-style:none;}
-
-.download .main .dl_body{margin-left:50px;}
-.download .main .dl_body h3{font-size:22px; color:#000000; font-weight:normal; margin-top:39px;}
-.download .main .dl_body p{font-size:16px; color:#666666;}
-.download .main .dl_body .divider {margin:42px 0 34px 60px;}
-.download .main .dl_body h4{font-size:22px; color:#6c9123; font-weight:normal; margin-bottom:25px;}
-.download .main .dl_body ol {padding-left:20px;}
-.download .main .dl_body ol li {margin-bottom:24px;}
-.download .main .dl_body .outline {width:763px; background:#e4f1d1; border:1px solid #cccccc; padding:15px 0 15px 49px; margin-left:-50px;}
-
-.technical-specifications .main .pagecontent .padded div.title{font-size:1.4em;}
-.technical-specifications .main .pagecontent .padded .divider{margin-left:100px;}
-.technical-specifications .main .pagecontent .padded div.entry{padding-left:0px; padding-right:0px;}
-.technical-specifications .main .pagecontent .padded .entry .r{width:565px;}
-.technical-specifications .main .pagecontent .padded div.entry{padding-left:0px; padding-right:0px;}
-.technical-specifications .main .pagecontent .padded .entry p{font-size:1.1em; color:#333333; margin-top:10px; margin-bottom:1px;}
-.technical-specifications .main .pagecontent .padded .entry h3{color:#6c9123; font-size:1.1em; margin-bottom:0px;}
-.technical-specifications .main .pagecontent .padded .entry ul{margin-bottom:23px;}
-.main .pagecontent p { font-family:"Georgia", sans-serif; font-size:0.9em; }
+.contact .form .submit input, .form #form_reg #submit{clear:none; float:right; text-align:center; cursor:pointer; margin:0; padding:0; background:url(http://www.axiomstack.com/static/images/form-contact-submit.gif) 0 0 no-repeat; width:88px; height:27px; border:0; color:#fff;}
+#password_reset_form .submit input{float:left;}
+#password_reset_form .submit {margin:10px 0 0 53px; float:left;}
+.contact .form .submit input {float:left; clear:left; margin-top:10px; *margin-left:-115px;}
+* html .contact .form .submit input {margin-left:-55px;}
 
 .issue_tracker .pagecontent h4{margin-bottom:0px;}
 
-.learn .main #toc #toctitle h2, .learn .main h2 {clear:both; color:#666666; font-size:1.3em; margin:20px 0; padding:0;}
-.learn .main ul li {color:#6C9123; font-weight:normal; font-family:"georgia",sans-serif; margin:15px 0 0 15px;}
+.learn .main #toc #toctitle h2, .learn .main h2 {clear:both; color:#666; font-size:1.3em; margin:20px 0; padding:0;}
+.learn .main ul li {color:#6C9123; font-weight:normal; margin:15px 0 0 15px;}
 .learn .main ul li ul li {margin-top:5px;}
 
-#bodyContent pre {overflow:auto;}
+a.forgotpass{display:block; width:88px; font-size:11px;}
+.main .forum .right a.forgotpass:hover {text-decoration:underline;}
+.pwResetPage .error {color:#FF476C;}
+.noToken .error {margin-bottom:70px;}
+.noToken .setMargin {margin-bottom:70px;}
+.reset form#password_reset_form fieldset input {width:350px;}
+.reset form#password_reset_form fieldset {float:right;}
+.reset form#password_reset_form .submit {margin-left:70px;}
+.noToken .error a {color:#FF476C; text-decoration:underline;}
 
+.errors {color:red; border: 1px solid red; padding: 10px; margin-bottom: 20px;}
+.errors li {list-style:none;}
+form fieldset {border:none;}
+form label, form input {float:left;}
+form label {clear:both; width: 150px;}
+form label span {color:red;}
+input[type=submit] {margin:0 10px 0 10px;}
 
 /* Styles for JsDoc Generated Markup */
 
-#index {width:200px; float:left; font-family:"Georgia", "Times New Roman", sans-serif; font-size:1em; color:#666666;}
+.main {overflow:hidden;}
+.main #toc #toctitle h3, .main h3 {color:#666; font-size:1.3em; margin:20px 0; padding:0;}
+.main ul li {color:#6C9123; font-weight:normal; margin:15px 0 0 15px;}
+.main ul li ul li {margin-top:5px;}
+
+#bodyContent pre {overflow:auto;}
+
+#index {width:200px; float:left; font-size:1em; color:#666;}
 #index .classbox {border:1px solid #ccc; background: #f4f4f4; padding:10px; width:180px; margin-bottom:15px;}
-#index .classbox h2 {margin:0 0 20px 0;}
+#index .classbox h4 {margin:0 0 20px 0;}
 #index .classbox ul {margin-bottom:20px;}
-#index .classbox ul li {color:#666666;}
+#index .classbox ul li {color:#666;}
 #index .classbox div {padding:10px 0; border-bottom:1px solid #ccc;}
 #index .classbox div.lastclass {border:0}
 #index h2 {color:#000;}
 #index a {color:#79A738;}
 #index ul li {margin:0;}
-#content {width:550px; padding-left:15px; float:left; font-family:"Georgia", "Times New Roman", sans-serif;	font-size:1em; color:#666666;}
-#content h1 {margin-top:0; color:#000;}
+#content {width:550px; padding-left:15px; float:left; font-size:1em; color:#666;}
+#content h3 {margin-top:0; color:#000;}
 #content a {color:#79A738;}
 #content div.fixedFont {padding-bottom:10px;}
 #content span.light {font-style:italic;}
 #content table.summaryTable {width:100%; margin-bottom:25px;}
-#content table.summaryTable caption {padding:10px; background:#666666; font-weight:bold; color:#fff; text-align:left;}
+#content table.summaryTable caption {padding:10px; background:#666; font-weight:bold; color:#fff; text-align:left;}
 #content table.summaryTable th {display:none;}
-#content table.summaryTable td {border-bottom:1px solid #666666; border-right: 1px solid #666666; padding: 5px;}
+#content table.summaryTable td {border-bottom:1px solid #666; border-right: 1px solid #666; padding: 5px;}
 #content table.summaryTable td a {color:#79A738;}
-#content table.summaryTable td.noconstructorattribs {border-left:1px solid #666666;}
-#content table.summaryTable td.attributes {font-style:italic; text-align:right; border-left:1px solid #666666;}
+#content table.summaryTable td.noconstructorattribs {border-left:1px solid #666;}
+#content table.summaryTable td.attributes {font-style:italic; text-align:right; border-left:1px solid #666;}
 #content table.summaryTable td.nameDescription div.fixedFont {padding:0;}
-#content div.sectionTitle {padding:10px; background:#666666; font-weight:bold; color:#fff; margin:20px 0 10px 0;}
-#content hr {height:1px; border:none 0; border-top:1px solid #666666; margin:20px 0;}
+#content div.sectionTitle {padding:10px; background:#666; font-weight:bold; color:#fff; margin:20px 0 10px 0;}
+#content hr {height:1px; border:none 0; border-top:1px solid #666; margin:20px 0;}
 #content dt.heading {font-weight:bold;}
 #content dl a {color:#79A738;}
-.fineprint {clear:both; padding-top:15px; font-family:"Georgia", "Times New Roman", sans-serif;	font-size:.7em; color:#666666;}
-
+.fineprint {clear:both; padding-top:15px; font-size:.7em; color:#666;}

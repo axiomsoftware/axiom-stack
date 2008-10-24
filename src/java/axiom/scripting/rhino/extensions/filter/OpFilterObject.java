@@ -27,10 +27,66 @@ import java.util.*;
 import org.mozilla.javascript.*;
 
 abstract public class OpFilterObject extends ScriptableObject implements IFilter {
-    
+	
     IFilter[] filters = null;
     private String analyzer = null;
     boolean cached = false; 
+    
+    protected OpFilterObject() {
+    	super();
+    }
+    
+    protected OpFilterObject(final Object[] args) throws Exception {
+    	super();
+    	if (args != null) {
+    		System.out.println("Arg is --> " + args.getClass().getName());
+	        final int length = args.length;
+	        if ((length == 1 && args[0] instanceof Scriptable 
+	                && !((Scriptable) args[0]).getClassName().equals("String"))
+	             || (length == 2 && args[0] instanceof Scriptable 
+	                && !((Scriptable) args[0]).getClassName().equals("String")
+	                && args[1] instanceof Boolean)) {
+	            Scriptable s = (Scriptable) args[0];
+	            final int arrlen = s.getIds().length;
+	            filters = new IFilter[arrlen];
+	            for (int i = 0; i < arrlen; i++) {
+	            	filters[i] = this.getFilterFromArg(s.get(i, s), i);
+	            }
+	            if (length == 2) {
+	                this.cached = ((Boolean) args[1]).booleanValue();
+	            }
+	        } else {
+	            filters = new IFilter[length];
+	            for (int i = 0; i < length; i++) {
+	                if (i == length - 1 && args[i] instanceof Boolean) {
+	                    this.cached = ((Boolean) args[i]).booleanValue();
+	                    continue;
+	                }
+	                filters[i] = this.getFilterFromArg(args[i], i);
+	            }
+	        }
+    	}
+    }
+    
+    private IFilter getFilterFromArg(Object arg, int i) throws Exception{
+    	IFilter filter = null;
+    	if (arg instanceof IFilter)  {
+             filter = (IFilter) arg;
+        } else if (arg instanceof String) {
+            filter = new NativeFilterObject(new Object[] {arg});
+        } else if (arg instanceof Scriptable) {
+            Scriptable s = (Scriptable) arg;
+            if (s.getClassName().equals("String")) {
+                filter = new NativeFilterObject(new Object[] {s});
+            } else {
+                filter = new FilterObject(s, null, null);
+            }
+        } else {
+            throw new Exception("Parameter " + (i+1) + " to the " + this.getClassName() + " constructor is not a valid filter.");
+        }
+    	
+    	return filter;
+    }
     
     public IFilter[] getFilters() {
         return filters;

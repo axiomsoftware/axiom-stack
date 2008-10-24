@@ -45,10 +45,9 @@ import org.mozilla.javascript.*;
  */
 public class FilterObject extends ScriptableObject implements IFilter {
     
-    private HashMap filters = new HashMap();
+    private HashMap<String, Object> filters = new HashMap<String, Object>();
     private String analyzer = null;
     boolean cached = false;
-    private Scriptable filterProfile = null;
         
     public FilterObject() {
         super();
@@ -149,7 +148,7 @@ public class FilterObject extends ScriptableObject implements IFilter {
         }
     }
     
-    public Set getKeys() {
+    public Set<String> getKeys() {
         return filters.keySet();
     }
     
