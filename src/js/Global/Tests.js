@@ -23,9 +23,9 @@ if (!global.axiom) {
 }
 
 /**
- * Axiom comes with a built in framework for writing functional and unit tests for your application. These tests 
- * can be written globally or organized by specific prototype. A test is a function that contains a number of 
- * assertions- if all the assertions pass and no other errors occur, the test passes. 
+ * Axiom comes with a built in framework for writing functional and unit tests for your application. These tests
+ * can be written globally or organized by specific prototype. A test is a function that contains a number of
+ * assertions- if all the assertions pass and no other errors occur, the test passes.
  * @constructor
  */
 axiom.Test = {};
@@ -52,18 +52,29 @@ axiom.Test.globalSuite = function(){
  * @returns {Object} An object containing the number of errors, failures and results for individual tests
  */
 axiom.Test.run = function(suite){
-	var results = { 
+	var results = {
 		errors: 0,
 		failures: 0,
 		test_results: []
 	};
-
+	var env = java.lang.System.getenv();
 	var start = new Date();
-	for(var proto in suite){
-		var tests = suite[proto];
-		axiom.Test.runSuite(tests, results, proto);
-	}
+	do{
+		for(var proto in suite){
+			var tests = suite[proto];
+			axiom.Test.runSuite(tests, results, proto);
+		}
+	} while(env.get('LOOPTESTS'));
+
 	results.total_time = ((new Date()).getTime() - start.getTime() ) / 1000.0;
+
+	if(!env.get('QUIET')){
+		if(!results.errors && !results.failures){
+			java.lang.System.out.println('ALL TESTS PASSED');
+		} else {
+			java.lang.System.out.println('FAILURES: '+results.failures+'  |  ERRORS: '+results.errors+'   |   TOTAL TESTS: '+results.test_results.length);
+		}
+	}
 	return results;
 }
 
@@ -74,6 +85,11 @@ axiom.Test.run = function(suite){
  * @param {String} proto Name of the prototype suite to be executed
  */
 axiom.Test.runSuite = function(tests, results, proto){
+	var env = java.lang.System.getenv();
+	var bail_mode = env.get('BAILMODE');
+	var quiet_mode = env.get('QUIET');
+
+
 	var setup = (tests.setup || function(){});
 	var teardown = (tests.teardown || function(){});
 	for(var test in tests){
@@ -81,9 +97,12 @@ axiom.Test.runSuite = function(tests, results, proto){
 			setup.call(tests);
 			res.commit();
 			var test_result = { name: proto+'.'+test };
-			var test_start = new Date()
+			var test_start = new Date();
 			try {
 				tests[test].call(tests);
+				if(!quiet_mode){
+					java.lang.System.out.println('passed: '+test_result.name);
+				}
 			} catch(e) {
 				if(e instanceof AssertionFailedError){
 					results.failures += 1;
@@ -91,6 +110,14 @@ axiom.Test.runSuite = function(tests, results, proto){
 				} else {
 					results.errors += 1;
 					test_result.error = e;
+				}
+				if(!quiet_mode){
+					java.lang.System.out.println('FAILED: '+test_result.name);
+					java.lang.System.out.println(' due to --> '+(test_result.error||test_result.failure).message);
+				}
+				if(bail_mode){
+					java.lang.System.out.println('Bailing!');
+					java.lang.System.exit(1);
 				}
 			} finally {
 				test_result.time = ( (new Date()).getTime() - test_start.getTime() ) / 1000.0;
@@ -101,8 +128,8 @@ axiom.Test.runSuite = function(tests, results, proto){
 			res.commit();
 		} else if(typeof tests[test] == 'object'){
 			setup.call(tests);
-			res.commit();			
-			axiom.Test.runSuite(tests[test], results, proto+'.'+test)
+			res.commit();
+			axiom.Test.runSuite(tests[test], results, proto+'.'+test);
 			teardown.call(tests);
 			res.commit();
 		}
@@ -133,8 +160,8 @@ axiom.Test.XMLReport = function(results) {
 			}
 			error.@message = defect.message;
 			if(defect.mCallStack){
-				error += defect.mCallStack.toString(); 
-			} 
+				error += defect.mCallStack.toString();
+			}
 			case_element.testcase += error;
 		}
 		markup.testsuite += case_element;
@@ -147,7 +174,7 @@ axiom.Test.buildXMLReport = function(results, resultFile){
 	var file = null;
 	try{
 		file = new axiom.SystemFile(resultFile);
-		
+
 		if(!file.exists()){
 			axiom.SystemFile.writeToFile(axiom.Test.XMLReport(results),	resultFile);
 		} else {
