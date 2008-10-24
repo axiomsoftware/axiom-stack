@@ -10,12 +10,13 @@
 	<property name="lib.dir" value="${home.dir}/lib"/>
 	<property name="src.dir" value="${home.dir}/src"/>
 	<property name="apps.dir" value="${home.dir}/apps"/>
+	<property name="release.dir" value="${home.dir}/release"/>
 	<property name="modules.dir" value="${home.dir}/modules"/>
 	<property name="jsdoc.dir" value="${home.dir}/doc"/>
 	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
 	<property name="utils.dir" value="${home.dir}/utils"/>
 	<property name="examples.dir" value="${home.dir}/examples"/>
-	<property name="test-config.dir" value="${home.dir}/test-config"/>
+	<property name="test-config.dir" value="${home.dir}/test"/>
 	<property name="java.version.default" value="1.6"/>
 	<property name="axiom-jar.name" value="axiom.jar"/>
 	<property name="launcher-jar.name" value="launcher.jar"/>
@@ -47,8 +48,8 @@
 		<delete dir="${build.dir}"/>
 		<delete dir="${jsdoc.dir}"/>
 		<delete dir="${javadoc.dir}"/>
-		<delete dir="${test-config.dir}/app"/>
-		<delete dir="${test-config.dir}/server"/>
+		<delete dir="${test-config.dir}"/>
+		<delete dir="${release.dir}"/>
 	</target>
 
 	<target name="build" depends="clean, init">
@@ -63,9 +64,6 @@
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
 		</antcall>		
-
-		<antcall target="jsdoc"/>
-		<antcall target="javadoc"/>
 	</target>
 
 	<target name="compile" depends="init">
@@ -126,39 +124,6 @@
             manifest="${src.dir}/java/axiom/main/launcher/manifest.txt"/>
 	</target>
 
-	<target name="test">
-		<move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
-
-		<move todir="${apps.dir}" includeemptydirs="false">
-			<fileset dir="${apps.dir}" casesensitive="yes">
-				<exclude name="**/${test.app}/*"/>
-				<include name="**/app.properties"/>
-			</fileset>
-			<mapper type="glob" from="*" to="*.testing"/>
-		</move>
-
-		<antcall target="build">
-			<param name="version" value="${java_version}"/>
-		</antcall>		
-
-		<java jar="${home.dir}/launcher.jar" fork="true" timeout="150000">
-			<sysproperty key="file.encoding" value="UTF-8"/>
-			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
-			<arg line="-w 8081 -h ${home.dir}"/>
-		</java>
-
-		<move todir="${apps.dir}" includeemptydirs="false">
-			<fileset dir="${apps.dir}" casesensitive="yes">
-				<exclude name="**/${test.app}/*"/>
-				<include name="**/app.properties.testing"/>
-			</fileset>
-			<mapper type="glob" from="*.testing" to="*"/>
-		</move>
-
-		<move file="${apps.dir}/test/app.properties" tofile="${apps.dir}/${test.app}/app.properties.test"/>
-
-	</target>
-
 	<target name="javadoc">
 		<javadoc sourcepath="${src.dir}/java" 
 			destdir="${javadoc.dir}" 
@@ -167,6 +132,14 @@
 	</target>
 
 	<target name="jsdoc" depends="compile">
+		<condition property="doc.dir"
+			value="${docdir}"
+			else="${jsdoc.dir}">
+			<and>
+				<isset property="docdir"/>
+			</and>
+		</condition>
+		
 		<javadoc 
 			doclet="axiom.util.JSDoclet" 
 			docletpath="${build.dir}/classes/" 
@@ -178,35 +151,36 @@
 		</javadoc>
 
 		<java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
-			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${jsdoc.dir} alldoc.js ${src.dir}/js/Global ${src.dir}/js-for-doc/"/>
+			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${doc.dir} alldoc.js ${src.dir}/js/Global ${src.dir}/js-for-doc/"/>
 		</java>
 		
+		<copy todir="${doc.dir}/css">
+			<fileset dir="${utils.dir}/jsdoc-toolkit/templates/jsdoc/static/css"/>
+		</copy>
+		
+		<copy todir="${doc.dir}/images">
+			<fileset dir="${utils.dir}/jsdoc-toolkit/templates/jsdoc/static/images"/>
+		</copy>
+
 		<delete file="alldoc.js"/>
 	</target>
 
-	
-	<target name="test-apps-config" depends="clean">
-	    <property name="test-app.dir" value="${test-config.dir}/app"/>
-
-		<mkdir dir="${test-config.dir}"/> 
-		<mkdir dir="${test-app.dir}"/> 
-		<mkdir dir="${test-app.dir}/lib"/> 
-		<mkdir dir="${test-app.dir}/apps"/>
-
-		<copy todir="${test-app.dir}/lib">
-			<fileset dir="${lib.dir}"/>
-		</copy>
-
-		<copy todir="${test-app.dir}/apps/test-app-config">
-			<fileset dir="${apps.dir}/test-app-config"  excludes="server.properties"/>
-		</copy>
-
-		<move file="${test-app.dir}/apps/test-app-config/app.properties.run"
-			tofile="${test-app.dir}/apps/test-app-config/app.properties"/>
+	<target name="test-util">
+		<condition property="app"
+			value="${appname}"
+			else="test">
+			<and>
+				<isset property="appname"/>
+			</and>
+		</condition>
 		
-		<copy todir="${test-app.dir}/">
-			<fileset file="${apps.dir}/test-app-config/server.properties"/>
-		</copy>
+		<condition property="applicationdir"
+			value="${appdir}"
+			else="apps">
+			<and>
+				<isset property="appdir"/>
+			</and>
+		</condition>
 
 		<condition property="java_version"
 			value="${env.JAVA_VERSION}"
@@ -215,6 +189,27 @@
 				<isset property="env.JAVA_VERSION"/>
 			</and>
 		</condition>
+
+		<property name="test-app.dir" value="${test-config.dir}/${app}"/>
+		
+		<mkdir dir="${test-app.dir}"/> 
+		<mkdir dir="${test-app.dir}/lib"/> 
+		<mkdir dir="${test-app.dir}/${applicationdir}"/>
+
+		<copy todir="${test-app.dir}/lib">
+			<fileset dir="${lib.dir}"/>
+		</copy>
+
+		<copy todir="${test-app.dir}/${applicationdir}/${app}">
+			<fileset dir="${apps.dir}/${app}" excludes="server.properties"/>
+		</copy>
+
+		<move file="${test-app.dir}/${applicationdir}/${app}/app.properties.run"
+			tofile="${test-app.dir}/${applicationdir}/${app}/app.properties"/>
+
+		<copy todir="${test-app.dir}/">
+			<fileset file="${apps.dir}/${app}/server.properties"/>
+		</copy>
 
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
@@ -227,28 +222,66 @@
 			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
 			<arg line="-w 8081 -h ${test-app.dir}"/>
 		</java>
+
 	</target>
 	
-	<target name="test-server-config" depends="clean">
-	    <property name="test-server.dir" value="${test-config.dir}/server"/>
+	<target name="test" depends="clean">
+		<antcall target="test-util">
+			<param name="appname" value="test"/>
+		</antcall>
 
-		<mkdir dir="${test-server.dir}"/> 
-		<mkdir dir="${test-server.dir}/lib"/> 
-		<mkdir dir="${test-server.dir}/applications"/>
+		<antcall target="test-util">
+			<param name="appname" value="test-app-config"/>
+		</antcall>
 
-		<copy todir="${test-server.dir}/lib">
-			<fileset dir="${lib.dir}"/>
+		<antcall target="test-util">
+			<param name="appname" value="test-server-config"/>
+			<param name="appdir" value="applications"/>
+		</antcall>
+	</target>
+	
+	<target name="release">
+
+		<condition property="ver">
+			<isset property="axiom_version"/>
+		</condition>
+		<fail message="To build a release, 'version' must be set" unless="ver"/>
+
+		<exec executable="./release.sh">
+		    <arg value="${axiom_version}"/>
+		</exec>
+
+		<mkdir dir="${release.dir}"/>
+
+		<copy todir="${release.dir}">
+			<fileset dir="${home.dir}" 
+				includes="start.bat, 
+					start.sh, 
+					build.xml, 
+					license.txt, 
+					README.txt, 
+					server.properties,
+					release.sh"/>
 		</copy>
 		
-		<copy todir="${test-server.dir}/applications/test-server-config">
-			<fileset dir="${apps.dir}/test-server-config" excludes="server.properties"/>
+		<copy todir="${release.dir}/src">
+			<fileset dir="${src.dir}"/>
 		</copy>
 
-		<move file="${test-server.dir}/applications/test-server-config/app.properties.run"
-			tofile="${test-server.dir}/applications/test-server-config/app.properties"/>
+		<copy todir="${release.dir}/lib">
+			<fileset dir="${lib.dir}"/>
+		</copy>
 
-		<copy todir="${test-server.dir}/">
-			<fileset file="${apps.dir}/test-server-config/server.properties"/>
+		<copy todir="${release.dir}/apps">
+			<fileset dir="${apps.dir}"/>
+		</copy>
+
+		<copy todir="${release.dir}/utils">
+			<fileset dir="${utils.dir}"/>
+		</copy>
+		
+		<copy todir="${release.dir}/examples">
+			<fileset dir="${examples.dir}"/>
 		</copy>
 
 		<condition property="java_version"
@@ -261,16 +294,18 @@
 
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
-			<param name="jar.home.dir" value="${test-server.dir}"/>
-			<param name="jar.lib.dir" value="${test-server.dir}/lib"/>
+			<param name="jar.home.dir" value="${release.dir}"/>
+			<param name="jar.lib.dir" value="${release.dir}/lib"/>
 		</antcall>
 
-		<java jar="${test-server.dir}/launcher.jar" fork="true" timeout="150000">
-			<sysproperty key="file.encoding" value="UTF-8"/>
-			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
-			<arg line="-w 8081 -h ${test-server.dir}"/>
-		</java>
+		<antcall target="jsdoc">
+			<param name="docdir" value="${release.dir}/doc"/>
+		</antcall>
+		
+		 <zip destfile="${home.dir}/axiom-stack-${axiom_version}.zip"
+		       basedir="${release.dir}"/>
 
+		<delete dir="${release.dir}"/>
 	</target>
 	
 </project>

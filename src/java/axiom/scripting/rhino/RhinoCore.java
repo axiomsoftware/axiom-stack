@@ -116,7 +116,7 @@ public final class RhinoCore implements ScopeProvider {
         context.setWrapFactory(wrapper);
 
         // Set default optimization level according to whether debugger is on
-        int optLevel = "true".equals(app.getProperty(DEBUGGER_PROPERTY)) ? 0 : -1;
+        int optLevel = "true".equals(app.getProperty(DEBUGGER_PROPERTY)) ? -1 : 9;
 
         String opt = app.getProperty("rhino.optlevel");
         if (opt != null) {

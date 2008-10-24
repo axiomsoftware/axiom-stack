@@ -583,7 +583,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 */
 	public Scriptable jsFunction_getChildren(Object prototype, Object filter, Object optional) {
 
-	    Scriptable ret;
+		Scriptable ret;
 	    if (prototype == Undefined.instance && 
 	            filter == Undefined.instance &&
 	            optional == Undefined.instance) {
@@ -599,7 +599,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        	else{
 	        		options = Context.getCurrentContext().newObject(this.core.getScope());	        		
 	        	}
-				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/");
+	        	String path = this.jsFunction_getPath();
+	        	path = path.equals("/") ? path + "*" : path + "/*";
+
+	        	options.put(LuceneQueryDispatcher.PATH_FIELD, options, path);
 
 				ret = this.core.app.getQueryBean().objects(prototype, filter, options);
 	        } catch (Exception ex) {
@@ -649,7 +652,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        	} else {
 	        		options = Context.getCurrentContext().newObject(this.core.getScope());	        		
 	        	}
-				options.put(LuceneQueryDispatcher.PATH_FIELD, options, this.jsFunction_getPath() + "/");
+	        	String path = this.jsFunction_getPath();
+	        	path = path.equals("/") ? path + "*" : path + "/*";
+				options.put(LuceneQueryDispatcher.PATH_FIELD, options, path);
 				
 				ret = this.core.app.getQueryBean().getHitCount(prototype, filter, options);
 	        } catch (Exception ex) {
@@ -1502,7 +1507,6 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		} else {
 		    value = (String) map.remove(LuceneManager.ACCESSNAME);
 		}
-
 		if (value != null) {
 		    if (aname != null) {
 		    	INode parent = this.node.getParent();
@@ -1525,7 +1529,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		        _idAccess = true;
 		    }
 		}
-
+		
 		Object setParentTo = null, v;
 		if ((v = map.get(LuceneManager.LOCATION)) != null) {
 			Object avalue = setValueTo != null ? setValueTo : this.jsFunction_accessvalue();
@@ -1553,7 +1557,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			this.put(setNameTo, this, setValueTo);
 		}
 		if (setParentTo != null) {
-			this.setParent(setParentTo);
+			try{
+				this.setParent(setParentTo);
+			} catch(Exception e){
+				emsgs.put(LuceneManager.LOCATION, emsgs, e.getMessage());
+				return;				
+			}
             this.calcComputedProps("_parent");
 		}
 
@@ -2050,8 +2059,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		return newvalue;
 	}
 
-	protected boolean setParent(Object parent) {
-
+	protected boolean setParent(Object parent) throws Exception{
 	    checkNode();
 
 	    INode newparent = null;
@@ -2080,6 +2088,8 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	        if ((currparent = node.getParent()) != null) {
 	            if (areNodesEqual(newparent, currparent)) {
 	                doTheAdd = false;
+	            } else if(childAccessNameExists(newparent)){
+		            throw new Exception("Adding " + node.getName() + " to " + newparent.getName() + " would cause an accessname conflict.");
 	            } else {
 	            	currparent.removeNode(node);
 	            	((AxiomObject) core.getNodeWrapper(currparent)).calcComputedProps("_children");
@@ -2096,6 +2106,20 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	    }
 
 	    return false;
+	}
+	
+	private boolean childAccessNameExists(INode newparent){
+    	String aname = this.computeAccessname(this);
+    	if(aname != null){
+        	String anameValue = node.getString(aname);
+        	if(anameValue != null){
+	        	INode child = (INode) newparent.getChildElement(anameValue);
+	        	if(child != null){
+	        		return true;
+	        	}
+        	}    		
+    	}
+		return false;
 	}
     
 	protected static boolean areNodesEqual(INode n1, INode n2) {
@@ -2136,7 +2160,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * <code>bar</code> is of prototype Y, then <code>this.getAncestor("Y")</code> will
 	 * return <code>bar</code>.
 	 * 
-	 * @param {String} [prototype] The prototype to look for on the ancestor hierarchy,
+	 * @param {String | Array} [prototype] The prototype to look for on the ancestor hierarchy,
 	 *                             if not specified, it just returns the 
 	 *                             <code>_parent</code> of this object
 	 * @param {Boolean} [includeThis] Whether to include this object in the ancestor
@@ -2144,7 +2168,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 * @returns {AxiomObject} The first AxiomObject in the hierarchy of this object matching
 	 *                       the given object prototype
 	 */
-	public Object jsFunction_getAncestor(String prototype, Object includeThis) {
+	public Object jsFunction_getAncestor(Object prototype, Object includeThis) {
 		if (node != null) {
 			checkNode();
 
@@ -2164,13 +2188,30 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				n = node.getParent();
 			}
 
-			prototype = prototype.toLowerCase();
-			while (n != null) {
-				if (prototype.equals(n.getPrototype().toLowerCase())) {
-					return Context.toObject(n, core.global);
-				}
-				n = n.getParent();
+
+			ArrayList<String> prototype_array = new ArrayList<String>();
+			if (prototype instanceof NativeArray) {
+				final NativeArray na = (NativeArray)prototype;
+	            final int length = (int)na.getLength();
+	            if(length > 0) {
+		            for (int i = 0; i < length; i++) {
+		                Object o = na.get(i, na);
+		                if (o instanceof String) {
+		                    String proto = o.toString().toLowerCase();
+		                    prototype_array.add(proto);
+		                }
+		            }
+	            }
+			} else if (prototype instanceof String) {
+				prototype_array.add(prototype.toString().toLowerCase());
 			}
+	            
+		    while (n != null) {
+		        if (prototype_array.contains(n.getPrototype().toLowerCase())) {
+		        	return Context.toObject(n, core.global);
+		        }
+		        n = n.getParent();
+		    }
 		}
 
 		return null;
@@ -2446,12 +2487,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 if (app.getBaseURI().equals("/")) {
 			 return href;
 		 }
-
 		 int a = href.indexOf('/', 1);
 		 if (a == -1) { 
-			 return null; 
+			 return "/"; 
 		 }		
-
 		 return href.substring(a);
 	 }
 

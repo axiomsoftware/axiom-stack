@@ -72,7 +72,11 @@ public class FileObjectCtor extends FunctionObject {
      */
     public static Object jsConstructor(Context cx, Object[] args,
                                        Function ctorObj, boolean inNewExpr)
-                         throws JavaScriptException {
+                         throws Exception {
+    	if(args == null || (args != null && args.length == 0)){
+    		throw new Exception("Invalid constructor parameters, new File(String|Mimepart, [optional] Boolean)");
+    	}
+
         FileObjectCtor ctor = (FileObjectCtor) ctorObj;
         RhinoCore core = ctor.core;
         String protoname = ctor.getFunctionName();
@@ -90,7 +94,19 @@ public class FileObjectCtor extends FunctionObject {
             }
             if (obj instanceof MimePart || obj instanceof String) {
                 fobj = new FileObject("File", core, node, proto, true);
-                FileObjectCtor.setup(fobj, node, args, core.app, true);
+            	boolean extractText = false;
+                if(args.length > 1){
+                	if(args[1] instanceof Scriptable){
+        				Scriptable s = (Scriptable) args[1];
+        				String className = s.getClassName();
+        				if("Boolean".equals(className)) {
+        					extractText = ScriptRuntime.toBoolean(s);
+        				}
+                	} else if(args[1] instanceof Boolean){
+                		extractText = ((Boolean)args[1]).booleanValue();
+                	}
+                }
+                FileObjectCtor.setup(fobj, node, args, core.app, !extractText);
             } else if (args[0] instanceof Scriptable) {
                 Scriptable data = (Scriptable) args[0];
                 fobj = new FileObject("File", core, node, proto, data);
@@ -99,7 +115,7 @@ public class FileObjectCtor extends FunctionObject {
         	Scriptable data = (Scriptable) args[0];
         	fobj = new FileObject("File", core, node, proto, data);
         }
-        
+
         return fobj;
     }
     
@@ -268,7 +284,16 @@ public class FileObjectCtor extends FunctionObject {
     }
     
     private static boolean isTextFile(String fileExt) {
-        return fileExt.indexOf(".") > -1;
+        int idx = fileExt.lastIndexOf(".");
+        String ext = idx > 0 ? fileExt.substring(idx + 1).trim().toLowerCase() : null;
+
+    	if(ext.equals("txt") || ext.equals("properties") || ext.equals("java") || 
+    			ext.equals("html") || ext.equals("xml") || ext.equals("css")){
+    		return true;
+    	} else {
+    		return false;
+    	}
+
     }
     
     private static String extractText(FileInputStream fis) {
