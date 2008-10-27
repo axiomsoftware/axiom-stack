@@ -47,21 +47,31 @@ abstract public class OpFilterObject extends ScriptableObject implements IFilter
 	                && args[1] instanceof Boolean)) {
 	            Scriptable s = (Scriptable) args[0];
 	            final int arrlen = s.getIds().length;
-	            filters = new IFilter[arrlen];
 	            for (int i = 0; i < arrlen; i++) {
-	            	filters[i] = this.getFilterFromArg(s.get(i, s), i);
+	            	IFilter f = this.getFilterFromArg(s.get(i, s), i);
+	            	if (f != null) {
+	            		if (filters == null) {
+	        	            filters = new IFilter[arrlen];
+	            		}
+	            		filters[i] = f;
+	            	}
 	            }
 	            if (length == 2) {
 	                this.cached = ((Boolean) args[1]).booleanValue();
 	            }
 	        } else {
-	            filters = new IFilter[length];
 	            for (int i = 0; i < length; i++) {
 	                if (i == length - 1 && args[i] instanceof Boolean) {
 	                    this.cached = ((Boolean) args[i]).booleanValue();
 	                    continue;
 	                }
-	                filters[i] = this.getFilterFromArg(args[i], i);
+	            	IFilter f = this.getFilterFromArg(args[i], i);
+	            	if (f != null) {
+	            		if (filters == null) {
+	        	            filters = new IFilter[length];
+	            		}
+	            		filters[i] = f;
+	            	}
 	            }
 	        }
     	}
@@ -78,7 +88,9 @@ abstract public class OpFilterObject extends ScriptableObject implements IFilter
             if (s.getClassName().equals("String")) {
                 filter = new NativeFilterObject(new Object[] {s});
             } else {
-            	filter = new FilterObject(s, null, null);
+            	if (s.getIds().length > 0) {
+            		filter = new FilterObject(s, null, null);
+            	}
             }
         } else {
             throw new Exception("Parameter " + (i+1) + " to the " + this.getClassName() + " constructor is not a valid filter.");

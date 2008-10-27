@@ -1,3 +1,5 @@
 automaticResourceUpdate = true
 mountpoint = /test
 onstart = run_tests
+
+onStartTimeout = 172800

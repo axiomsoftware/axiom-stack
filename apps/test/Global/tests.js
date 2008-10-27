@@ -338,6 +338,36 @@ _test = {
 			var results = app.getObjects("LuceneKitchenSink", filter);
 			Assert.assertEquals("test_getObjects_native_filter_tokenized1 failed", 2, results.length);
 		},
+	    test_getObjects_or_filter_object_tokenized1: function() {
+			var filter = new OrFilter({tokenized:"dogs cats"});
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_or_filter_object_tokenized1 failed", 2, results.length);
+	    },
+	    test_getObjects_or_filter_array_tokenized1: function() {
+		var filter = new OrFilter([{tokenized:"dogs"}, {tokenized:'cats'}]);
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_or_filter_array_tokenized1 failed", 2, results.length);
+	    },
+	    test_getObjects_and_filter_object_tokenized1: function() {
+			var filter = new AndFilter({tokenized:"dogs cats mice"});
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_and_filter_object_tokenized1 failed", 1, results.length);
+	    },
+	    test_getObjects_and_filter_array_tokenized1: function() {
+		var filter = new AndFilter([{tokenized:"dogs"}, {tokenized:'cats'}, {tokenized: 'mice'}]);
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_and_filter_array_tokenized1 failed", 1, results.length);
+	    },
+	    test_getObjects_or_filter_no_params: function() {
+			var filter = new OrFilter({});
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_or_filter_no_params failed", 4, results.length);
+	    },
+	    test_getObjects_and_filter_no_params: function() {
+		var filter = new AndFilter({});
+			var results = app.getObjects("LuceneKitchenSink", filter);
+			Assert.assertEquals("test_getObjects_and_filter_no_params failed", 4, results.length);
+	    },
 		test_getObjects_filter_untokenized1: function() {
 			var filter = new Filter({untokenized:"dogs cats"});
 			var results = app.getObjects("LuceneKitchenSink", filter);

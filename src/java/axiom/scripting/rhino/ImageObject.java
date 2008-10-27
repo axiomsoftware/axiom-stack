@@ -29,6 +29,7 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.FileLoadDescriptor;
 import javax.imageio.ImageIO;
 import java.awt.RenderingHints;
+import java.awt.image.renderable.ParameterBlock;
 
 import org.mozilla.javascript.*;
 
@@ -393,7 +394,15 @@ public class ImageObject extends FileObject {
         
         String cmd = core.app.getProperty("imagemagick");
         if(cmd == null){
-        	return null;
+        	ParameterBlock args = new ParameterBlock();
+        	args.addSource(FileLoadDescriptor.create(srcPath, null, null, null));
+        	args.add((float)offsetx);
+        	args.add((float)offsety);
+        	args.add((float)width);
+        	args.add((float)height);
+        	RenderedOp croppedImage = JAI.create("crop", args);
+            String type = dstPath.substring(dstPath.lastIndexOf(".")+1);
+            success = writeImage(dstPath, type, croppedImage);
         } else {
         	 if (!cmd.endsWith("convert")) {
         		 if (!cmd.endsWith(File.separator)) {
@@ -418,6 +427,51 @@ public class ImageObject extends FileObject {
         return null;
 	}
 	
+	protected boolean writeImage(String dstPath, String type, RenderedOp image){
+		boolean success = false;
+		//		JAI doesn't natively support GIF encoding, but Java ImageIO does.
+        if (type.toLowerCase().equals("gif")) {
+        	File dst = new File(dstPath);
+    		//if the file doesn't exist, create it and make sure we can write to it.
+            if (!dst.exists()) {
+            	try {
+            		dst.createNewFile();
+            	} catch (IOException ioe) {
+                    this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to create tmp img at \""+dstPath+"\".", ioe);
+            	}
+            }
+            if (!dst.canWrite()) {
+            	dst.setWritable(true);
+            }
+            
+            try {
+                ImageIO.write(image, type.toUpperCase(), dst);
+             } catch (IOException ioe) {
+                 this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to write image data to \""+dstPath+"\".", ioe);
+             }
+             
+             //clean up file handle
+             dst = null;
+        } else {
+        	if (type.toLowerCase().equals("jpg")) {
+        		type = "jpeg";
+        	}
+        	
+        	JAI.create("filestore", image, dstPath, type);
+        }
+
+        if (image != null && new File(dstPath).exists()) {
+        	success = true;
+        }
+
+        //JAI Cleanup
+        image.dispose();
+        image = null;
+        type = null;
+		
+		return success;
+	}
+	
     protected int[] resize(int thumbWidth, int thumbHeight, int imageWidth, 
                                 int imageHeight, String srcPath, String dstPath, 
                                 boolean scaleComputed) {
@@ -435,48 +489,9 @@ public class ImageObject extends FileObject {
         boolean success = false;
         
         if (cmd == null) {
-        	RenderedOp resizedImage = this.resize(thumbWidth, thumbHeight, FileLoadDescriptor.create(srcPath, null, null, null), false);	//Don't like the pre-calculated scaling. Recalculate it.
+        	RenderedOp resizedImage = this.resizeJAI(thumbWidth, thumbHeight, FileLoadDescriptor.create(srcPath, null, null, null), false);	//Don't like the pre-calculated scaling. Recalculate it.
             String type = dstPath.substring(dstPath.lastIndexOf(".")+1);
-            
-            //JAI doesn't natively support GIF encoding, but Java ImageIO does.
-            if (type.toLowerCase().equals("gif")) {
-            	File dst = new File(dstPath);
-        		//if the file doesn't exist, create it and make sure we can write to it.
-                if (!dst.exists()) {
-                	try {
-                		dst.createNewFile();
-                	} catch (IOException ioe) {
-                        this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to create tmp img at \""+dstPath+"\".", ioe);
-                	}
-                }
-                if (!dst.canWrite()) {
-                	dst.setWritable(true);
-                }
-                
-                try {
-                    ImageIO.write(resizedImage, type.toUpperCase(), dst);
-                 } catch (IOException ioe) {
-                     this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "resizeImg") + "Failed to write image data to \""+dstPath+"\".", ioe);
-                 }
-                 
-                 //clean up file handle
-                 dst = null;
-            } else {
-            	if (type.toLowerCase().equals("jpg")) {
-            		type = "jpeg";
-            	}
-            	
-            	JAI.create("filestore", resizedImage, dstPath, type);
-            }
-
-            if (resizedImage != null && new File(dstPath).exists()) {
-            	success = true;
-            }
-
-            //JAI Cleanup
-            resizedImage.dispose();
-            resizedImage = null;
-            type = null;
+            success = writeImage(dstPath, type, resizedImage);
          } else {
         	 if (!cmd.endsWith("convert")) {
         		 if (!cmd.endsWith(File.separator)) {
@@ -525,7 +540,7 @@ public class ImageObject extends FileObject {
         return (exitStatus == 0);
     }
 	
-	protected RenderedOp resize(int thumbWidth, int thumbHeight, RenderedOp image, boolean scaleComputed) {
+	protected RenderedOp resizeJAI(int thumbWidth, int thumbHeight, RenderedOp image, boolean scaleComputed) {
 		double scale = 1.0;
 		if (!scaleComputed) {
 			int imageWidth = image.getWidth();
@@ -537,7 +552,7 @@ public class ImageObject extends FileObject {
 		RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		return JAI.create("SubsampleAverage", image, scale, scale, qualityHints);
 	}
-
+	
 	protected double computeEvenResizeScale(int nw, int nh, int iw, int ih) {
 		double[] scales = this.computeResizeScale(nw, nh, iw, ih);
 		if (scales[0] > scales[1]) {
