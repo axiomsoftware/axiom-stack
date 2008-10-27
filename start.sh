@@ -4,8 +4,22 @@
 # To add JAR files to the classpath, simply place them into the
 # lib/ext directory.
 
-# uncomment to set JAVA_HOME variable
-#JAVA_HOME=/usr/jdk/jdk1.6.0
+# Guess which jre to use.
+JAVA_HOME="`which java`"
+JAVA_HOME=${JAVA_HOME/%bin\/java/}
+
+if [ "$JAVA_HOME" == "" ]; then
+    case "`uname`" in
+	Darwin*)
+	    JAVA_HOME=/usr/
+	    ;;
+	*)
+	    #Only uncomment the line below if your instance of Java does not reside in /bin.
+	    #JAVA_HOME=/usr/jdk/jdk1.6.0
+	    ;;
+    esac
+fi
+echo "JAVA_HOME=$JAVA_HOME"
 
 # uncomment to set AXIOM_HOME, otherwise we get it from the script path
 # AXIOM_HOME=/usr/local/axiom
@@ -15,7 +29,7 @@
 
 # Set TCP ports for Axiom servers
 # (comment/uncomment to de/activate)
-HTTP_PORT=80
+HTTP_PORT=8080
 # XMLRPC_PORT=8081
 # AJP13_PORT=8009
 # RMI_PORT=5050
