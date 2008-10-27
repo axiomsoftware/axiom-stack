@@ -648,10 +648,12 @@ public class Transactor extends Thread {
         int cacheCount = this.nmgr.getCurrentCacheSize(), sessionCount = this.nmgr.app.countSessions();
         if (reqeval != null) {
             RequestTrans reqtrans = reqeval.getRequest();
-            sessionId = reqtrans.getSession();
-            HttpServletRequest srequest = reqtrans.getServletRequest();
-            if (srequest != null) {
-                remoteAddr = srequest.getRemoteAddr();
+            if (reqtrans != null) {
+            	sessionId = reqtrans.getSession();
+            	HttpServletRequest srequest = reqtrans.getServletRequest();
+            	if (srequest != null) {
+            		remoteAddr = srequest.getRemoteAddr();
+            	}
             }
         }
         nmgr.app.logAccess(requestPath + " [" + remoteAddr + "], sid = " + sessionId +

@@ -508,7 +508,9 @@ public class Server implements IPathElement, Runnable {
                 http.stop();
                 http.destroy();
             } catch (InterruptedException irx) {
-                // http.stop() interrupted by another thread. ignore.
+            	System.out.println("Exception while trying to stop http obj");
+            	System.out.println(irx);
+            	// http.stop() interrupted by another thread. ignore.
             }
             catch(Exception e){
             	System.out.println(e);
@@ -528,7 +530,7 @@ public class Server implements IPathElement, Runnable {
             this.shutdownDefaultDb();
         }
         
-        try {
+        /*try {
             Runtime.getRuntime().removeShutdownHook(shutdownhook);
             // HACK: running the shutdownhook seems to be necessary in order
             // to prevent it from blocking garbage collection of Axiom 
@@ -537,8 +539,10 @@ public class Server implements IPathElement, Runnable {
             shutdownhook.start();
             shutdownhook = null;
         } catch (Exception x) {
+        	System.out.println("Exception while trying to run shutdownhook thread");
+        	System.out.println(x);
             // invalid shutdown hook or already shutting down. ignore.
-        }
+        }*/
     }
     
     private void shutdownDefaultDb() {
