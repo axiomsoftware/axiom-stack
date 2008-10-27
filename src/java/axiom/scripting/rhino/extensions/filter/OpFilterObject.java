@@ -39,9 +39,8 @@ abstract public class OpFilterObject extends ScriptableObject implements IFilter
     protected OpFilterObject(final Object[] args) throws Exception {
     	super();
     	if (args != null) {
-    		System.out.println("Arg is --> " + args.getClass().getName());
 	        final int length = args.length;
-	        if ((length == 1 && args[0] instanceof Scriptable 
+	        if ((length == 1 && args[0] instanceof NativeArray && args[0] instanceof Scriptable 
 	                && !((Scriptable) args[0]).getClassName().equals("String"))
 	             || (length == 2 && args[0] instanceof Scriptable 
 	                && !((Scriptable) args[0]).getClassName().equals("String")
@@ -79,7 +78,7 @@ abstract public class OpFilterObject extends ScriptableObject implements IFilter
             if (s.getClassName().equals("String")) {
                 filter = new NativeFilterObject(new Object[] {s});
             } else {
-                filter = new FilterObject(s, null, null);
+            	filter = new FilterObject(s, null, null);
             }
         } else {
             throw new Exception("Parameter " + (i+1) + " to the " + this.getClassName() + " constructor is not a valid filter.");
