@@ -1835,7 +1835,20 @@ public final class Application implements IPathElement, Runnable {
                 this.setCurrentRequestEvaluator(eval);
                 // update scripting prototypes
                 eval.scriptingEngine.updatePrototypes();
-            	eval.invokeInternal(null, func, RequestEvaluator.EMPTY_ARGS);
+                String strt = this.getProperty("onStartTimeout");
+                long timeout = -1;
+                if (strt != null) {
+                	try {
+                		timeout = Long.parseLong(strt) * 1000L;
+                	} catch (Exception ex) {
+                		timeout = -1;
+                	}
+                }
+                if (timeout == -1) {
+                	eval.invokeInternal(null, func, RequestEvaluator.EMPTY_ARGS);
+                } else {
+                	eval.invokeInternal(null, func, RequestEvaluator.EMPTY_ARGS, timeout);
+                }
         	} catch (Exception xcept) {
             	logError("Error in " + name + " " + func, xcept);
         	} finally {

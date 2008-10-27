@@ -681,7 +681,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             String analyzer = filter.jsFunction_getAnalyzer();
             if (analyzer != null) {
                 QueryParser qp = new QueryParser(LuceneManager.ID, 
-                        this.lmgr.getAnalyzer(analyzer));
+                        LuceneManager.getAnalyzer(analyzer));
                 filter_query = qp.parse(filter_query.toString());
                 qp = null;
             }
@@ -699,11 +699,12 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             String analyzer = filter.jsFunction_getAnalyzer();
             if (analyzer != null) {
                 QueryParser qp = new QueryParser(LuceneManager.ID, 
-                        this.lmgr.getAnalyzer(analyzer));
+                        LuceneManager.getAnalyzer(analyzer));
                 q = qp.parse(q.toString());
                 qp = null;
             }
             if (q != null) {
+            	
                 primary.add(q, BooleanClause.Occur.MUST);
             }
         } else if (filter instanceof RangeFilterObject){
@@ -848,7 +849,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         
         try {
             BooleanQuery primary = null;
-            Iterator iter = fobj.getKeys().iterator();
+            Iterator<String> iter = fobj.getKeys().iterator();
             while (iter.hasNext()) {
                 if (primary == null) {
                     primary = new BooleanQuery();
@@ -1029,12 +1030,13 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     private Query parseOpFilter(OpFilterObject opf, ResourceProperties props) 
     throws Exception {
         IFilter[] filters = opf.getFilters();
-        BooleanQuery bq = new BooleanQuery();
-        if (filters == null) {
-            return bq;
+        //want to return all the results if no filters are specified
+        if (filters == null || filters.length == 0) {
+        	return null;
         }
-
+        BooleanQuery bq = new BooleanQuery();
         BooleanClause.Occur OCCUR = BooleanClause.Occur.MUST; // default is AND
+
         if (opf instanceof AndFilterObject) {
             OCCUR = BooleanClause.Occur.MUST;
         } else if (opf instanceof OrFilterObject) {
@@ -1055,7 +1057,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             } else if (filters[i] instanceof NativeFilterObject) {
                 q = getNativeQuery((NativeFilterObject) filters[i]);
             } else if (filters[i] instanceof OpFilterObject) {
-                q = parseOpFilter((OpFilterObject) filters[i], props);
+            	try {
+            		q = parseOpFilter((OpFilterObject) filters[i], props);
+            	} catch (Exception e) {
+            		q = null;
+            	}
             } else if (filters[i] instanceof RangeFilterObject) {
             	q = getRangeQuery((RangeFilterObject)filters[i], props);
 	        } else if (filters[i] instanceof SearchFilterObject) {

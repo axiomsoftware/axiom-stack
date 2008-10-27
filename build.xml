@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="axiom" default="all" basedir=".">
+<project name="stack-trunk" default="all" basedir=".">
     <!-- =================================================================== -->
     <!-- Initializes some variables                                          -->
     <!-- =================================================================== -->
