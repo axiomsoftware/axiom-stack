@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ant jar
 
 rm -Rf test
