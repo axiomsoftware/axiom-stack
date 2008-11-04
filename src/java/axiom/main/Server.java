@@ -63,7 +63,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Server implements IPathElement, Runnable {
 
 	// version string
-    public static final String version = "3.2.5";
+    public static final String version = "3.2.8";
     
 	protected ContextHandlerCollection contexts = new ContextHandlerCollection();
 	protected HandlerCollection handlers = new HandlerCollection();
@@ -403,7 +403,7 @@ public class Server implements IPathElement, Runnable {
             NCSARequestLog requestLog = new NCSARequestLog(logDir + "/" + requestLogName);
             requestLog.setRetainDays(90);
             requestLog.setAppend(true);
-            requestLog.setExtended(false);
+            requestLog.setExtended(true);
             requestLog.setLogTimeZone("GMT");
             requestLogHandler.setRequestLog(requestLog);
         } 
