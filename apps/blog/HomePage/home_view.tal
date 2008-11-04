@@ -1,8 +1,0 @@
-<div class="maincol" xmlns:tal="http://axiomstack.com/tale">
-	<ul>
-		<li tal:repeat="p:posts">
-			<span tal:replace="p.listing_view(data)" />
-		</li>
-	</ul>
-	<span tal:replace="pagination" />
-</div>
