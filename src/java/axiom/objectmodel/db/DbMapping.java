@@ -1166,7 +1166,7 @@ public final class DbMapping {
     	}
     	return sb.toString();
     }
-    
+  
     /**
      *  Get a StringBuffer initialized to the first part of the select statement
      *  for objects defined by this DbMapping
@@ -1253,14 +1253,7 @@ public final class DbMapping {
     }
     
     public StringBuffer getSelectCount(Relation rel) {
-        // assign to local variable first so we are thread safe
-        // (selectString may be reset by other threads)
-        String sel = selectString;
         boolean isOracle = isOracle();
-
-        if (rel == null && sel != null) {
-            return new StringBuffer(sel);
-        }
 
         StringBuffer s = new StringBuffer("SELECT COUNT(*) ");
 
