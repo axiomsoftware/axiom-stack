@@ -30,18 +30,39 @@ import org.mozilla.javascript.*;
  * The Filter class encapsulates the basic type of filtering passed to the Query API.
  * Query parameters are specified as a series of key/value pairs indicating the property
  * names and their respective values to query against.  Objects that meet the specified
- * criterion are returned by the Query API.  For example, <br><br>
+ * criterion are returned by the Query API.  For example, <br /><br />
  * <code>
  * app.getObjects("Post", new Filter({id: "company-picnic"}));
  * </code>
- * <br>
+ * <br /><br />
  * 
  * This will return all Axiom Objects of the Post prototype, with an id exactly 
- * matching "company-picnic".
+ * matching "company-picnic".<br /><br />
+ * 
+ * The second parameter is the Analyzer. Should you decide that the analyzer we use is not suitable
+ * for your needs, you can specify the one you prefer. By default all filters are processed using the StandardAnalyzer.<br /><br />
+ * <code>
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, new WhitespaceAnalyzer());
+ * </code><br /><br />
+ * 
+ * The third parameter is to specify whether or not to cache the filter bitset. This is useful
+ * when you have to rerun the same filter multiple times. Why reprocess all the documents in your
+ * system if you can cache the results. That is what this does. There is a timeout that can be set as well.<br /><br />
+ * <code>
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, new WhitespaceAnalyzer(), true);
+ * </code><br /><br />
+ * 
+ * One thing to note is that the Analyzer, while the second parameter, does not need to be specified. If you don't want
+ * to specify it, you can use the cacheFilter parameter in the second parameter slot. Axiom checks the types.<br /><br />
+ * <code>
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, true);
+ * </code><br /><br />
  * 
  * @jsconstructor Filter
  * @param {Object} filter A JavaScript object of key/value pairs indicating the property 
  *                        names and values to query against in the search
+ * @param {Analyzer} analyzer A specified analyzer to use in processing the query
+ * @param {Boolean} cacheFilter Specify whether or not to cache the filter bitset
  */
 public class FilterObject extends ScriptableObject implements IFilter {
     
