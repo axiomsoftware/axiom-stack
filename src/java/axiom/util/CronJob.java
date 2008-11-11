@@ -72,18 +72,18 @@ import java.util.*;
 
 public class CronJob {
 
-   private static HashSet all = new HashSet (2);
+   private static HashSet<Object> all = new HashSet<Object>(2);
    private static String ALL_VALUE = "*";
    static {
       all.add (ALL_VALUE);
    }
 
-   private HashSet year;
-   private HashSet month;
-   private HashSet day;
-   private HashSet weekday;
-   private HashSet hour;
-   private HashSet minute;
+   private HashSet<Object> year;
+   private HashSet<Object> month;
+   private HashSet<Object> day;
+   private HashSet<Object> weekday;
+   private HashSet<Object> hour;
+   private HashSet<Object> minute;
 
    private String name     = null;
    private String function = null;
@@ -185,9 +185,9 @@ public class CronJob {
   }
 
 
-  public static List parse(Properties props) {
-      Hashtable jobs = new Hashtable ();
-      Enumeration e = props.keys ();
+  public static List<CronJob> parse(Properties props) {
+      Hashtable<String, CronJob> jobs = new Hashtable<String, CronJob>();
+      Enumeration e = props.keys();
       while (e.hasMoreElements ()) {
          String key = (String) e.nextElement ();
          if (!key.startsWith ("cron."))
@@ -228,22 +228,19 @@ public class CronJob {
         	 nsee.printStackTrace();
          }
       }
-      Iterator it = jobs.values().iterator();
-      while (it.hasNext()) {
-          CronJob job = (CronJob) it.next();
+      
+      for (CronJob job : jobs.values()) {
           if (job.getFunction() == null) {
-              it.remove();
+              jobs.remove(job);
           }
       }
-      List jobVec = new ArrayList (jobs.values());
-      return sort (jobVec);
+      List<CronJob> jobVec = new ArrayList<CronJob>(jobs.values());
+      return sort(jobVec);
    }
 
-    public static List sort (List list) {
-      Collections.sort (list, new Comparator() {
-        public int compare (Object o1, Object o2) {
-            CronJob cron1 = (CronJob) o1;
-            CronJob cron2 = (CronJob) o2;
+    public static List<CronJob> sort (List<CronJob> list) {
+      Collections.sort(list, new Comparator<CronJob>() {
+        public int compare(CronJob cron1, CronJob cron2) {
             if (cron1.getTimeout () > cron2.getTimeout ())
                 return 1;
             else if (cron1.getTimeout () < cron2.getTimeout ())
@@ -251,7 +248,7 @@ public class CronJob {
             else
                 return 0;
         }
-        public boolean equals (Object o1, Object o2) {
+        public boolean equals(CronJob o1, CronJob o2) {
             if (o1!=null) {
                 return o1.equals (o2);
             } else {
@@ -439,12 +436,12 @@ public class CronJob {
    */
    public CronJob (String name) {
       this.name = name;
-      year = new HashSet (all);
-      month = new HashSet (all);
-      day = new HashSet (all);
-      weekday = new HashSet (all);
-      hour = new HashSet (all);
-      minute = new HashSet (all);
+      year = new HashSet<Object>(all);
+      month = new HashSet<Object>(all);
+      day = new HashSet<Object>(all);
+      weekday = new HashSet<Object>(all);
+      hour = new HashSet<Object>(all);
+      minute = new HashSet<Object>(all);
    }
 
   /**

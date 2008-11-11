@@ -87,7 +87,7 @@ public class Server implements IPathElement, Runnable {
     public final long starttime;
 
     private ApplicationManager appManager;
-    private Vector extensions;
+    private Vector<AxiomExtension> extensions;
     private Thread mainThread;
 
     String websrvPort = null;
@@ -429,7 +429,7 @@ public class Server implements IPathElement, Runnable {
         dbSources = new Hashtable();
 
         // try to load the extensions
-        extensions = new Vector();
+        extensions = new Vector<AxiomExtension>();
         initExtensions();   
         // start the default DB TCP Server with SSL enabled
         try {
@@ -817,7 +817,7 @@ public class Server implements IPathElement, Runnable {
      *
      * @return ...
      */
-    public Vector getExtensions() {
+    public Vector<AxiomExtension> getExtensions() {
         return extensions;
     }
 
