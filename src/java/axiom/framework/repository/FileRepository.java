@@ -137,7 +137,7 @@ public class FileRepository extends AbstractRepository {
         if (!directory.exists()) {
             repositories = emptyRepositories;
             if (resources != null) {
-                resources = new HashMap();
+                resources = new HashMap<String, Resource>();
             } else {
                 resources.clear();
             }
@@ -150,8 +150,8 @@ public class FileRepository extends AbstractRepository {
 
             File[] list = directory.listFiles();
 
-            ArrayList newRepositories = new ArrayList(list.length);
-            HashMap newResources = new HashMap(list.length);
+            ArrayList<Repository> newRepositories = new ArrayList<Repository>(list.length);
+            HashMap<String, Resource> newResources = new HashMap<String, Resource>(list.length);
 
             for (int i = 0; i < list.length; i++) {
                 if (list[i].isDirectory() && !list[i].getName().startsWith(".")) {
