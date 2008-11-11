@@ -1031,7 +1031,7 @@ public final class DbMapping {
     }
     /**
      * Return an array of DbColumns for the relational table mapped by this DbMapping.
-     * Some reworking done to accomodate for the columnsByTable field
+     * Some reworking done to accommodate for the columnsByTable field
      */
     public synchronized DbColumn[] getColumns(int tableNumber)
                                        throws ClassNotFoundException, SQLException {
@@ -1166,7 +1166,7 @@ public final class DbMapping {
     	}
     	return sb.toString();
     }
-    
+  
     /**
      *  Get a StringBuffer initialized to the first part of the select statement
      *  for objects defined by this DbMapping
@@ -1253,14 +1253,7 @@ public final class DbMapping {
     }
     
     public StringBuffer getSelectCount(Relation rel) {
-        // assign to local variable first so we are thread safe
-        // (selectString may be reset by other threads)
-        String sel = selectString;
         boolean isOracle = isOracle();
-
-        if (rel == null && sel != null) {
-            return new StringBuffer(sel);
-        }
 
         StringBuffer s = new StringBuffer("SELECT COUNT(*) ");
 
@@ -1318,12 +1311,6 @@ public final class DbMapping {
                 s.append(" ON ");
                 joins[i].renderJoinConstraints(s, isOracle);
             }
-        }
-
-        // cache rendered string for later calls, but only if it wasn't
-        // built for a particular Relation
-        if (rel == null) {
-            selectString = s.toString();
         }
 
         return s;

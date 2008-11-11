@@ -75,8 +75,7 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 		return 0;
 	}
 
-	public ArrayList executeQuery(ArrayList prototypes,
-		IFilter filter, Object options) throws Exception {
+	public ArrayList executeQuery(ArrayList prototypes, IFilter filter, Object options) throws Exception {
 		if (filter == null) {
 			throw new Exception(
 					"Filter object is null in executeRelationalQuery().");
@@ -153,7 +152,7 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				}
 				
 				query = b.toString();
-
+				
 				pstmt = con.prepareStatement(query);
 				
 				if (maxResults != -1) pstmt.setMaxRows(maxResults);
@@ -248,7 +247,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
 				}
 			}
 		}
-
 		return results;
 	}
 
@@ -441,7 +439,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
                 b.append(dbm.getTableJoinClause(whereAdded ? 0 : 1));
 
                 query = b.toString();
-
                 pstmt = con.prepareStatement(query);
 
                 int count = 0;
@@ -511,13 +508,8 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
     	return Context.getCurrentContext().newArray(this.core.global, new Object[0]);
     }
 
-    public int getHitCount(ArrayList prototypes, IFilter filter, Object options) 
-    throws Exception {
-    	int length = 0;
-        ArrayList relationalResults = 
-            executeQuery(prototypes, filter, options);
-        length = relationalResults.size();
-		return length;
+    public int getHitCount(ArrayList prototypes, IFilter filter, Object options) throws Exception {
+        return numResultsRelationalQuery(prototypes, filter);
 	} 
 
 }

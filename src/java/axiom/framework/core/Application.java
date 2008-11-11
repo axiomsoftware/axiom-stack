@@ -244,13 +244,12 @@ public final class Application implements IPathElement, Runnable {
 	public Application(String name) {
 		this.name = name;
 	}
-
 	/**
 	 * Build an application with the given name with the given sources. No
 	 * Server-wide properties are created or used.
 	 */
 	public Application(String name, Repository[] repositories, File dbDir)
-	throws RemoteException, IllegalArgumentException, IOException	 {
+	throws RemoteException, IllegalArgumentException, Exception	 {
 		this(name, null, repositories, null);
 	}
 
@@ -259,7 +258,7 @@ public final class Application implements IPathElement, Runnable {
 	 * app directories will be created if they don't exist already.
 	 */
 	public Application(String name, Server server)
-	throws RemoteException, IllegalArgumentException, IOException {
+	throws RemoteException, IllegalArgumentException, Exception {
 		this(name, server, null, null);
 	}
 
@@ -268,7 +267,7 @@ public final class Application implements IPathElement, Runnable {
 	 * db directory.
 	 */
 	public Application(String name, Server server, Repository[] repositories, File customAppDir)
-	throws RemoteException, IllegalArgumentException, IOException {
+	throws RemoteException, IllegalArgumentException, Exception {
 		if ((name == null) || (name.trim().length() == 0)) {
 			throw new IllegalArgumentException("Invalid application name: " + name);
 		}
@@ -410,22 +409,16 @@ public final class Application implements IPathElement, Runnable {
 
 		ArrayList<String> names = this.getDbNames();
 		for(int i = 0; i < names.size(); i++){
-			try{
-				String dbname = names.get(i).toString();
-				DbSource dbsource = this.getDbSource(dbname);
-				String initClass = dbsource.getProperty("initClass", null);
-				if(initClass != null){
-			        Class[] parameters = { Application.class };
-					IDBSourceInitializer dbsi = (IDBSourceInitializer)Class.forName(initClass)
-					.getConstructor(parameters).newInstance(new Object[] {this});
-					dbsi.init();
-				}
-			}
-			catch(Exception e){
-				throw new IOException(e.getMessage());
+			String dbname = names.get(i).toString();
+			DbSource dbsource = this.getDbSource(dbname);
+			String initClass = dbsource.getProperty("initClass", null);
+			if(initClass != null){
+				Class[] parameters = { Application.class };
+				IDBSourceInitializer dbsi = (IDBSourceInitializer)Class.forName(initClass)
+				.getConstructor(parameters).newInstance(new Object[] {this});
+				dbsi.init();
 			}
 		}
-	
 	}
 	
 	private Repository[] initRepositories() {
