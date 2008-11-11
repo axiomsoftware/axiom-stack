@@ -125,14 +125,14 @@ public final class Application implements IPathElement, Runnable {
 	/**
 	 * Collections for evaluator thread pooling
 	 */
-	protected Stack freeThreads;
-	protected Vector allThreads;
+	protected Stack<RequestEvaluator> freeThreads;
+	protected Vector<RequestEvaluator> allThreads;
 	boolean running = false;
 	boolean debug;
 	long starttime;
-	Hashtable dbSources;
+	Hashtable<String, DbSource> dbSources;
 
-	Set onstartFunctions;
+	Set<String> onstartFunctions;
 
 	// internal worker thread for scheduler, session cleanup etc.
 	Thread worker;
@@ -144,7 +144,7 @@ public final class Application implements IPathElement, Runnable {
     ThreadLocal<RequestEvaluator> currentEvaluator = new ThreadLocal<RequestEvaluator>();
 
 	// Map of requesttrans -> active requestevaluators
-	Hashtable activeRequests;
+	Hashtable<RequestTrans, RequestEvaluator> activeRequests;
 
 	String logDir;
 
@@ -202,9 +202,9 @@ public final class Application implements IPathElement, Runnable {
 	private long lastModuleRead = -1L;
 
 	// the list of currently active cron jobs
-	Hashtable activeCronJobs = null;
+	Hashtable<String, CronRunner> activeCronJobs = null;
 	// the list of custom cron jobs
-	Hashtable customCronJobs = null;
+	Hashtable<String, CronJob> customCronJobs = null;
 
 	private ResourceComparator resourceComparator;
 
@@ -585,9 +585,9 @@ public final class Application implements IPathElement, Runnable {
 			allThreads.addElement(ev);
 		}
 
-		activeRequests = new Hashtable();
-		activeCronJobs = new Hashtable();
-		customCronJobs = new Hashtable();
+		activeRequests = new Hashtable<RequestTrans, RequestEvaluator>();
+		activeCronJobs = new Hashtable<String, CronRunner>();
+		customCronJobs = new Hashtable<String, CronJob>();
 
 		// read in root id, root prototype, user prototype
 		rootId = props.getProperty("rootid", "0");
@@ -1040,7 +1040,7 @@ public final class Application implements IPathElement, Runnable {
 			// first look if a request with same user/path/data is already being executed.
 			// if so, attach the request to its output instead of starting a new evaluation
 			// this helps to cleanly solve "doubleclick" kind of users
-			ev = (RequestEvaluator) activeRequests.get(req);
+			ev = activeRequests.get(req);
 
 			if (ev != null) {
 				res = ev.attachHttpRequest(req);
@@ -1907,9 +1907,9 @@ public final class Application implements IPathElement, Runnable {
 
 		// when interrupted, shutdown running cron jobs
 		synchronized (activeCronJobs) {
-			for (Iterator i = activeCronJobs.values().iterator(); i.hasNext();) {
-				((CronRunner) i.next()).interrupt();
-				i.remove();
+			for (CronRunner cron : activeCronJobs.values()) {
+				cron.interrupt();
+				activeCronJobs.remove(cron);
 			}
 		}
 
@@ -1991,7 +1991,7 @@ public final class Application implements IPathElement, Runnable {
 	 */
 	private void executeCronJobs() {
 		// loop-local cron job data
-		List jobs = CronJob.parse(props);
+		List<CronJob> jobs = CronJob.parse(props);
 		Date date = new Date();
 
 		jobs.addAll(customCronJobs.values());
@@ -2001,9 +2001,7 @@ public final class Application implements IPathElement, Runnable {
 			logEvent("Cron jobs still running from last minute: " + activeCronJobs);
 		}
 
-		for (Iterator i = jobs.iterator(); i.hasNext();) {
-			CronJob job = (CronJob) i.next();
-
+		for (CronJob job : jobs) {
 			if (job.appliesToDate(date)) {
 				// check if the job is already active ...
 				if (activeCronJobs.containsKey(job.getName())) {
@@ -2069,9 +2067,7 @@ public final class Application implements IPathElement, Runnable {
 	 * Return the java class that a given prototype wraps, or null.
 	 */
 	public String getJavaClassForPrototype(String typename) {
-
-		for (Iterator it = classMapping.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+		for (Map.Entry entry : classMapping.entrySet()) {
 
 			if (typename.equals(entry.getValue())) {
 				return (String) entry.getKey();
@@ -2088,7 +2084,7 @@ public final class Application implements IPathElement, Runnable {
 	 */
 	public DbSource getDbSource(String name) {
 		String dbSrcName = name.toLowerCase();
-		DbSource dbs = (DbSource) dbSources.get(dbSrcName);
+		DbSource dbs = dbSources.get(dbSrcName);
 
 		if (dbs != null) {
 			return dbs;
@@ -2237,11 +2233,7 @@ public final class Application implements IPathElement, Runnable {
 
 			// update extensions
 			if (Server.getServer() != null) {
-				Vector extensions = Server.getServer().getExtensions();
-
-				for (int i = 0; i < extensions.size(); i++) {
-					AxiomExtension ext = (AxiomExtension) extensions.get(i);
-
+				for (AxiomExtension ext : Server.getServer().getExtensions()) {
 					try {
 						ext.applicationUpdated(this);
 					} catch (ConfigurationException e) {
