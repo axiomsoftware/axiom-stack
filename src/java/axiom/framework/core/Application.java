@@ -74,7 +74,7 @@ public final class Application implements IPathElement, Runnable {
 	private String name;
 
 	// application sources
-	ArrayList repositories;
+	ArrayList<Repository> repositories;
 
 	// properties and db-properties
 	ResourceProperties props;
@@ -299,7 +299,7 @@ public final class Application implements IPathElement, Runnable {
 		// give the Thread group a name so the threads can be recognized
 		threadgroup = new ThreadGroup("TX-" + name);
 
-		this.repositories = new ArrayList();
+		this.repositories = new ArrayList<Repository>();
 		try {
 			// assume that the appdir is, in fact, a directory...
 			Repository newRepository = new FileRepository(appDir);
@@ -439,7 +439,7 @@ public final class Application implements IPathElement, Runnable {
 		Repository[] repositories;
 		ResourceProperties conf = this.props;
 		// parse main application directory	
-        ArrayList repositoryList = new ArrayList();
+        ArrayList<Repository> repositoryList = new ArrayList<Repository>();
         
         // read and configure additional app repositories
         Class[] parameters = { String.class };
@@ -2156,10 +2156,10 @@ public final class Application implements IPathElement, Runnable {
 	 * Returns the repositories of this application
 	 * @return iterator through application repositories
 	 */
-	public List getRepositories() {
+	public List<Repository> getRepositories() {
 		return Collections.unmodifiableList(repositories);
 	}
-
+	
 	/**
 	 * Return the directory of the Axiom server
 	 */
@@ -2664,17 +2664,15 @@ public final class Application implements IPathElement, Runnable {
     
     protected String[][] setupRewriteRules() {
         String[][] rules = null;
-        Iterator iterator = this.getRepositories().iterator();
-        while (iterator.hasNext()) {
+        for (Repository repository : this.getRepositories()) {
             BufferedReader br = null;
             boolean found_resource = false;
             try {
-                Repository repository = (Repository) iterator.next();
                 Resource res = repository.getResource("rewrite.properties");
                 if (res != null && res.exists()) {
                     br = new BufferedReader(new InputStreamReader(res.getInputStream()));
                     String line;
-                    ArrayList lines = new ArrayList();
+                    ArrayList<String> lines = new ArrayList<String>();
                     while ((line = br.readLine()) != null) {
                         lines.add(line);
                     }

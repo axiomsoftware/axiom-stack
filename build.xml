@@ -22,6 +22,8 @@
 	<property name="launcher-jar.name" value="launcher.jar"/>
 	<property name="js-jar.name" value="js.zip"/>
 	<property name="test.app" value="test"/>
+	<!-- <property name="axiom_version" value="3.2.9"/> -->
+	<property name="base_dir" value="axiom-stack-${axiom_version}"/>
 	<property environment="env"/>
 
 	
@@ -252,36 +254,35 @@
 		    <arg value="${axiom_version}"/>
 		</exec>
 
-		<mkdir dir="${release.dir}"/>
+		<mkdir dir="${release.dir}/${base_dir}"/>
 
-		<copy todir="${release.dir}">
+		<copy todir="${release.dir}/${base_dir}">
 			<fileset dir="${home.dir}" 
 				includes="start.bat, 
 					start.sh, 
 					build.xml, 
 					license.txt, 
 					README.txt, 
-					server.properties,
-					release.sh"/>
+					server.properties"/>
 		</copy>
 		
-		<copy todir="${release.dir}/src">
+		<copy todir="${release.dir}/${base_dir}/src">
 			<fileset dir="${src.dir}"/>
 		</copy>
 
-		<copy todir="${release.dir}/lib">
+		<copy todir="${release.dir}/${base_dir}/lib">
 			<fileset dir="${lib.dir}"/>
 		</copy>
 
-		<copy todir="${release.dir}/apps">
+		<copy todir="${release.dir}/${base_dir}/apps">
 			<fileset dir="${apps.dir}"/>
 		</copy>
 
-		<copy todir="${release.dir}/utils">
+		<copy todir="${release.dir}/${base_dir}/utils">
 			<fileset dir="${utils.dir}"/>
 		</copy>
 		
-		<copy todir="${release.dir}/examples">
+		<copy todir="${release.dir}/${base_dir}/examples">
 			<fileset dir="${examples.dir}"/>
 		</copy>
 
@@ -295,17 +296,26 @@
 
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
-			<param name="jar.home.dir" value="${release.dir}"/>
-			<param name="jar.lib.dir" value="${release.dir}/lib"/>
+			<param name="jar.home.dir" value="${release.dir}/${base_dir}"/>
+			<param name="jar.lib.dir" value="${release.dir}/${base_dir}/lib"/>
 		</antcall>
 
 		<antcall target="jsdoc">
-			<param name="docdir" value="${release.dir}/doc"/>
+			<param name="docdir" value="${release.dir}/${base_dir}/doc"/>
 		</antcall>
 		
-		 <zip destfile="${home.dir}/axiom-stack-${axiom_version}.zip"
+		<echo file="${release.dir}/${base_dir}/version.txt" message="${axiom_version}" />
+		
+		<zip destfile="${home.dir}/axiom-stack-${axiom_version}.zip"
 		       basedir="${release.dir}"/>
-
+		<tar destfile="${home.dir}/axiom-stack-${axiom_version}.tar"
+			basedir="${release.dir}"/>
+		<gzip destfile="${home.dir}/axiom-stack-${axiom_version}.tar.gz"
+			src="${home.dir}/axiom-stack-${axiom_version}.tar"/>
+		<zip destfile="${home.dir}/axiom-stack-docs-${axiom_version}.zip"
+				       basedir="${release.dir}/${base_dir}/doc"/>
+		
+		<delete file="${home.dir}/axiom-stack-${axiom_version}.tar"/>
 		<delete dir="${release.dir}"/>
 	</target>
 	
