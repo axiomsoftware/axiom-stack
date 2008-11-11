@@ -207,7 +207,7 @@ public final class TypeManager {
      * there are any prototypes to be created.
      */
     private void checkRepositories() throws IOException {
-        List list = app.getRepositories();
+        List<Repository> list = app.getRepositories();
         // first check if we need to create or adapt our array of last scans
         if (lastRepoScan == null || lastRepoScan.length != list.size()) {
             lastRepoScan = new long[list.size()];
@@ -215,7 +215,7 @@ public final class TypeManager {
 
         // walk through repositories and check if any of them have changed.
         for (int i = lastRepoScan.length - 1; i > -1; i--) {
-            Repository repository = (Repository) list.get(i);
+            Repository repository = list.get(i);
             if (repository.lastModified() != lastRepoScan[i]) {
                 lastRepoScan[i] = repository.lastModified();
 
@@ -226,9 +226,7 @@ public final class TypeManager {
         // loop through prototypes and check if prototype.properties needs updates
         // it's important that we do this _after_ potentially new prototypes
         // have been created in the previous loop.
-        for (Iterator i = prototypes.values().iterator(); i.hasNext();) {
-            Prototype proto = (Prototype) i.next();
-
+        for (Prototype proto : prototypes.values()) {
             // update prototype's type mapping
             DbMapping dbmap = proto.getDbMapping();
 
@@ -257,18 +255,16 @@ public final class TypeManager {
     private void setupSecurity(Prototype proto) {
         proto.setupSecurity();
         ArrayList<Prototype> childprotos = proto.getChildPrototypes();
-        final int size = childprotos.size();
-        for (int i = 0; i < size; i++) {
-        	childprotos.get(i).setupSecurity();
+        for (Prototype childproto : childprotos) {
+        	childproto.setupSecurity();
         }
     }
     
     private void setupCaching(Prototype proto) {
         proto.setupCaching();
         ArrayList<Prototype> childprotos = proto.getChildPrototypes();
-        final int size = childprotos.size();
-        for (int i = 0; i < size; i++) {
-        	childprotos.get(i).setupCaching();
+        for (Prototype childproto : childprotos) {
+        	childproto.setupCaching();
         }
     }
 
