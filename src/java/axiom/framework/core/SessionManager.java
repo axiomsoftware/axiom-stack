@@ -26,12 +26,12 @@ import axiom.scripting.ScriptingEngine;
 
 public class SessionManager {
 
-    protected Hashtable sessions;
+    protected Hashtable<String, Session> sessions;
 
     protected Application app;
 
     public SessionManager() {
-        sessions = new Hashtable();
+        sessions = new Hashtable<String, Session>();
     }
 
     public void init(Application app) {
@@ -65,7 +65,7 @@ public class SessionManager {
      * actual changes from the table itself, which is managed by the application.
      * It is safe and allowed to manipulate the session objects contained in the table, though.
      */
-    public Map getSessions() {
+    public Map<String, Session> getSessions() {
         return (Map) sessions.clone();
     }
 
@@ -130,17 +130,14 @@ public class SessionManager {
      * Return an array of <code>SessionBean</code> objects currently associated with a given
      * Axiom user.
      */
-    public List getSessionsForUsername(String username) {
-        ArrayList list = new ArrayList();
+    public List<SessionBean> getSessionsForUsername(String username) {
+        ArrayList<SessionBean> list = new ArrayList<SessionBean>();
 
         if (username == null) {
             return list;
         }
 
-        Enumeration e = sessions.elements();
-        while (e.hasMoreElements()) {
-            Session s = (Session) e.nextElement();
-
+        for (Session s : sessions.values()) {
             if (s != null && username.equals(s.getUID())) {
                 // append to list if session is logged in and fits the given username
                 list.add(new SessionBean(s));
@@ -154,12 +151,10 @@ public class SessionManager {
      * Return a list of Axiom nodes (AxiomObjects -  the database object representing the user,
      *  not the session object) representing currently logged in users.
      */
-    public List getActiveUsers() {
-        ArrayList list = new ArrayList();
+    public List<INode> getActiveUsers() {
+        ArrayList<INode> list = new ArrayList<INode>();
 
-        for (Enumeration e = sessions.elements(); e.hasMoreElements();) {
-            Session s = (Session) e.nextElement();
-
+        for (Session s : sessions.values()) {
             if (s != null && s.isLoggedIn()) {
                 // returns a session if it is logged in and has not been
                 // returned before (so for each logged-in user is only added once)
@@ -193,9 +188,9 @@ public class SessionManager {
             synchronized (sessions) {
                 p.writeInt(sessions.size());
 
-                for (Enumeration e = sessions.elements(); e.hasMoreElements();) {
+                for (Session s : sessions.values()) {
                     try {
-                        engine.serialize(e.nextElement(), p);
+                        engine.serialize(s, p);
                         // p.writeObject(e.nextElement());
                     } catch (NotSerializableException nsx) {
                         // not serializable, skip this session
@@ -241,7 +236,7 @@ public class SessionManager {
             ObjectInputStream p = new ObjectInputStream(istream);
             int size = p.readInt();
             int ct = 0;
-            Hashtable newSessions = new Hashtable();
+            Hashtable<String, Session> newSessions = new Hashtable<String, Session>();
 
             while (ct < size) {
                 Session session = (Session) engine.deserialize(p);

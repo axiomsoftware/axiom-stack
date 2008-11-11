@@ -296,10 +296,8 @@ public class ResourceProperties extends Properties {
         }
         ResourceProperties subprops = new ResourceProperties();
         subprops.setIgnoreCase(ignoreCase);
-        Iterator it = entrySet().iterator();
         int prefixLength = prefix.length();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Map.Entry entry : entrySet()) {
             String key = entry.getKey().toString();
             if (key.regionMatches(ignoreCase, 0, prefix, 0, prefixLength)) {
                 subprops.put(key.substring(prefixLength), entry.getValue());
