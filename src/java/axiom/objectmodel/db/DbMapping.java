@@ -1031,7 +1031,7 @@ public final class DbMapping {
     }
     /**
      * Return an array of DbColumns for the relational table mapped by this DbMapping.
-     * Some reworking done to accomodate for the columnsByTable field
+     * Some reworking done to accommodate for the columnsByTable field
      */
     public synchronized DbColumn[] getColumns(int tableNumber)
                                        throws ClassNotFoundException, SQLException {
@@ -1311,12 +1311,6 @@ public final class DbMapping {
                 s.append(" ON ");
                 joins[i].renderJoinConstraints(s, isOracle);
             }
-        }
-
-        // cache rendered string for later calls, but only if it wasn't
-        // built for a particular Relation
-        if (rel == null) {
-            selectString = s.toString();
         }
 
         return s;

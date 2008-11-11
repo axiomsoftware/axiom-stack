@@ -439,10 +439,6 @@ public class RelationalQueryDispatcher extends QueryDispatcher {
                 b.append(dbm.getTableJoinClause(whereAdded ? 0 : 1));
 
                 query = b.toString();
-                System.out.println("------");
-                System.out.println(query);
-                System.out.println("------");
-                
                 pstmt = con.prepareStatement(query);
 
                 int count = 0;
