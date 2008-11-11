@@ -393,13 +393,6 @@ public final class Application implements IPathElement, Runnable {
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Could not create the transaction database source: " + ex.getMessage());
 		}
-		
-		// the passwd file, to be used with the authenticate() function
-		CryptResource parentpwfile = null;
-
-		if (axiomHome != null) {
-			parentpwfile = new CryptResource(new FileResource(new File(axiomHome, "passwd")), null);
-		}
 
 		// the properties that map java class names to prototype names
 		classMapping = new ResourceProperties(this, "class.properties");
