@@ -228,7 +228,7 @@ public final class Application implements IPathElement, Runnable {
     private ClusterCommunicator clusterComm = null;
     private String clusterHost = null;
     
-    private HashMap draftHosts = new HashMap();
+    private HashMap<String, Integer> draftHosts = new HashMap<String, Integer>();
     private int highestPreviewLayer = 1;
     
     private ArrayList<String> extDbTypes = new ArrayList<String>();
@@ -313,7 +313,7 @@ public final class Application implements IPathElement, Runnable {
 		props = new ResourceProperties(this, "app.properties", sysProps);
 		
 		if (repositories == null) {
-			repositories = this.getAppRepositories();
+			repositories = this.initRepositories();
 		}
 		if (repositories.length == 0) {
 			throw new java.lang.IllegalArgumentException("No sources defined for application: " + name);
@@ -408,14 +408,14 @@ public final class Application implements IPathElement, Runnable {
 		// get class name of root object if defined. Otherwise native Axiom objectmodel will be used.
 		rootObjectClass = classMapping.getProperty("root");
 
-		onstartFunctions = new HashSet();
+		onstartFunctions = new HashSet<String>();
 		updateProperties();
 
-		dbSources = new Hashtable();
+		dbSources = new Hashtable<String, DbSource>();
 		
 		cachenode = new TransientNode("app");
 
-		ArrayList names = this.getDbNames();
+		ArrayList<String> names = this.getDbNames();
 		for(int i = 0; i < names.size(); i++){
 			try{
 				String dbname = names.get(i).toString();
@@ -435,7 +435,7 @@ public final class Application implements IPathElement, Runnable {
 	
 	}
 	
-	private Repository[] getAppRepositories() {
+	private Repository[] initRepositories() {
 		Repository[] repositories;
 		ResourceProperties conf = this.props;
 		// parse main application directory	
@@ -540,7 +540,7 @@ public final class Application implements IPathElement, Runnable {
 		}
 
 		if (Server.getServer() != null) {
-			Vector extensions = Server.getServer().getExtensions();
+			Vector<AxiomExtension> extensions = Server.getServer().getExtensions();
 
 			for (int i = 0; i < extensions.size(); i++) {
 				AxiomExtension ext = (AxiomExtension) extensions.get(i);
@@ -555,8 +555,8 @@ public final class Application implements IPathElement, Runnable {
 		}
 
 		// create and init evaluator/thread lists
-		freeThreads = new Stack();
-		allThreads = new Vector();
+		freeThreads = new Stack<RequestEvaluator>();
+		allThreads = new Vector<RequestEvaluator>();
 
 		// preallocate minThreads request evaluators
 		int minThreads = 0;
@@ -784,9 +784,7 @@ public final class Application implements IPathElement, Runnable {
 
 		// stop evaluators
 		if (allThreads != null) {
-			for (Enumeration e = allThreads.elements(); e.hasMoreElements();) {
-				RequestEvaluator ev = (RequestEvaluator) e.nextElement();
-
+			for (RequestEvaluator ev : allThreads) {
 				ev.stopTransactor();
 			}
 		}
@@ -809,7 +807,7 @@ public final class Application implements IPathElement, Runnable {
 
 		// tell the extensions that we're stopped.
 		if (Server.getServer() != null) {
-			Vector extensions = Server.getServer().getExtensions();
+			Vector<AxiomExtension> extensions = Server.getServer().getExtensions();
 
 			for (int i = 0; i < extensions.size(); i++) {
 				AxiomExtension ext = (AxiomExtension) extensions.get(i);
@@ -920,7 +918,7 @@ public final class Application implements IPathElement, Runnable {
 
 		// first try
 		try {
-			RequestEvaluator ev = (RequestEvaluator) freeThreads.pop();
+			RequestEvaluator ev = freeThreads.pop();
             //this.logEvent("Getting evaluator " + ev + ", total evaluators = " + allThreads.size() + ", free evaluators = " + freeThreads.size());
             return ev;
 		} catch (EmptyStackException nothreads) {
@@ -951,7 +949,7 @@ public final class Application implements IPathElement, Runnable {
 			try {
 				Thread.sleep(3000);
 
-				RequestEvaluator ev = (RequestEvaluator) freeThreads.pop();
+				RequestEvaluator ev = freeThreads.pop();
                 this.logEvent("Getting evaluator " + ev + ", total evaluators = " + allThreads.size() + ", free evaluators = " + freeThreads.size());
                 return ev;
 			} catch (EmptyStackException nothreads) {
@@ -998,7 +996,7 @@ public final class Application implements IPathElement, Runnable {
 
 				for (int i = 0; i < toBeDestroyed; i++) {
 					try {
-						RequestEvaluator re = (RequestEvaluator) freeThreads.pop();
+						RequestEvaluator re = freeThreads.pop();
 
 						allThreads.removeElement(re);
 
@@ -1112,7 +1110,7 @@ public final class Application implements IPathElement, Runnable {
 	}
 
 
-	public Object executeExternal(String method, Vector args)
+	public Object executeExternal(String method, Vector<String> args)
 	throws Exception {
 		Object retval = null;
 		RequestEvaluator ev = null;
@@ -1129,7 +1127,7 @@ public final class Application implements IPathElement, Runnable {
 	}
 
 	/**
-	 * Reset the application's object cache, causing all objects to be refetched from
+	 * Reset the application's object cache, causing all objects to be retrieved from
 	 * the database.
 	 */
 	public void clearCache() {
@@ -1308,7 +1306,7 @@ public final class Application implements IPathElement, Runnable {
 	 * Return a list of Axiom nodes (AxiomObjects -  the database object representing the user,
 	 *  not the session object) representing currently logged in users.
 	 */
-	public List getActiveUsers() {
+	public List<INode> getActiveUsers() {
 		return sessionMgr.getActiveUsers();
 	}
 
@@ -1316,7 +1314,7 @@ public final class Application implements IPathElement, Runnable {
 	 * Return an array of <code>SessionBean</code> objects currently associated
 	 * with a given Axiom user.
 	 */
-	public List getSessionsForUsername(String username) {
+	public List<SessionBean> getSessionsForUsername(String username) {
 		return sessionMgr.getSessionsForUsername(username);
 	}
 
@@ -1330,12 +1328,12 @@ public final class Application implements IPathElement, Runnable {
 	/**
 	 *  Return the whole session map.
 	 */
-	public Map getSessions() {
+	public Map<String, Session> getSessions() {
 		return sessionMgr.getSessions();
 	}
 
 	/**
-	 * Returns the number of currenty active sessions.
+	 * Returns the number of currently active sessions.
 	 */
 	public int countSessions() {
 		return sessionMgr.countSessions();
@@ -1948,12 +1946,8 @@ public final class Application implements IPathElement, Runnable {
 
 				thisEvaluator = getEvaluator();
 
-				Map sessions = sessionMgr.getSessions();
-
-				Iterator it = sessions.values().iterator();
-				while (it.hasNext()) {
-					Session session = (Session) it.next();
-
+				Map<String, Session> sessions = sessionMgr.getSessions();
+				for (Session session : sessions.values()) {
 					if ((now - session.lastTouched()) > (sessionTimeout * 60000)) {
 						NodeHandle userhandle = session.userHandle;
 

@@ -38,9 +38,9 @@ import java.util.*;
  * This class is responsible for starting and stopping Axiom applications.
  */
 public class ApplicationManager implements XmlRpcHandler {
-    private Hashtable descriptors;
-    private Hashtable applications;
-    private Hashtable xmlrpcHandlers;
+    private Hashtable<String, AppDescriptor> descriptors;
+    private Hashtable<String, Application> applications;
+    private Hashtable<String, Application> xmlrpcHandlers;
     private int rmiPort;
     private Server server;
     private long lastModified;
@@ -57,9 +57,9 @@ public class ApplicationManager implements XmlRpcHandler {
     public ApplicationManager(Server server, int port) {
         this.server = server;
         this.rmiPort = port;
-        descriptors = new Hashtable();
-        applications = new Hashtable();
-        xmlrpcHandlers = new Hashtable();
+        descriptors = new Hashtable<String, AppDescriptor>();
+        applications = new Hashtable<String, Application>();
+        xmlrpcHandlers = new Hashtable<String, Application>();
         lastModified = 0;
     }
 
@@ -75,7 +75,7 @@ public class ApplicationManager implements XmlRpcHandler {
      *  Bind an application by name
      */
     public void register(String appName) {
-        AppDescriptor desc = (AppDescriptor) descriptors.get(appName);
+        AppDescriptor desc = descriptors.get(appName);
         if (desc != null) {
             desc.bind();
         }
@@ -85,7 +85,7 @@ public class ApplicationManager implements XmlRpcHandler {
      *  Stop an application by name
      */
     public void stop(String appName) {
-        AppDescriptor desc = (AppDescriptor) descriptors.get(appName);
+        AppDescriptor desc = descriptors.get(appName);
         if (desc != null) {
             desc.stop();
         }
@@ -97,16 +97,16 @@ public class ApplicationManager implements XmlRpcHandler {
      */
     public void startAll() {
         try {
-        	ArrayList<AppDescriptor> descriptors = new ArrayList<AppDescriptor>();
+        	ArrayList<AppDescriptor> allDescriptors = new ArrayList<AppDescriptor>();
         	
         	File[] apps = this.server.getAppsHome().listFiles();
-        	for (int i = 0; i < apps.length; i++) {
-        		File appPropsFile = new File(apps[i], "app.properties");
+        	for (File app : apps) {
+        		File appPropsFile = new File(app, "app.properties");
         		if (!appPropsFile.exists() || !appPropsFile.canRead()) {
         			continue;
         		}
         		
-        		String name = apps[i].getName();
+        		String name = app.getName();
         		if (name.startsWith(".")) {
         			continue;
         		}
@@ -116,12 +116,12 @@ public class ApplicationManager implements XmlRpcHandler {
         		}
         		AppDescriptor desc = new AppDescriptor(name);
                 desc.start();
-                descriptors.add(desc);
+                allDescriptors.add(desc);
         	}
         	
-        	final int size = descriptors.size();
-        	for (int i = 0; i < size; i++) {
-        		descriptors.get(i).bind();
+        	final int size = allDescriptors.size();
+        	for (AppDescriptor d : allDescriptors) {
+        		d.bind();
         	}
         	
         	if (size > 0) {
@@ -138,10 +138,8 @@ public class ApplicationManager implements XmlRpcHandler {
      *  Stop all running applications.
      */
     public void stopAll() {
-        for (Enumeration en = descriptors.elements(); en.hasMoreElements();) {
+        for (AppDescriptor appDesc : descriptors.values()) {
             try {
-                AppDescriptor appDesc = (AppDescriptor) en.nextElement();
-
                 appDesc.stop();
             } catch (Exception x) {
             	x.printStackTrace(System.out);
@@ -152,15 +150,15 @@ public class ApplicationManager implements XmlRpcHandler {
     /**
      *  Get an array containing all currently running applications.
      */
-    public Object[] getApplications() {
-        return applications.values().toArray();
+    public Application[] getApplications() {
+        return applications.values().toArray(new Application[applications.size()]);
     }
 
     /**
      *  Get an application by name.
      */
     public Application getApplication(String name) {
-        return (Application) applications.get(name);
+        return applications.get(name);
     }
 
     /**
@@ -181,10 +179,10 @@ public class ApplicationManager implements XmlRpcHandler {
 
         String handler = method.substring(0, dot);
         String method2 = method.substring(dot + 1);
-        Application app = (Application) xmlrpcHandlers.get(handler);
+        Application app = xmlrpcHandlers.get(handler);
 
         if (app == null) {
-            app = (Application) xmlrpcHandlers.get("*");
+            app = xmlrpcHandlers.get("*");
             // use the original method name, the handler is resolved within the app.
             method2 = method;
         }
@@ -258,7 +256,6 @@ public class ApplicationManager implements XmlRpcHandler {
         String uploadLimit;
         String uploadSoftfail;
         String debug;
-        boolean encode;
 
         /**
          * extend apps.properties, add [appname].ignore
@@ -279,7 +276,7 @@ public class ApplicationManager implements XmlRpcHandler {
             pathPattern = getPathPattern(mountpoint);
             domain = conf.getProperty("domain", null);
                        
-            ArrayList staticDirNames = new ArrayList();
+            ArrayList<String> staticDirNames = new ArrayList<String>();
             String staticArgs = "";
             // Axiom changes
             for(int i = 0; staticArgs != null; i++){ 
@@ -301,7 +298,6 @@ public class ApplicationManager implements XmlRpcHandler {
             uploadLimit = conf.getProperty("uploadLimit");
             uploadSoftfail = conf.getProperty("uploadSoftfail");
             debug = conf.getProperty("debug");
-            encode = "true".equalsIgnoreCase(conf.getProperty("responseEncoding"));
 
             // got ignore dirs
             ignoreDirs = conf.getProperty("ignore");
@@ -415,31 +411,13 @@ public class ApplicationManager implements XmlRpcHandler {
 	                    NCSARequestLog requestLog = new NCSARequestLog(app.getLogDir() + "/" + app.getRequestLogName());
 	                    requestLog.setRetainDays(1);
 	                    requestLog.setAppend(true);
-	                    requestLog.setExtended(false);
+	                    requestLog.setExtended(true);
 	                    requestLog.setLogTimeZone("GMT");
 	                    requestLogHandler.setRequestLog(requestLog);     
 	                    ch.addHandler(requestLogHandler);
                     }
                     ch.start();
                     
-                    if (encode) {
-                        // FIXME: ContentEncodingHandler is broken/removed in Jetty 4.2
-                        // context.addHandler(new ContentEncodingHandler());
-                        server.getLogger().warn("Warning: disabling response encoding for Jetty 4.2 compatibility");
-                    }
-                    /* FIXME: What is a protect static dir?
-                    if (protectedStaticDir != null) {
-                        File protectedContent = new File(protectedStaticDir);
-                        if (!protectedContent.isAbsolute()) {
-                            protectedContent = new File(server.getAxiomHome(), protectedStaticDir);
-                        }
-                        context.setResourceBase(protectedContent.getAbsolutePath());
-                        server.getLogger().info("Serving protected static from " +
-                                       protectedContent.getAbsolutePath());
-                        context.addHandler(new ResourceHandler());
-                    }
-                    */
-
                     // if there is a static direcory specified, mount it
                     if (staticDirs.length > 0) {
                     	for(int i =0; i < staticDirs.length; i++){

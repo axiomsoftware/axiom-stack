@@ -683,7 +683,7 @@ public class Server implements IPathElement, Runnable {
     /**
      *  Get an Iterator over the applications currently running on this Server.
      */
-    public Object[] getApplications() {
+    public Application[] getApplications() {
         return appManager.getApplications();
     }
 

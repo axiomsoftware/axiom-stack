@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.*;
 
 import axiom.framework.core.Application;
-import axiom.util.SystemProperties;
 
 /**
  *  Axiom command line runner class. This class creates and starts a single application,
@@ -43,7 +42,7 @@ public class CommandlineRunner {
 
         Config config = new Config();
         String commandStr = null;
-        Vector funcArgs = new Vector();
+        Vector<String> funcArgs = new Vector<String>();
     
         // get possible environment setting for Axiom home
         if (System.getProperty("axiom.home")!=null) {
