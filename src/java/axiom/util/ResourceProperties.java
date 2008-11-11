@@ -24,6 +24,7 @@ import axiom.framework.core.*;
 import axiom.framework.repository.FileResource;
 import axiom.framework.repository.Repository;
 import axiom.framework.repository.Resource;
+import axiom.framework.repository.ResourceComparator;
 
 /**
  *  A property dictionary that is updated from property resources
@@ -57,7 +58,7 @@ public class ResourceProperties extends Properties {
     private String resourceName;
 
     // Sorted map of resources
-    private Set resources;
+    private Set<Resource> resources;
 
     /**
      * Constructs an empty ResourceProperties
@@ -67,7 +68,7 @@ public class ResourceProperties extends Properties {
         // TODO: we can't use TreeSet because we don't have the app's resource comparator
         // Since resources don't implement Comparable, we can't add them to a "naked" TreeSet
         // As a result, resource ordering is random when updating.
-        resources = new HashSet();
+        resources = new HashSet<Resource>();
     }
 
     /**
@@ -76,7 +77,7 @@ public class ResourceProperties extends Properties {
      */
     public ResourceProperties(Application app) {
     	this.app = app;
-        resources = new TreeSet(app.getResourceComparator());
+        resources = new TreeSet<Resource>(app.getResourceComparator());
     }
 
     /**
@@ -88,7 +89,7 @@ public class ResourceProperties extends Properties {
     public ResourceProperties(Application app, String resourceName) {
         this.app = app;
         this.resourceName = resourceName;
-        resources = new TreeSet(app.getResourceComparator());
+        resources = new TreeSet<Resource>(app.getResourceComparator());
     }
 
     /**
@@ -169,7 +170,7 @@ public class ResourceProperties extends Properties {
      * Get an iterator over the properties' resources
      * @return iterator over the properties' resources
      */
-    public Iterator getResources() {
+    public Iterator<Resource> getResources() {
         return resources.iterator();
     }
 
@@ -196,11 +197,9 @@ public class ResourceProperties extends Properties {
             // repositories, if we belong to any application
             if (resourceName != null) {
             	if (resourceName.equalsIgnoreCase("app.properties")) {
-            		Iterator iterator = app.getRepositories().iterator();
             		int staticDirs = 0;
-            		while (iterator.hasNext()) {
+            		for (Repository repository : app.getRepositories()) {
             			try {
-            				Repository repository = (Repository) iterator.next();
             				Resource res = repository.getResource(resourceName);
                     		ResourceProperties curr = new ResourceProperties();
             				if (res != null && res.exists()) {
@@ -239,10 +238,8 @@ public class ResourceProperties extends Properties {
             			}
             		}
             	} else {
-            		Iterator iterator = app.getRepositories().iterator();
-            		while (iterator.hasNext()) {
+            		for (Repository repository : app.getRepositories()) {
             			try {
-            				Repository repository = (Repository) iterator.next();
             				Resource res = repository.getResource(resourceName);
             				if (res != null && res.exists()) {
             					temp.load(res.getInputStream());
@@ -257,10 +254,8 @@ public class ResourceProperties extends Properties {
 
             // at last we try to load properties from the resource list
             if (resources != null) {
-                Iterator iterator = resources.iterator();
-                while (iterator.hasNext()) {
+                for (Resource res : resources) {
                     try {
-                        Resource res = (Resource) iterator.next();
                         if (res.exists()) {
                             temp.load(res.getInputStream());
                         }
@@ -379,9 +374,7 @@ public class ResourceProperties extends Properties {
         long checksum = 0;
 
         if (resourceName != null) {
-            Iterator iterator = app.getRepositories().iterator();
-            while (iterator.hasNext()) {
-                Repository repository = (Repository) iterator.next();
+            for (Repository repository : app.getRepositories()) {
                 Resource resource = repository.getResource(resourceName);
                 if (resource != null) {
                     checksum += resource.lastModified();
@@ -390,9 +383,8 @@ public class ResourceProperties extends Properties {
         }
 
         if (resources != null) {
-            Iterator iterator = resources.iterator();
-            while (iterator.hasNext()) {
-                checksum += ((Resource) iterator.next()).lastModified();
+            for (Resource res : resources) {
+                checksum += res.lastModified();
             }
         }
 
