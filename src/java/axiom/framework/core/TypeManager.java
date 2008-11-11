@@ -48,13 +48,13 @@ public final class TypeManager {
     
     private Application app;
     // map of prototypes
-    private HashMap prototypes;
+    private HashMap<String, Prototype> prototypes;
 
     // set of Java archives
-    private HashSet jarfiles;
+    private HashSet<String> jarfiles;
 
     // set of directory names to ignore
-    private HashSet ignoreDirs;
+    private HashSet<String> ignoreDirs;
 
     private long lastCheck = 0;
     private long lastCodeUpdate;
@@ -72,9 +72,9 @@ public final class TypeManager {
      */
     public TypeManager(Application app, String ignore) {
         this.app = app;
-        prototypes = new HashMap();
-        jarfiles = new HashSet();
-        ignoreDirs = new HashSet();
+        prototypes = new HashMap<String, Prototype>();
+        jarfiles = new HashSet<String>();
+        ignoreDirs = new HashSet<String>();
         // split ignore dirs list and add to hash set
         if (ignore != null) {
             String[] arr = StringUtils.split(ignore, ",");
@@ -177,10 +177,8 @@ public final class TypeManager {
             }
         }
 
-        Iterator resources = repository.getResources();
-        while (resources.hasNext()) {
+        for (Resource resource : repository.getResources()) {
             // check for jar files to add to class loader
-            Resource resource = (Resource) resources.next();
             String name = resource.getName();
             if (name.endsWith(".jar")) {
                 if (!jarfiles.contains(name)) {
@@ -319,7 +317,7 @@ public final class TypeManager {
      *
      * @return a collection containing the prototypes
      */
-    public Collection getPrototypes() {
+    public Collection<Prototype> getPrototypes() {
         return Collections.unmodifiableCollection(prototypes.values());
     }
 

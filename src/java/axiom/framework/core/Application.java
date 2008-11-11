@@ -141,7 +141,7 @@ public final class Application implements IPathElement, Runnable {
 	ThreadGroup threadgroup;
 	
     // threadlocal variable for the current RequestEvaluator
-    ThreadLocal currentEvaluator = new ThreadLocal();
+    ThreadLocal<RequestEvaluator> currentEvaluator = new ThreadLocal<RequestEvaluator>();
 
 	// Map of requesttrans -> active requestevaluators
 	Hashtable activeRequests;
@@ -1282,17 +1282,16 @@ public final class Application implements IPathElement, Runnable {
 	/**
 	 * Return a collection containing all prototypes defined for this application
 	 */
-	public java.util.Collection getPrototypes() {
+	public java.util.Collection<Prototype> getPrototypes() {
 		return typemgr.getPrototypes();
 	}
 	
 	public String[] getPrototypeNames() {
-		java.util.Collection protos = typemgr.getPrototypes();
+		java.util.Collection<Prototype> protos = typemgr.getPrototypes();
 		String[] protoNames = new String[protos.size()];
-		Iterator iter = protos.iterator();
 		int count = 0;
-		while (iter.hasNext()) {
-			protoNames[count++] = ((Prototype) iter.next()).getName();
+		for (Prototype prototype : protos) {
+			protoNames[count++] = prototype.getName();
 		}
 		return protoNames;
 	}
@@ -2556,12 +2555,9 @@ public final class Application implements IPathElement, Runnable {
 		return this.sessionsId;
 	}
 
-	public ArrayList getSearchablePrototypes() {
-		ArrayList names = new ArrayList();        
-		Iterator prototypes = this.getPrototypes().iterator();
-		Object n = null;
-		while (prototypes.hasNext()) {
-			n = prototypes.next();
+	public ArrayList<String> getSearchablePrototypes() {
+		ArrayList<String> names = new ArrayList<String>();        
+		for(Prototype n : this.getPrototypes()) {
 			if (n != null) {
 				String name = ((Prototype) n).getName();
 				if ((name != null) && (!name.equals("AxiomObject")) && (!name.equals("Global"))) {
@@ -2791,7 +2787,7 @@ public final class Application implements IPathElement, Runnable {
      * @return the RequestEvaluator belonging to the current thread
      */
     public RequestEvaluator getCurrentRequestEvaluator() {
-        return (RequestEvaluator) currentEvaluator.get();
+        return currentEvaluator.get();
     }
 
     /**
@@ -2855,7 +2851,7 @@ public final class Application implements IPathElement, Runnable {
     	return false;
     }
     
-    public ArrayList getDbNames(){
+    public ArrayList<String> getDbNames(){
     	ArrayList<String> ret = new ArrayList<String>();
     	Enumeration e = this.dbProps.keys();
     	while (e.hasMoreElements()) {
@@ -2867,7 +2863,7 @@ public final class Application implements IPathElement, Runnable {
     	return ret;
     }
    
-    public ArrayList getExtDBTypes(){
+    public ArrayList<String> getExtDBTypes(){
     	return extDbTypes;
     }
 
