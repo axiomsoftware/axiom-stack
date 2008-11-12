@@ -770,7 +770,8 @@ public final class Application implements IPathElement, Runnable {
 
 		// stop evaluators
 		if (allThreads != null) {
-			for (RequestEvaluator ev : allThreads) {
+			for (Enumeration e = allThreads.elements(); e.hasMoreElements();) {
+				RequestEvaluator ev = (RequestEvaluator) e.nextElement();
 				ev.stopTransactor();
 			}
 		}
