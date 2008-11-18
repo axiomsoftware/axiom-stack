@@ -93,6 +93,19 @@
         </javac>
 	</target>
 	
+	<target name="jszip" description="Packages the JS Zip">
+		<condition property="jar-lib.dir" value="${jar.lib.dir}"
+					else="${lib.dir}">
+			<and>
+				<isset property="jar.lib.dir"/>
+			</and>
+		</condition>
+		<delete file="${jar-lib.dir}/js.zip" />
+
+		<zip compress="false" destfile="${jar-lib.dir}/js.zip" 
+			     basedir="${src.dir}/js"/>
+	</target>
+	
 	<target name="jar" depends="compile" description="Packages the JAR file">
 		<condition property="jar-lib.dir"
 			value="${jar.lib.dir}"
@@ -116,8 +129,9 @@
 	    	excludes="**/test/**, **/main/launcher/**"/>
 
 		<!-- build js.zip -->
-		<zip compress="false" destfile="${jar-lib.dir}/js.zip" 
-		     basedir="${src.dir}/js"/>
+		<antcall target="jszip">
+			<param name="jar-lib.dir" value="${jar-lib.dir}" />
+		</antcall>
 
 		<!-- Build launcher.jar -->
 		<jar jarfile="${jar-home.dir}/${launcher-jar.name}"
