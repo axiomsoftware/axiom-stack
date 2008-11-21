@@ -540,7 +540,7 @@ this._test = {
 		teardown: function(){
 			app.log('Performance suite teardown');
 			for each(var child in root.getChildren()){
-				root.remove(child)
+				root.remove(child);
 			}
 		},
 		getPlaceHolder: function(){
@@ -550,7 +550,7 @@ this._test = {
 			var lph = this.getPlaceHolder();
 			var num = 1000;
 			var start = new Date();
-			var slowspeed = 150;
+			var slowspeed = 50;
 			for(var i = 0; i < num; i++){
 				var ks = new LuceneKitchenSink();
 				ks.id = 'testks' + i;
@@ -561,7 +561,7 @@ this._test = {
 			var now = new Date();
 			var persec = num / ((now.getTime()-start.getTime()) / 1000);
 //			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second: was "+persec, persec > slowspeed);
+			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);
 		}
 	}
 }
