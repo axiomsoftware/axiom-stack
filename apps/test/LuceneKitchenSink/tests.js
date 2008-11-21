@@ -528,7 +528,7 @@ this._test = {
 			Assert.assertEquals("test_AxiomObject_getChildrenWithPrototype failed", 5, children.length);
 		}
 	},
-	Performance_suite: {
+	/*Performance_suite: {
 		setup: function(){
 			app.log('Performance suite setup');
 			app.log('app_getObjects_suite setup');
@@ -563,6 +563,6 @@ this._test = {
 //			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
 			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);			
 		}		
-	}
+	}*/
 }
 
