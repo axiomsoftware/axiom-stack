@@ -187,27 +187,27 @@ TAL.semisplit = function (s) {
 TAL.RE_define = /^ *(global )?(local )? *([^ ]+) +(.+)$/;
 TAL.RE_nameExpr = /^ *([^ ]+) +(.*)$/;
 TAL.RE_trim = /^ *(.*?) *$/;
-TAL.Repeat = function (i, c) { this.index = i; this.count = c; }
-TAL.Repeat.prototype.number = function () { return parseInt(this.index,10) + 1 }
-TAL.Repeat.prototype.even = function () { return ((this.index % 2)==0)?true:false; }
-TAL.Repeat.prototype.odd = function () { return ((this.index % 2)==1)?true:false; }
-TAL.Repeat.prototype.start = function () { return this.index==0 }
-TAL.Repeat.prototype.end = function () { return this.index==(this.count-1) }
+TAL.Repeat = function (i, c) { this.index = i; this.count = c; };
+TAL.Repeat.prototype.number = function () { return parseInt(this.index,10) + 1; };
+TAL.Repeat.prototype.even = function () { return ((this.index % 2)==0)?true:false; };
+TAL.Repeat.prototype.odd = function () { return ((this.index % 2)==1)?true:false; };
+TAL.Repeat.prototype.start = function () { return this.index==0; };
+TAL.Repeat.prototype.end = function () { return this.index==(this.count-1); };
 TAL.stringExpr = function(data, str) {
-        var path_re=/\$\{([^}]+)\}|\$([^$ \/]+)/g, lastlast=0, parts=[], match, index;
-while((match=path_re.exec(str))!=null) {
-    index = match.index;
-    if(index==0 || str.charAt(index-1)!='$') {
-        parts.push(str.slice(lastlast, index).replace('$$', '$'));
-        parts.push(TAL.getPathExpr(data, match[1] || match[2])[1]);
-    } else {
-        parts.push(str.slice(lastlast, path_re.lastIndex).replace('$$', '$'));
-    }
-    lastlast = path_re.lastIndex;
-}
-parts.push(str.slice(lastlast).replace('$$','$'));
-return parts.join('');
-}
+    var path_re=/\$\{([^}]+)\}|\$([^$ \/]+)/g, lastlast=0, parts=[], match, index;
+	while((match=path_re.exec(str))!=null) {
+		index = match.index;
+		if(index==0 || str.charAt(index-1)!='$') {
+			parts.push(str.slice(lastlast, index).replace('$$', '$'));
+			parts.push(TAL.getPathExpr(data, match[1] || match[2])[1]);
+		} else {
+			parts.push(str.slice(lastlast, path_re.lastIndex).replace('$$', '$'));
+		}
+		lastlast = path_re.lastIndex;
+	}
+	parts.push(str.slice(lastlast).replace('$$','$'));
+	return parts.join('');
+};
 
 /*
  * pathExpr - look up the value of a path variable in the current scope.
