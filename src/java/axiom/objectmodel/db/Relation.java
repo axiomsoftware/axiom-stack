@@ -1122,6 +1122,7 @@ public final class Relation {
                        " must be mapped in order to be used as constraint in "+
                        Relation.this);
                 } else {
+                	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.setConstraincts() calling setString");
                     home.setString(localProp, child.getID());
                 }
                 continue;
@@ -1149,6 +1150,7 @@ public final class Relation {
                             // correctly for transient nodes, so this may fail.
                         }
                     } else if (crel.reftype == PRIMITIVE) {
+                    	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.setConstraincts() 2 calling setString");
                         child.setString(crel.propName, home.getID());
                     }
                 } else if (crel.reftype == PRIMITIVE) {
@@ -1187,6 +1189,7 @@ public final class Relation {
             if (constraints[i].foreignKeyIsPrimary()) {
                 String localProp = constraints[i].localProperty();
                 if (localProp != null) {
+                	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.unsetConstraincts() calling setString");
                     home.setString(localProp, null);
                 }
                 continue;
@@ -1201,9 +1204,11 @@ public final class Relation {
                         INode currentValue = child.getNode(crel.propName);
 
                         if ((currentValue == home)) {
+                        	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.unsetConstraincts() 2 calling setString");
                             child.setString(crel.propName, null);
                         }
                     } else if (crel.reftype == PRIMITIVE) {
+                    	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.unsetConstraincts() 3 calling setString");
                         child.setString(crel.propName, null);
                     }
                 } else if (crel.reftype == PRIMITIVE) {
@@ -1216,6 +1221,7 @@ public final class Relation {
                     }
 
                     if (prop != null) {
+                    	if (this.ownType.app.debug()) this.ownType.app.logEvent("Relation.unsetConstraincts() 4 calling setString");
                         child.setString(crel.propName, null);
                     }
                 }

@@ -1554,11 +1554,20 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		}
 
 		if (setNameTo != null) {
+			if (this.core.app.debug()) {
+				core.app.logEvent("AxiomObject.edit() -> " + ((Node)node).logString() 
+						+ "setting accessname " + setNameTo + " to " + setValueTo);
+			}
 			this.put(setNameTo, this, setValueTo);
 		}
 		if (setParentTo != null) {
 			try{
 				this.setParent(setParentTo);
+				if (this.core.app.debug()) {
+					core.app.logEvent("AxiomObject.edit() -> " + ((Node)node).logString() 
+							+ "setting parent to " + setParentTo);
+					
+				}
 			} catch(Exception e){
 				emsgs.put(LuceneManager.LOCATION, emsgs, e.getMessage());
 				return;				
