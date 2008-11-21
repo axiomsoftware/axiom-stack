@@ -20,7 +20,7 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_getObjects_no_params: function(){
 			var index = 10;
@@ -35,7 +35,7 @@ this._test = {
 		test_getObjects_one_proto: function(){
 			var index = 10;
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
-			Assert.assertEquals('test_getObjects_one_proto failed', app.getObjects('LuceneKitchenSink').length, index); 
+			Assert.assertEquals('test_getObjects_one_proto failed', app.getObjects('LuceneKitchenSink').length, index);
 		},
 		test_getObjects_two_protos: function(){
 			var index = 5;
@@ -91,7 +91,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_sort_object_asc failed', 
+			Assert.assertTrue('test_getObjects_sort_object_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4');
 		},
 		test_getObjects_sort_object_desc: function(){
@@ -99,7 +99,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_sort_object_desc failed', 
+			Assert.assertTrue('test_getObjects_sort_object_desc failed',
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_max_length_sort_object_asc: function(){
@@ -108,7 +108,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort, maxlength:maxlength});
-			Assert.assertTrue('test_getObjects_max_length_sort_object_asc failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4' &&
 				objects.length == maxlength);
 		},
@@ -117,7 +117,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_max_length_sort_object_desc failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_desc failed',
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_by_path: function(){
@@ -139,7 +139,7 @@ this._test = {
 			var path = '/';
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {path:path, maxlength:maxlength, sort:sort});
-			Assert.assertTrue('test_getObjects_maxlength_path_sort_asc failed', 
+			Assert.assertTrue('test_getObjects_maxlength_path_sort_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4' &&
 				objects.length == maxlength);
 
@@ -151,7 +151,7 @@ this._test = {
 			var path = '/';
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {path:path, maxlength:maxlength, sort:sort});
-			Assert.assertTrue('test_getObjects_maxlength_path_sort_desc failed', 
+			Assert.assertTrue('test_getObjects_maxlength_path_sort_desc failed',
 				objects[0].id == 'ks9' && objects[1].id == 'ks8' && objects[2].id == 'ks7' && objects[3].id == 'ks6' && objects[4].id == 'ks5' &&
 				objects.length == maxlength);
 
@@ -188,7 +188,7 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_AxiomObject_add: function() {
 			var lph = this.getPlaceHolder();
@@ -425,46 +425,6 @@ this._test = {
 			res.commit();
 
 			Assert.assertEquals("test_AxiomObject_getURI", "/test/lph/axiomobject_geturi_test", ks.getURI());
-		}, 
-		test_AxiomObject_hasChildren: function() {
-			var lph = this.getPlaceHolder();
-			var ks1 = new LuceneKitchenSink();
-			ks1.title = "AxiomObject hasChildren Test1";
-			ks1.id = "axiomobject_haschildren_test1";
-			lph.add(ks1);
-			res.commit();
-			var ks2 = new LuceneKitchenSink();
-			ks2.title = "AxiomObject hasChildren Test2";
-			ks2.id = "axiomobject_haschildren_test2";
-			ks1.add(ks2);
-			res.commit();
-
-			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());			
-		},
-		test_AxiomObject_href: function() {
-			var lph = this.getPlaceHolder();
-			var ks = new LuceneKitchenSink();
-			ks.title = "AxiomObject href Test";
-			ks.id = "axiomobject_href_test";
-			lph.add(ks);
-			res.commit();
-
-			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
-		}, 
-		test_AxiomObject_isChild: function() {
-			var lph = this.getPlaceHolder();
-			var ks1 = new LuceneKitchenSink();
-			ks1.title = "AxiomObject isChild Test1";
-			ks1.id = "axiomobject_ischild_test1";
-			lph.add(ks1);
-			res.commit();
-			var ks2 = new LuceneKitchenSink();
-			ks2.title = "AxiomObject isChild Test2";
-			ks2.id = "axiomobject_ischild_test2";
-			ks1.add(ks2);
-			res.commit();
-
-			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));			
 		},
 		test_AxiomObject_hasChildren: function() {
 			var lph = this.getPlaceHolder();
@@ -479,7 +439,7 @@ this._test = {
 			ks1.add(ks2);
 			res.commit();
 
-			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());			
+			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());
 		},
 		test_AxiomObject_href: function() {
 			var lph = this.getPlaceHolder();
@@ -490,7 +450,7 @@ this._test = {
 			res.commit();
 
 			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
-		}, 
+		},
 		test_AxiomObject_isChild: function() {
 			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
@@ -504,7 +464,47 @@ this._test = {
 			ks1.add(ks2);
 			res.commit();
 
-			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));			
+			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));
+		},
+		test_AxiomObject_hasChildren: function() {
+			var lph = this.getPlaceHolder();
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject hasChildren Test1";
+			ks1.id = "axiomobject_haschildren_test1";
+			lph.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject hasChildren Test2";
+			ks2.id = "axiomobject_haschildren_test2";
+			ks1.add(ks2);
+			res.commit();
+
+			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());
+		},
+		test_AxiomObject_href: function() {
+			var lph = this.getPlaceHolder();
+			var ks = new LuceneKitchenSink();
+			ks.title = "AxiomObject href Test";
+			ks.id = "axiomobject_href_test";
+			lph.add(ks);
+			res.commit();
+
+			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
+		},
+		test_AxiomObject_isChild: function() {
+			var lph = this.getPlaceHolder();
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject isChild Test1";
+			ks1.id = "axiomobject_ischild_test1";
+			lph.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject isChild Test2";
+			ks2.id = "axiomobject_ischild_test2";
+			ks1.add(ks2);
+			res.commit();
+
+			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));
 		},
 		test_AxiomObject_remove: function() {
 			var lph = this.getPlaceHolder();
@@ -544,13 +544,13 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_Performance_1000_objects_insert: function() {
 			var lph = this.getPlaceHolder();
 			var num = 1000;
 			var start = new Date();
-			var slowspeed = 75;
+			var slowspeed = 150;
 			for(var i = 0; i < num; i++){
 				var ks = new LuceneKitchenSink();
 				ks.id = 'testks' + i;
@@ -561,8 +561,8 @@ this._test = {
 			var now = new Date();
 			var persec = num / ((now.getTime()-start.getTime()) / 1000);
 //			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);			
-		}		
+			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second: was "+persec, persec > slowspeed);
+		}
 	}
 }
 
