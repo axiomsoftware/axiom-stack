@@ -354,8 +354,17 @@ public class LuceneManager{
 		}
 
 		if (doc == null) {
+			if (this.app.debug()) 
+				app.logEvent("LuceneManager.retrieveFromIndex("	+ field + "," + key + "," 
+						+ mode + ") executed query [" + query + "] and retrieved 0 documents");
+			
 			throw new ObjectNotFoundException("No documents exist for key '" + key + "'");
 		}
+		
+		/*if (this.app.debug()) 
+			app.logEvent("LuceneManager.retrieveFromIndex(" + field + "," + key + "," 
+					+ mode + ") executed query [" + query + "] and got document on layer " 
+					+ layerInStorage);*/
 
 		Node node = null;
 		try {
@@ -412,12 +421,24 @@ public class LuceneManager{
         }
 
         if (doc == null) {
+        	if (this.app.debug()) 
+        		app.logEvent("LuceneManager.retrieveKeyFromIndex(" + field + "," + key + "," 
+        				+ parentid + "," + mode + ") executed query [" + query 
+        				+ "] and didnt find a key");
+        	
             throw new ObjectNotFoundException("No documents exist for key '" + key + "'");
         }
-
+        
         DbMapping dbmap = this.app.getNodeManager().getDbMapping(doc.get(PROTOTYPE));
         String id = doc.get(ID);
-        return new DbKey(dbmap, id, mode);
+        DbKey dbkey = new DbKey(dbmap, id, mode);
+        
+        /*if (this.app.debug()) 
+        	app.logEvent("LuceneManager.retrieveKeyFromIndex(" + field + "," + key + "," 
+        			+ parentid + "," + mode + ") executed query [" + query 
+        			+ "] and got key = " + dbkey);*/
+        
+        return dbkey;
     }
     
     public Node retrieveFromIndexFixedMode(String key, final int mode) 
@@ -463,9 +484,19 @@ public class LuceneManager{
 		}
 
 		if (doc == null) {
+			if (this.app.debug()) 
+				app.logEvent("LuceneManager.retrieveFromIndexFixedMode(" + key + "," + mode 
+						+ "," + ignoreDraftSettings + ") executed query [" + query 
+						+ "] and retrieved 0 documents");
+			
 			throw new ObjectNotFoundException("No documents exist for key '" + key + "'");
 		}
 
+		/*if (this.app.debug()) 
+			app.logEvent("LuceneManager.retrieveFromIndexFixedMode(" + key + "," + mode 
+					+ "," + ignoreDraftSettings + ") executed query [" + query 
+					+ "] and got document on layer " + layerInStorage);*/
+		
 		Node node = null;
 		try {
 			node = docToNode(doc, mode, layerInStorage);
@@ -679,7 +710,7 @@ public class LuceneManager{
 				break;
 			
             case IProperty.MULTI_VALUE:       
-				MultiValue mv = generateMultiValueProp(proto, fieldname, fieldvalue, (Object[]) map.get(REF_LIST_FIELD), mode);
+				MultiValue mv = generateMultiValueProp(proto, fieldname, fieldvalue, mode);
 				if (mv != null) {
 					prop.setMultiValue(mv);
 				} else {
@@ -764,7 +795,7 @@ public class LuceneManager{
 				}
 				break;
 			case IProperty.MULTI_VALUE:                
-				MultiValue mv = generateMultiValueProp(proto, fieldname, fieldvalue, (Object[]) props.get(REF_LIST_FIELD), mode);
+				MultiValue mv = generateMultiValueProp(proto, fieldname, fieldvalue, mode);
 				if (mv != null) {
 					node.setMultiValue(fieldname, mv);
 				}
@@ -777,59 +808,6 @@ public class LuceneManager{
 			break;
 			}
 		}
-	}
-
-	public Node[] getReferencedFromNodes(String id, File dbhome) {
-		NodeManager nmgr = this.app.getNodeManager();
-		int mode = LIVE_MODE;
-		RequestEvaluator reqeval = this.app.getCurrentRequestEvaluator();
-		if (reqeval != null) {
-			mode = reqeval.getLayer();
-		}
-
-		IndexSearcher searcher = null;
-		Query query = null;
-        
-		try {
-			searcher = this.getIndexSearcher();
-			query = new TermQuery(new Term(REF_LIST_FIELD, id));
-			Hits hits = searcher.search(query);
-
-			int hitslen = hits.length();
-			Node[] nodes = new Node[hitslen];   
-
-			for (int i = 0; i < hitslen; i++) {
-				Document d = hits.doc(i);
-
-				Key key = new DbKey(null, d.getField(LuceneManager.ID).stringValue(), mode);
-				axiom.objectmodel.db.Node node = nmgr.getNodeFromTransaction(key);
-
-				if (node == null) {
-					node = nmgr.getNodeFromCache(key);
-
-					if (node == null) {
-						node = this.docToNode(d, mode, mode);
-						node = nmgr.conditionalCacheUpdate(node);
-					} 
-
-					nmgr.conditionalNodeVisit(key, node);
-				}
-
-				nodes[i] = node;
-
-			}
-
-			return nodes;
-
-		} catch (Exception ex) {
-			app.logError(ErrorReporter.errorMsg(this.getClass(), "getReferencedFromNodes") 
-					+ "Could not retrieve the " 
-					+ "nodes referencing node '" + id + "' with query = " + query, ex);
-		} finally {
-            this.releaseIndexSearcher(searcher);
-		}
-
-		return new Node[0];
 	}
 
 	public boolean isSpecialNode(String id) {
@@ -912,8 +890,7 @@ public class LuceneManager{
 	}
 
 	private MultiValue generateMultiValueProp(Prototype proto, final String fieldname,
-			final String fieldvalue, 
-			final Object[] ref_fields, final int mode) 
+			final String fieldvalue, final int mode) 
 	throws Exception {
 		String typeStr = "string";
 		while (proto != null) {
@@ -1027,6 +1004,13 @@ public class LuceneManager{
 				bq.add(new TermQuery(new Term(LAYER_OF_SAVE, i + "")), BooleanClause.Occur.MUST);
 				Hits hits = searcher.search(bq);
 				length = hits.length();
+
+				/*if (app.debug()) 
+					app.logEvent("LuceneManager.getTheChildren(), parent = " + parent.getKey() 
+							+ ", layer = " + mode + ", layerInStorage = " + layerInStorage 
+							+ ", executed query " + bq + " which produced " + length 
+							+ " results");*/
+				
 				for (int j = 0; j < length; j++) {
 					Document doc = hits.doc(j);
 					ids.put(doc.getField(ID).stringValue(), doc.getField(PROTOTYPE).stringValue());
@@ -1691,6 +1675,12 @@ public class LuceneManager{
             	query.add(id_query, BooleanClause.Occur.MUST);
             	query.add(new TermQuery(new Term(LAYER_OF_SAVE, i + "")), BooleanClause.Occur.MUST);
             	Hits hits = searcher.search(query);
+            	
+            	/*if (app.debug()) 
+            		app.logEvent("LuceneManager.getTargetNodeIds(): id=" + id 
+            				+ ",layer=" + mode + " executed query [" + query 
+            				+ "] which resulted in " + hits.length() + " hits");*/
+            	
             	if (hits.length() > 0) {
             		doc = hits.doc(0);
             		break;
@@ -1741,6 +1731,12 @@ public class LuceneManager{
             	}
             	query.add(new TermQuery(new Term(LAYER_OF_SAVE, j + "")), BooleanClause.Occur.MUST);
             	Hits hits = searcher.search(query);
+            	
+            	/*if (app.debug()) 
+            		app.logEvent("LuceneManager.getTargetNodeIds() [for retrieving target " +
+            				"keys]: id=" + id + ",layer=" + mode + " executed query [" + query 
+            				+ "] which resulted in " + hits.length() + " hits");*/
+            	
             	if (hits.length() > 0) {
             		doc = hits.doc(0);
             		break;
@@ -1790,17 +1786,39 @@ public class LuceneManager{
 			
 			hits = searcher.search(query, sort);
 			
+			/*if (app.debug())
+				app.logEvent("LuceneManager.getSourceNodeIds(): id=" + id + ",layer=" + mode
+						+ " executed query [" + query + " which resulted in " 
+						+ hits.length() + " hits");*/
+			
 			int size = hits.length();
-			keys = new Key[size];
+			ArrayList<Key> list = new ArrayList<Key>();
 			for (int i = 0; i < size; i++) {
 				Document doc = hits.doc(i);
+				
+				if (!isIdInDocumentRefs(doc, id)) {
+					continue;
+				}
+				
 				Field id_field = doc.getField(ID);
 				Field proto_field = doc.getField(PROTOTYPE);
+				Field layer_field = doc.getField(LAYER_OF_SAVE);
+				if (layer_field != null) {
+					try {
+						if (mode < Integer.parseInt(layer_field.stringValue())) {
+							continue;
+						}
+					} catch (Exception nfe) {
+					}
+				}
 				if (id_field != null && proto_field != null) {
-					keys[i] = new DbKey(this.app.getDbMapping(proto_field.stringValue()), 
-							id_field.stringValue(), mode);
+					list.add(new DbKey(this.app.getDbMapping(proto_field.stringValue()), 
+							id_field.stringValue(), mode));
 				}
 			}
+			
+			keys = new Key[list.size()];
+			list.toArray(keys);
 		} catch (Exception ex) {
 			app.logError(ErrorReporter.errorMsg(this.getClass(), "getSourceNodeIds") 
 					+ "Could not retrieve document "
@@ -1811,6 +1829,18 @@ public class LuceneManager{
 		}
 
 		return keys;
+	}
+	
+	public static boolean isIdInDocumentRefs(Document doc, String id) {
+		Field[] ref_fields = doc.getFields(REF_LIST_FIELD);
+		final int ref_length = ref_fields != null ? ref_fields.length : 0;
+		for (int i = 0; i < ref_length; i++) {
+			String[] values = ref_fields[i].stringValue().split(NULL_DELIM);
+			if (id.equals(values[0])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String getDataType(Prototype proto, String fieldname) {
@@ -2297,7 +2327,16 @@ public class LuceneManager{
 		}
 		IndexInput input = null;
 		try {
+			System.out.println("segmentsNew = " + segmentsNew + ", exists ? " + dir.fileExists(segmentsNew));
 			input = dir.openInput(segmentsNew);
+			SegmentInfos sinfos = new SegmentInfos();
+			sinfos.read(input,dir);
+			System.out.println("FROM segmetns.new = "+sinfos.size());
+	    	for (int i = 0; i < sinfos.size(); i++) {
+	    		System.out.println("info("+i+"): " + sinfos.info(i).name);
+	    	}
+	    	input.clone();
+	    	input = dir.openInput(segmentsNew);
 			int length = (int) input.length();
 			segmentContents = new byte[length];
 			try {
@@ -2348,6 +2387,7 @@ public class LuceneManager{
 			pstmt.setBinaryStream(count++, bais, segmentContents.length);
             pstmt.setInt(count++, getLuceneVersion());
 			int rows = pstmt.executeUpdate();
+			System.out.println("EXECUTE update was a SUCCESS!!");
 			if (rows < 1) {
 				throw new Exception("LuceneTransactionManager.executeTransaction(): update didn't affect any rows in the database");
 			}
@@ -2425,6 +2465,10 @@ public class LuceneManager{
             bq.add(query2, BooleanClause.Occur.MUST);
 
             final Hits hits = searcher.search(bq);
+            
+            /*if (app.debug())
+            	app.logEvent("LuceneManager.getChildrenIds() executed query [" + bq 
+            			+ " which resulted in " + hits.length() + " hits");*/
 
             final int length = hits.length();
             for (int i = 0; i < length; i++) {

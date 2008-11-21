@@ -388,6 +388,7 @@ public class Transactor extends Thread {
                         
                         while (iter.hasNext()) {
                             Node n = (Node) iter.next();
+                            if (this.nmgr.app.debug()) this.nmgr.app.logEvent("Node to be deleted: " + node.getPrototype() + " " + node.getID() + "/" + node.getLayer() + " produced additional delete " + n.getPrototype() + " " + n.getID() + "/" + n.getLayer());
                             
                             QueryBean qb = this.getQueryBean();
                             Object[] refs = (Object[]) qb.sources(n);
@@ -397,6 +398,7 @@ public class Transactor extends Thread {
                             for (int z = 0; z < refslen; z++) {
                                 Node curr = (Node) refs[z];
                                 AxiomObject currobj = AxiomObject.createAxiomObject(curr.getPrototype(), curr);
+                                if (this.nmgr.app.debug()) this.nmgr.app.logEvent(n.getPrototype() + " " + n.getID() + "/" + n.getLayer() + " is referred to by " + curr.getPrototype() + " " + curr.getID() + "/" + curr.getLayer() + ", so its references will be updated");
                                 
                                 Enumeration e = curr.properties();
                                 while (e.hasMoreElements()) {
@@ -405,7 +407,8 @@ public class Transactor extends Thread {
                                     if (ptype == Property.REFERENCE) {
                                         Reference ref = p.getReferenceValue();
                                         if (ref != null && ref.getTargetKey().getID().equals(nId)) {
-                                            currobj.put(p.getName(), currobj, null);
+                                        	currobj.put(p.getName(), currobj, null);
+                                        	if (this.nmgr.app.debug()) this.nmgr.app.logEvent("setting Reference property " + p.getName() + " to null");
                                         }
                                     } else if (ptype == Property.MULTI_VALUE) {
                                         MultiValue mv = p.getMultiValue();
@@ -421,11 +424,13 @@ public class Transactor extends Thread {
                                             curr.lastmodified = System.currentTimeMillis();
                                             mv.setValues(newvalues);
                                             currobj.put(p.getName(), currobj, mv);
+                                            if (this.nmgr.app.debug()) this.nmgr.app.logEvent("removing the reference from MultiValue property " + p.getName());
                                         }
                                     } else if (ptype == Property.XHTML) {
                                     	Object xhtml = p.getXHTMLValue();
                                     	xhtml = removeRefsFromXhtml(xhtml, n);
                                     	currobj.put(p.getName(), currobj, xhtml);
+                                    	if (this.nmgr.app.debug()) this.nmgr.app.logEvent("removing references from XHTML property " + p.getName());
                                     }
                                 }
                                 
@@ -451,7 +456,8 @@ public class Transactor extends Thread {
                 		final int sizeOfList = parentChangedNodes.size();
                 		for (int a = 0; a < sizeOfList; a++) {
                 			Node n = parentChangedNodes.get(a);
-                            
+                			if (this.nmgr.app.debug()) this.nmgr.app.logEvent("Path update on " + node.getPrototype() + " " + node.getID() + "/" + node.getLayer() + " produced additional path update of " + n.getPrototype() + " " + n.getID() + "/" + n.getLayer() + ", so its references will be updated");
+                			
                             QueryBean qb = this.getQueryBean();
                             HashMap options = new HashMap();
                             options.put(QueryDispatcher.LAYER, new Integer(node.getKey().getLayer()));
@@ -461,6 +467,7 @@ public class Transactor extends Thread {
                             for (int z = 0; z < refslen; z++) {
                                 Node curr = (Node) refs[z];
                                 AxiomObject currobj = AxiomObject.createAxiomObject(curr.getPrototype(), curr);
+                                if (this.nmgr.app.debug()) this.nmgr.app.logEvent(n.getPrototype() + " " + n.getID() + "/" + n.getLayer() + " is referred to by " + curr.getPrototype() + " " + curr.getID() + "/" + curr.getLayer() + ", so its XHTML refs will be updated");
                                 
                                 Enumeration e = curr.properties();
                                 while (e.hasMoreElements()) {
@@ -469,6 +476,7 @@ public class Transactor extends Thread {
                                     	Object xhtml = p.getXHTMLValue();
                                     	xhtml = updateRefsInXhtml(xhtml, n);
                                     	currobj.put(p.getName(), currobj, xhtml);
+                                    	if (this.nmgr.app.debug()) this.nmgr.app.logEvent("Updating XHTML property " + p.getName());
                                     }
                                 }
                                 

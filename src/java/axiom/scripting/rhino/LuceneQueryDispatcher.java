@@ -47,6 +47,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
@@ -254,20 +255,35 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 		}
 		
 		Object ret = null;
+		int sizeOfResults = 0;
+		
 		try {
 			if (sort != null && (lsort = getLuceneSort(sort)) != null) {
 				if (maxResults == -1 || opaths.size() > 0) {
-					ret = searcher.search(primary, lsort);
+					Hits h = searcher.search(primary, lsort);
+					sizeOfResults = h.length();
+					ret = h;
 				} else {
-					ret = searcher.search(primary, null, maxResults, lsort);
+					TopFieldDocs tfd = searcher.search(primary, null, maxResults, lsort);
+					sizeOfResults = tfd.totalHits;
+					ret = tfd;
 				}
 			} else {
 				if (maxResults == -1 || opaths.size() > 0) {
-					ret = searcher.search(primary);
+					Hits h = searcher.search(primary);
+					sizeOfResults = h.length();
+					ret = h;
 				} else {
-					ret = searcher.search(primary, null, maxResults);
+					TopDocs td = searcher.search(primary, null, maxResults);
+					sizeOfResults = td.totalHits;
+					ret = td;
 				}
 			}
+			
+			/*if (app.debug())
+				app.logEvent("LuceneManager.luceneHits() executed query [" + primary 
+						+ "] which resulted in " + sizeOfResults + " hits");*/
+			
 		} catch (Exception ex) {
 			app.logError(ErrorReporter.errorMsg(this.getClass(), "luceneHits") 
 					+ "Occured on query = " + primary, ex);
@@ -333,25 +349,39 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         }
         
         Object ret = null;
+        int sizeOfResults = 0;
+        
         try {
             IndexSearcher searcher = params.searcher;
             if (params.sort != null) {
                 if (params.max_results == -1) {
-                    ret = searcher.search(mergedQuery, filter, params.sort);
+                    Hits h = searcher.search(mergedQuery, filter, params.sort);
+                    sizeOfResults = h.length();
+                    ret = h;
                 } else {
-                    ret = searcher.search(mergedQuery, filter, params.max_results, params.sort);
+                    TopFieldDocs tfd = searcher.search(mergedQuery, filter, params.max_results, params.sort);
+                    sizeOfResults = tfd.totalHits;
+                    ret = tfd;
                 }
             } else {
                 if (params.max_results == -1) {
-                    ret = searcher.search(mergedQuery, filter);
+                    Hits h = searcher.search(mergedQuery, filter);
+                    sizeOfResults = h.length();
+                    ret = h;
                 } else {
-                    ret = searcher.search(mergedQuery, filter, params.max_results);
+                    TopDocs td = searcher.search(mergedQuery, filter, params.max_results);
+                    sizeOfResults = td.totalHits;
+                    ret = td;
                 }
             }
         } catch (Exception ex) {
             app.logError(ErrorReporter.errorMsg(this.getClass(), "luceneHits") 
             		+ "Occured on query = " + primary, ex);
         } 
+        
+        /*if (app.debug())
+			app.logEvent("LuceneManager.luceneHits() [2] executed query [" + mergedQuery 
+					+ "] which resulted in " + sizeOfResults + " hits");*/
 
         return ret;
     }
@@ -1412,6 +1442,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         try {
             searcher = this.lmgr.getIndexSearcher();
             Hits hits = searcher.search(primary);
+            /*if (app.debug())
+				app.logEvent("LuceneManager.getReferences() executed query [" + primary 
+						+ "] which resulted in " + hits.length() + " hits");*/
             
             HashSet target_set = new HashSet(targets);
             luceneResultsToReferences(hits, results, target_set, mode);
@@ -1537,17 +1570,24 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         final LuceneManager lmgr = this.lmgr;
         INode node = null;
 
+        int objLayer = -1;
         ArrayList objects = null;
         if (o instanceof AxiomObject) {
             objects = new ArrayList();
             node = ((AxiomObject) o).node;
             if (node != null) {
                 objects.add(node.getID());
+                if (node instanceof Node) {
+                	objLayer = ((Node) node).getLayer();
+                }
             }
         } else if (o instanceof INode) { 
             objects = new ArrayList();
             node = (INode) o;
             objects.add(node.getID());
+            if (node instanceof Node) {
+            	objLayer = ((Node) node).getLayer();
+            }
         } else if (o instanceof String) {
             objects = this.getNodesByPath((String) o);
         }
@@ -1566,6 +1606,8 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         final int mode; 
         if (_layer > -1) {
         	mode = _layer;
+        } else if (objLayer > -1) { 
+        	mode = objLayer;
         } else {
         	RequestEvaluator req_eval = app.getCurrentRequestEvaluator();
         	if (req_eval != null) {
@@ -1682,17 +1724,24 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         final LuceneManager lmgr = this.lmgr;
         INode node = null;
 
+        int objLayer = -1;
         ArrayList objects = null;
         if (o instanceof AxiomObject) {
             objects = new ArrayList();
             node = ((AxiomObject) o).node;
             if (node != null) {
                 objects.add(node.getID());
+                if (node instanceof Node) {
+                	objLayer = ((Node) node).getLayer();
+                }
             }
         } else if (o instanceof INode) { 
             objects = new ArrayList();
             node = (INode) o;
             objects.add(node.getID());
+            if (node instanceof Node) {
+            	objLayer = ((Node) node).getLayer();
+            }
         } else if (o instanceof String) {
             objects = this.getNodesByPath((String) o);
         }
@@ -1707,6 +1756,8 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         final int mode; 
         if (_layer > -1) {
         	mode = _layer;
+        } else if (objLayer > -1) { 
+        	mode = objLayer;
         } else {
         	RequestEvaluator req_eval = app.getCurrentRequestEvaluator();
         	if (req_eval != null) {

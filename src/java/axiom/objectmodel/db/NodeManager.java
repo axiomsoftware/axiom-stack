@@ -2518,6 +2518,10 @@ public final class NodeManager {
     }
     
     public Node getNodeInLayer(Node node, final int mode) throws Exception {
+    	if (app.debug()) 
+    		app.logEvent("NodeManager.getNodeInLayer() for " + node.logString() 
+    				+ " on layer " + mode);
+    	
     	DbKey dkey = new DbKey(node.getDbMapping(), node.getID(), mode);
     	Node nnode = null;
     	try {
@@ -2538,9 +2542,14 @@ public final class NodeManager {
     		final int state = nnode.getState();
     		if (state == Node.DELETED || (state == Node.MODIFIED && nnode.getParent() == null)) {
     			nnode.checkWriteLock();
+    			if (app.debug())
+            		app.logEvent("NodeManager.getNodeInLayer(), getting node " 
+            				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
+            				+ ", state = " + nnode.getState()
+            				+ ", id = " + nnode.getString("id")
+            				+ " by thread " + Thread.currentThread());
     			nnode.markAs(Node.MODIFIED);
     			nnode.setParent(parent);
-    			nnode.setPropMap(new Hashtable());
     			nnode.cloneProperties(node);
     		}
     		return nnode;
@@ -2556,6 +2565,12 @@ public final class NodeManager {
         nnode.setSubnodes(node.getSubnodeList());
         nnode.cloneProperties(node);
         nnode.markAs(Node.NEW);
+        
+        if (app.debug())
+    		app.logEvent("NodeManager.getNodeInLayer(), created new node " 
+    				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
+    				+ ", id = " + nnode.getString("id")
+    				+ " by thread " + Thread.currentThread());
         
         // synchronize with cache
         synchronized (cache) {
@@ -2584,6 +2599,10 @@ public final class NodeManager {
     }
     
     public void deleteNodeInLayer(Node node, final int mode) {
+    	if (app.debug()) 
+    		app.logEvent("NodeManager.deleteNodeInLayer() for " + node.logString() 
+    				+ " on layer " + mode);
+    	
     	DbKey dkey = new DbKey(node.getDbMapping(), node.getID(), mode);
     	Node nnode = null;
     	try {
@@ -2591,9 +2610,16 @@ public final class NodeManager {
     	} catch (Exception ex) {
     		nnode = null;
     	}
-
+    	
     	if (nnode != null) {
     		nnode.checkWriteLock();
+    		if (app.debug())
+        		app.logEvent("NodeManager.deleteNodeInLayer(), setting delete status on " 
+        				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
+        				+ ", state = " + nnode.getState()
+        				+ ", id = " + nnode.getString("id")
+        				+ " by thread " + Thread.currentThread());
+        	
     		nnode.markAs(Node.DELETED);  
     		INode parent = nnode.getParent();
     		if (parent != null) {
@@ -2602,6 +2628,9 @@ public final class NodeManager {
     		nnode.setParentHandle(null);
     	}
 
+    	if (app.debug())
+    		app.logEvent("NodeManager.deleteNodeInLayer(), evict key = " + dkey);
+    	
     	this.evictKey(dkey);
     }
     
@@ -2628,6 +2657,9 @@ public final class NodeManager {
     		}
     		if (newPath != null && oldPath != null && !newPath.equals(oldPath)) {
     			node.hasPathChanged = true;
+    			if (this.app.debug()) 
+    	        	this.app.logEvent("Node.saveNodeInLayer(): Path has changed on " 
+    	        			+ node.logString());
     		}
     	} catch (Exception ignore) {
     		// object not found in current layer, ignore
