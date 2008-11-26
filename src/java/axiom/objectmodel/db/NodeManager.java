@@ -262,7 +262,7 @@ public final class NodeManager {
                 }
                 // end of cache-synchronized section
             }
-        }
+        } 
         
         if (node != null && tx != null) {
             tx.visitCleanNode(key, node);
@@ -2539,15 +2539,18 @@ public final class NodeManager {
         }
         
     	if (nnode != null) {
+    		if (app.debug())
+        		app.logEvent("NodeManager.getNodeInLayer(), getting node " 
+        				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
+        				+ ", state = " + nnode.getState()
+        				+ ", id = " + nnode.getString("id")
+        				+ ", layer = " + nnode.getLayer() 
+        				+ ", layerinStorage = " + nnode.getLayerInStorage()
+        				+ " by thread " + Thread.currentThread());
+    		
     		final int state = nnode.getState();
     		if (state == Node.DELETED || (state == Node.MODIFIED && nnode.getParent() == null)) {
     			nnode.checkWriteLock();
-    			if (app.debug())
-            		app.logEvent("NodeManager.getNodeInLayer(), getting node " 
-            				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
-            				+ ", state = " + nnode.getState()
-            				+ ", id = " + nnode.getString("id")
-            				+ " by thread " + Thread.currentThread());
     			nnode.markAs(Node.MODIFIED);
     			nnode.setParent(parent);
     			nnode.cloneProperties(node);
@@ -2560,6 +2563,7 @@ public final class NodeManager {
     	nnode = new Node(node.getName(), node.getID(), node.getPrototype(), safe, node.created, node.lastmodified);
     	nnode.getKey(mode);
     	nnode.setLayer(mode);
+    	nnode.setLayerInStorage(mode);
     	
         nnode.setParent(parent);
         nnode.setSubnodes(node.getSubnodeList());

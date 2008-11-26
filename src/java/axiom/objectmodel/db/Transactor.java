@@ -533,6 +533,8 @@ public class Transactor extends Thread {
                     inserted++;
                     nmgr.app.logEvent("inserted: Node " + node.getPrototype() + "/" +
                                   node.getID() + "/" + node.getKey().getLayer());
+                    
+                    deleted += deletePreviewNodes(node, dirtyDbMappings, invalidationList, deletedNodes, hasListeners, hasOnCommit);
                 } else if (nstate == Node.MODIFIED) {
                     // update the node's path in the path index db
                     if (node.hasPathChanged()) {
@@ -1078,10 +1080,12 @@ public class Transactor extends Thread {
     								 final boolean hasListeners, final boolean hasOnCommit)
     throws Exception {
     	
+    	nmgr.app.logEvent("Transactor.deletePreviewNodes(), node = " + node.getKey() + ", layer in storage = " + node.getLayerInStorage());
     	int deleted = 0;
     	IDatabase db = this.nmgr.getDatabaseForMapping(node.dbmap);
     	if (db instanceof LuceneDatabase) {
         	ArrayList<Node> preview = ((LuceneDatabase) db).getPreviewNodes(node.getID(), node.getLayer());
+        	nmgr.app.logEvent("Transactor.deletePreviewNodes(), size = " + preview.size());
         	for (Node n : preview) {
         		pitxn.addResource(n, ITransaction.DELETED);
         		nmgr.deleteNode(db, this.txns.get(db), n);
