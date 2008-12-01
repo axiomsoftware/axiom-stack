@@ -1161,6 +1161,10 @@ public class Node implements INode, Serializable {
         // we want the element name to be recomputed on the child node
         node.lastNameCheck = 0;
         node.hasPathChanged = true;
+        if (this.nmgr.nmgr.app.debug()) 
+        	this.nmgr.nmgr.app.logEvent("Node.addNode(): Path has changed on " 
+        			+ node.logString());
+        
         registerSubnodeChange();
         
         // Keeps track if a relational node was just added to a lucene node
@@ -1170,6 +1174,10 @@ public class Node implements INode, Serializable {
         }
 
         return node;
+    }
+    
+    public String logString() {
+    	return this.getPrototype() + " " + this.getID() + "/" + this.getLayer();
     }
 
     /**
@@ -2320,6 +2328,11 @@ public class Node implements INode, Serializable {
                             subrel.accessName.equals(dbcolumn)) {
                     	
                     	this.hasPathChanged = true;
+                    	if (this.nmgr.nmgr.app.debug()) 
+                        	this.nmgr.nmgr.app.logEvent("Node.setString(" + propname 
+                        			+ "," + value + "): Path has changed on " 
+                        			+ this.logString() + ", oldvalue = " + oldvalue);
+                    	
                         // if any other node is contained with the new value, remove it
                         INode n = (INode) parent.getChildElement(value);
 
@@ -3312,10 +3325,6 @@ public class Node implements INode, Serializable {
         this.hasPathChanged = false;
     }
     
-    public void pathChanged() {
-        this.hasPathChanged = true;
-    }
-        
     public void setLastModified(long time) {
     	this.lastmodified = time;
     }
@@ -3394,12 +3403,23 @@ public class Node implements INode, Serializable {
     }
     
     public void cloneProperties(Node node) throws Exception {
+    	if (this.propMap == null) {
+    		this.propMap = new Hashtable();
+    	}
+    	
+    	HashSet<String> currentProps = new HashSet<String>();
+    	Enumeration firstpass = this.properties();
+    	while (firstpass.hasMoreElements()) {
+    		currentProps.add(this.get(firstpass.nextElement().toString()).getName());
+    	}
+    	
     	try {
     		Enumeration e = node.properties();
 
     		while (e.hasMoreElements()) {
     			String str = e.nextElement().toString();
-    			IProperty property = node.get(str);    
+    			IProperty property = node.get(str);   
+    			currentProps.remove(property.getName());
 
     			switch (property.getType()) {
     			case IProperty.STRING:
@@ -3491,6 +3511,11 @@ public class Node implements INode, Serializable {
     	} catch (Exception ex) {
     		throw new Exception("Error calling cloneProperties() on " + this, ex);
     	} 
+    	
+    	Iterator<String> iter = currentProps.iterator();
+    	while (iter.hasNext()) {
+    		this.unset(iter.next());
+    	}
     }
     
     protected void updateLayersOnReferences(int layer) {
