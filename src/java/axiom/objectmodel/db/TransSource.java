@@ -38,21 +38,21 @@ public class TransSource {
 		"CREATE TABLE Lucene (" +
 			"timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
 			"valid SMALLINT NOT NULL," +
-			"db_home VARCHAR(255) NOT NULL," +
+			"db_home VARCHAR(1024) NOT NULL," +
 			"segments BLOB NOT NULL," + 
             "version INT NOT NULL)";
 		
     public final static String TRANS_SQL_IDGEN = 
         "CREATE TABLE IdGen (" +
 			"id INT NOT NULL," +
-            "cluster_host VARCHAR(10) NOT NULL," +
+            "cluster_host VARCHAR(255) NOT NULL," +
     		"PRIMARY KEY (id, cluster_host))";
     
     public final static String TRANS_SQL_PATHINDICES =
 		"CREATE TABLE PathIndices (" +
-			"id VARCHAR(20) NOT NULL," +
+			"id VARCHAR(30) NOT NULL," +
 			"layer INT NOT NULL," +
-			"path VARCHAR(255) NOT NULL," +
+			"path VARCHAR(8192) NOT NULL," +
 			"PRIMARY KEY (id, layer))";
     
     public final static String TRANS_SQL_INDEX = 
