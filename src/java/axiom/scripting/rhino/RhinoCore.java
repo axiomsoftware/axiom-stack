@@ -986,15 +986,14 @@ public final class RhinoCore implements ScopeProvider {
             ArrayList<Resource> code = proto.getCodeResourceList();
             ArrayList<Resource> talFiles = new ArrayList<Resource>();
             Scriptable op = type.objProto;
-            Scriptable temp = cx.newObject(global); 
-        	
+
 	        for (int i = 0; i < code.size(); i++) {
         		Resource resource = code.get(i);
         		sourceName = resource.getName();
                 // do the update, evaluating the file
                 if (sourceName.endsWith(".js")) {
                     reader = new InputStreamReader(resource.getInputStream());
-                    cx.evaluateReader(temp, reader, sourceName, 1, null);
+                    cx.evaluateReader(op, reader, sourceName, 1, null);
                 } else if (sourceName.endsWith(".tal")) {
                 	talFiles.add(code.get(i));
                 }
@@ -1003,25 +1002,10 @@ public final class RhinoCore implements ScopeProvider {
 			for(int j = 0; j < talFiles.size(); j++){
             	Resource resource = talFiles.get(j);
         		sourceName = resource.getName();
-        		String shortName = resource.getShortName();
-        		String shortTalName = shortName.substring(0, shortName.length() - 4);
-        		Object exists = temp.get(shortTalName, temp);
-       		
-        		if(exists != null && exists != Scriptable.NOT_FOUND){
-                    String prototpe = proto.getName();
-                	app.logError("WARNING, unable to load " + prototpe + "/" + shortName + " because a javascript function named " + shortTalName + " already exists for prototype " + prototpe);
-        		} else { 
-	        		reader = new StringReader(ResourceConverter.convertTal(resource));
-	        		cx.evaluateReader(op, reader, sourceName, 1, null);
-        		}
+        		reader = new StringReader(ResourceConverter.convertTal(resource));
+        		cx.evaluateReader(op, reader, sourceName, 1, null);
 	        }
-			
-			Object objs[] = temp.getIds();
-			for(int i = 0; i < objs.length; i++){
-				String name = objs[i].toString();
-				op.put(name, op, temp.get(name, temp));
-			}
-			
+
         }
         catch(Exception e){
             app.logError(ErrorReporter.errorMsg(this.getClass(), "evaluate") 
