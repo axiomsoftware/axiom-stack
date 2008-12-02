@@ -913,7 +913,6 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     	Query query = null;
     	String qstr = nfobj.getNativeQuery();
     	Analyzer analyzer = nfobj.getAnalyzer();
-
     	try {
     		if (analyzer != null) {
     			QueryParser qp = new QueryParser(LuceneManager.ID, analyzer);
@@ -934,7 +933,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     
     private Query getSearchFilterQuery(SearchFilterObject sfobj, ResourceProperties props) 
     	throws Exception {
-    	BooleanQuery bquery = new BooleanQuery();
+    	BooleanQuery primary = null;
     	Query query = null;
     	
     	Analyzer analyzer = sfobj.getAnalyzer();
@@ -955,35 +954,20 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         
         try {
     		if (analyzer != null) {
+    			if (primary == null) {
+    				primary = new BooleanQuery();
+    			}
     			QueryParser qp = new QueryParser(LuceneManager.ID, analyzer);
     			if(profile != null && filter instanceof String) {
-    				qstr = "\"" + qstr + "\"";
-    				BooleanQuery bq = new BooleanQuery();
+    				BooleanQuery sub_query = new BooleanQuery();
+    				
     				for (int i = 0; i < profile.fields.length; i++) {
     					Query q = qp.parse(profile.fields[i] + ":" + qstr);
     					q.setBoost(profile.boosts[i]);
-    					bq.add(q, BooleanClause.Occur.SHOULD);
+    					sub_query.add(q, BooleanClause.Occur.SHOULD);
     				}
-        			bquery.add(bq, BooleanClause.Occur.MUST);
-    			} else if(profile != null && filter instanceof Scriptable){
-        			IFilter spfilter = QueryBean.getFilterFromObject((Scriptable)filter);
-    				
-        			Query q = null; 
-                    if (spfilter instanceof FilterObject) {
-                        q = getFilterQuery((FilterObject) spfilter, props);
-                    } else if (spfilter instanceof NativeFilterObject) {
-                        q = getNativeQuery((NativeFilterObject) spfilter);
-                    } else if (spfilter instanceof OpFilterObject) {
-                        q = parseOpFilter((OpFilterObject) spfilter, props);
-                    } else if (spfilter instanceof RangeFilterObject) {
-                    	q = getRangeQuery((RangeFilterObject)spfilter, props);
-                    } else if (spfilter instanceof SearchFilterObject) {
-                    	q = getSearchFilterQuery((SearchFilterObject)spfilter, props);
-                    }
-                    
-                    if(q != null){
-            			bquery.add(q, BooleanClause.Occur.SHOULD);
-                    }
+        			primary.add(sub_query, BooleanClause.Occur.MUST);        			
+        			sub_query = null;
     			}
     	    	
     	    	String profileFilter = profile.filter;
@@ -1003,7 +987,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     				spfilter = QueryBean.getFilterFromObject(result);
     			}
 
-    			Query q = null; 
+    			Query q = null;
                 if (spfilter instanceof FilterObject) {
                     q = getFilterQuery((FilterObject) spfilter, props);
                 } else if (spfilter instanceof NativeFilterObject) {
@@ -1017,10 +1001,10 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
                 }
                 
                 if(q != null){
-        			bquery.add(q, OCCUR);
+        			primary.add(q, OCCUR);
                 }
 
-    			query = bquery;
+    			query = primary;
     	    	
     			qp = null;
     		} else {

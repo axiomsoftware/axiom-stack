@@ -86,12 +86,10 @@ public class SearchFilterObject extends ScriptableObject implements IFilter {
         	filter = (String)arg;
         } else if (arg instanceof Scriptable && ((Scriptable) arg).getClassName().equals("String")) {
         	filter = ScriptRuntime.toString(arg);
-        } else if (arg instanceof Scriptable){
-        	filter = (Scriptable)arg;
         } else {
-            throw new Exception("First parameter of a SearchFilter must be a string literal or a javascript object literal.");
+            throw new Exception("First parameter of a SearchFilter must be a string.");
         }
-        	
+        
         if(searchProfile instanceof String){
         	searchFilter = searchProfile.toString();
         } else if (searchProfile instanceof Scriptable && ((Scriptable) searchProfile).getClassName().equals("String")) {
