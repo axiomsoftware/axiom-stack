@@ -2322,10 +2322,23 @@ public final class Application implements IPathElement, Runnable {
 		return dbProps;
 	}
     
+	/**
+	 * Get the applications Search Profiles
+	 * 
+	 * @deprecated As of 3.2.9, replaced by {@link #getSearchProfiles()}
+	 */
     public ResourceProperties getSearchProperties() {
         return this.searchProps;
     }
 
+    /**
+     * Get the applications Search Profiles
+     * 
+     * @return A ResourceProperties object containing the profiles
+     */
+    public ResourceProperties getSearchProfiles() {
+        return this.searchProps;
+    }
 
 	/**
 	 * Return a string representation for this app.
