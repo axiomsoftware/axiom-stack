@@ -958,7 +958,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     				primary = new BooleanQuery();
     			}
     			QueryParser qp = new QueryParser(LuceneManager.ID, analyzer);
-    			if(profile != null && filter instanceof String) {
+    			if(profile != null && !qstr.isEmpty()) {
     				BooleanQuery sub_query = new BooleanQuery();
     				
     				for (int i = 0; i < profile.fields.length; i++) {
