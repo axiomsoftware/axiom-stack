@@ -84,4 +84,4 @@ if not "%AXIOM_HOME%"=="" (
 
 :: Invoking the Java virtual machine
 ::echo %OPTIONS%
- %JAVACMD% -javaagent:c:\dev\JavaConTest\Lib\ConTest.jar -Dfile.encoding=%ENCODING% -Dorg.apache.lucene.FSDirectory.class=%FSDIRECTORY% %JAVA_OPTIONS% -jar "%INSTALL_DIR%\launcher.jar" %OPTIONS%
+ %JAVACMD% -Dfile.encoding=%ENCODING% -Dorg.apache.lucene.FSDirectory.class=%FSDIRECTORY% %JAVA_OPTIONS% -jar "%INSTALL_DIR%\launcher.jar" %OPTIONS%
