@@ -174,6 +174,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 			SortObject sort, int maxResults, ArrayList opaths,
 			IndexSearcher searcher, LuceneQueryParams params, 
 			int _layer) throws Exception {
+    	long start = System.currentTimeMillis();
 		BooleanQuery primary = new BooleanQuery();
 		final String PROTO = LuceneManager.PROTOTYPE;
 		final BooleanClause.Occur SHOULD = BooleanClause.Occur.SHOULD;
@@ -258,6 +259,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 		int sizeOfResults = 0;
 		
 		try {
+			if (app.debug()){
+				app.logEvent("running query "+primary+" with maxResults "+maxResults+ " and sort "+(sort == null ? "null" : getLuceneSort(sort)));
+			}
 			if (sort != null && (lsort = getLuceneSort(sort)) != null) {
 				if (maxResults == -1 || opaths.size() > 0) {
 					Hits h = searcher.search(primary, lsort);
@@ -279,11 +283,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 					ret = td;
 				}
 			}
-			
-			/*if (app.debug())
-				app.logEvent("LuceneManager.luceneHits() executed query [" + primary 
-						+ "] which resulted in " + sizeOfResults + " hits");*/
-			
+
 		} catch (Exception ex) {
 			app.logError(ErrorReporter.errorMsg(this.getClass(), "luceneHits") 
 					+ "Occured on query = " + primary, ex);
@@ -300,11 +300,17 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 			params.sort = lsort;
 			params.rprops = combined_props;
 		}
+		if(app.debug()){
+			long time = System.currentTimeMillis() - start;
+			app.logEvent("... took "+(time/1000.0)+" seconds\n ------");
+		}
+
 		return ret;
 	}
 
     private Object luceneHits(ArrayList prototypes, IFilter ifilter, LuceneQueryParams params) 
     throws Exception {
+    	long start = System.currentTimeMillis();
         BooleanQuery primary = new BooleanQuery();
         final String PROTO = LuceneManager.PROTOTYPE;
         final BooleanClause.Occur SHOULD = BooleanClause.Occur.SHOULD;
@@ -352,7 +358,10 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         int sizeOfResults = 0;
         
         try {
-            IndexSearcher searcher = params.searcher;
+        	if(app.debug()){
+        		app.logEvent("running query "+primary);
+        	}
+        	IndexSearcher searcher = params.searcher;
             if (params.sort != null) {
                 if (params.max_results == -1) {
                     Hits h = searcher.search(mergedQuery, filter, params.sort);
@@ -379,10 +388,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             		+ "Occured on query = " + primary, ex);
         } 
         
-        /*if (app.debug())
-			app.logEvent("LuceneManager.luceneHits() [2] executed query [" + mergedQuery 
-					+ "] which resulted in " + sizeOfResults + " hits");*/
-
+        if (app.debug()){
+			long time = System.currentTimeMillis() - start;
+			app.logEvent("... took "+(time/1000.0)+" seconds\n ------");
+        }
+        
         return ret;
     }
 
@@ -1394,6 +1404,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 
     public Scriptable getReferences(ArrayList sources, ArrayList targets, final int mode)
     throws Exception {
+    	long start = System.currentTimeMillis();
         final GlobalObject global = this.core != null ? this.core.global : null;
         final Application app = this.app;
         
@@ -1424,11 +1435,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         IndexSearcher searcher = null;   
         
         try {
-            searcher = this.lmgr.getIndexSearcher();
+            if (app.debug()){
+            	app.logEvent("running query "+primary);
+            }
+        	searcher = this.lmgr.getIndexSearcher();
             Hits hits = searcher.search(primary);
-            /*if (app.debug())
-				app.logEvent("LuceneManager.getReferences() executed query [" + primary 
-						+ "] which resulted in " + hits.length() + " hits");*/
             
             HashSet target_set = new HashSet(targets);
             luceneResultsToReferences(hits, results, target_set, mode);
@@ -1438,6 +1449,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
             		+ "Occured on query = " + primary, ex);
         } finally {
             this.lmgr.releaseIndexSearcher(searcher);
+        }
+        
+        if(app.debug()){
+        	long time = System.currentTimeMillis() - start;
+        	app.logEvent("... took "+(time/1000.0)+" seconds\n ------");
         }
         
         return Context.getCurrentContext().newArray(global, results.toArray());
