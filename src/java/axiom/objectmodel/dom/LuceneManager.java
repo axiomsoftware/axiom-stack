@@ -1338,7 +1338,7 @@ public class LuceneManager{
 			doc.add(f);
 			System.out.println("addToDoc::String with analyzer "+analyzer);
 			if (analyzer != null) {
-				String docid = doc.get(LuceneManager.ID);
+				String docid = doc.getField(ID).stringValue() + DeletedInfos.KEY_SEPERATOR + doc.getField(LAYER_OF_SAVE).stringValue();
 				PerFieldAnalyzerWrapper ret = 
 					(PerFieldAnalyzerWrapper) analyzerMap.get(docid);
 				if (ret == null) {
@@ -1398,7 +1398,7 @@ public class LuceneManager{
 			if (prop instanceof axiom.objectmodel.db.Property) {
 				axiom.objectmodel.db.Property p = 
 					(axiom.objectmodel.db.Property) prop;
-				Object xml = p.getValue();
+				Object xml = p.getXMLValue();
 				if (xml != null) {
 					f = new Field(key, XmlUtils.objectToXMLString(xml), store, index);
 					if (boost > -1f) {
@@ -1411,7 +1411,7 @@ public class LuceneManager{
             if (prop instanceof axiom.objectmodel.db.Property) {
                 axiom.objectmodel.db.Property p = 
                     (axiom.objectmodel.db.Property) prop;
-                Object xml = p.getValue();
+                Object xml = p.getXHTMLValue();
                 if (xml != null) {
                 	f = new Field(key, XmlUtils.objectToXMLString(xml), store, index);
                 	if (boost > -1f) {
@@ -2332,16 +2332,7 @@ public class LuceneManager{
 		}
 		IndexInput input = null;
 		try {
-			System.out.println("segmentsNew = " + segmentsNew + ", exists ? " + dir.fileExists(segmentsNew));
 			input = dir.openInput(segmentsNew);
-			SegmentInfos sinfos = new SegmentInfos();
-			sinfos.read(input,dir);
-			System.out.println("FROM segmetns.new = "+sinfos.size());
-	    	for (int i = 0; i < sinfos.size(); i++) {
-	    		System.out.println("info("+i+"): " + sinfos.info(i).name);
-	    	}
-	    	input.clone();
-	    	input = dir.openInput(segmentsNew);
 			int length = (int) input.length();
 			segmentContents = new byte[length];
 			try {
