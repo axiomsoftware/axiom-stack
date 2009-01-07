@@ -244,6 +244,7 @@ public class LuceneManager{
 					for (int i = 0; i < savesize; i++) {
 						String docid = (String) docids.get(i);
 						Analyzer analyzer = (Analyzer) analyzerMap.get(docid);
+						System.out.println(docid +" using "+analyzer);
 						if (analyzer != null) {
 							fsWriter.addDocument(docid, (Document) doclist.get(i), analyzer);
 						} else {
@@ -256,6 +257,7 @@ public class LuceneManager{
 					for (int i = 0; i < updatesize; i++) {
 						String docid = (String) updateids.get(i);
                         Analyzer analyzer = (Analyzer) analyzerMap.get(docid);
+                        System.out.println(docid +" (update) using "+analyzer);
                         try {
 							if (analyzer != null) {
 								fsWriter.update(docid, (Document) updatelist.get(i), analyzer);
@@ -1334,14 +1336,17 @@ public class LuceneManager{
 				f.setBoost(boost);
 			}
 			doc.add(f);
+			System.out.println("addToDoc::String with analyzer "+analyzer);
 			if (analyzer != null) {
 				String docid = doc.get(LuceneManager.ID);
 				PerFieldAnalyzerWrapper ret = 
 					(PerFieldAnalyzerWrapper) analyzerMap.get(docid);
 				if (ret == null) {
 					ret = buildAnalyzer();
+					//System.out.println(docid+" using "+ret);
 					analyzerMap.put(docid, ret);
 				}
+				System.out.println(docid+" using "+ret+" with key "+key+" and analyzer "+analyzer);
 				ret.addAnalyzer(key, analyzer);
 			}
 			break;
@@ -2424,12 +2429,12 @@ public class LuceneManager{
 		}
 	}
 
-	public static Analyzer getAnalyzer(String analyzer) {
-        if (analyzer == null) {
+	public static Analyzer getAnalyzer(String analyzerName) {
+        if (analyzerName == null) {
             return null;
         }
         
-		analyzer = analyzer.toLowerCase();
+		String analyzer = analyzerName.toLowerCase();
 		if ("whitespaceanalyzer".equals(analyzer)) {
 			return new WhitespaceAnalyzer();
 		} else if ("simpleanalyzer".equals(analyzer)) {
@@ -2438,6 +2443,22 @@ public class LuceneManager{
 			return new StopAnalyzer();
 		} else if ("standardanalyzer".equals(analyzer)) {
 			return new StandardAnalyzer();
+		} else {
+			try {
+				System.out.println("asking for "+analyzerName);
+				Analyzer analyzerInstance = (Analyzer) Class.forName(analyzerName).newInstance();
+				System.out.println("got "+analyzerInstance.getClass().getName());
+				return analyzerInstance;
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch(ClassNotFoundException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return null;
