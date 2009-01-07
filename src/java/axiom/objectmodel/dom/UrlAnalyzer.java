@@ -35,10 +35,11 @@ public class UrlAnalyzer extends Analyzer {
 	                	found = matcher.find();	  
 	                	
 	                	if(found){
-		                	final String text = sb.toString().substring(0, matcher.end()-1);
+		                	final String text = sb.toString().substring(0, matcher.end()-1).toLowerCase();
 		                	int len = text.length();
 		                	if(len > 0){
 		                		// matched a token
+		                		System.out.println("-- token: ["+text+"]");
 		                		return new Token(text, 0, len);
 		                	} else {
 		                		// only contains a stop token, continue reading
@@ -49,7 +50,8 @@ public class UrlAnalyzer extends Analyzer {
 	                }
                 	// at end of string
 	                done = true;
-	                final String value = sb.toString();
+	                final String value = sb.toString().toLowerCase();
+	                System.out.println("-- token: ["+value+"]");
 	                return new Token(value, 0, value.length());
             	}
             	return null;
