@@ -2267,12 +2267,13 @@ public class LuceneManager{
 
 		try {
 			String sql = "UPDATE Lucene SET valid = ?, version = ? " +
-						 "WHERE valid = ?";
+						 "WHERE valid = ? AND db_home = ?";
 			pstmt = conn.prepareStatement(sql);
 			int count = 1;
 			pstmt.setBoolean(count++, false);
             pstmt.setInt(count++, getLuceneVersion());
 			pstmt.setBoolean(count++, true);
+			pstmt.setString(count++, app.getDbDir().getName());
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
@@ -2363,12 +2364,13 @@ public class LuceneManager{
 
 		try {
 			String sql = "UPDATE Lucene SET valid = ?, version = ? " +
-						 "WHERE valid = ?";
+						 "WHERE valid = ? AND db_home = ?";
 			pstmt = conn.prepareStatement(sql);
 			int count = 1;
 			pstmt.setBoolean(count++, false);
             pstmt.setInt(count++, getLuceneVersion());
 			pstmt.setBoolean(count++, true);
+			pstmt.setString(count++, dbhome.getName());
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
