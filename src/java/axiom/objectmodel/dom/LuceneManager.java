@@ -244,7 +244,6 @@ public class LuceneManager{
 					for (int i = 0; i < savesize; i++) {
 						String docid = (String) docids.get(i);
 						Analyzer analyzer = (Analyzer) analyzerMap.get(docid);
-						System.out.println(docid +" using "+analyzer);
 						if (analyzer != null) {
 							fsWriter.addDocument(docid, (Document) doclist.get(i), analyzer);
 						} else {
@@ -257,7 +256,6 @@ public class LuceneManager{
 					for (int i = 0; i < updatesize; i++) {
 						String docid = (String) updateids.get(i);
                         Analyzer analyzer = (Analyzer) analyzerMap.get(docid);
-                        System.out.println(docid +" (update) using "+analyzer);
                         try {
 							if (analyzer != null) {
 								fsWriter.update(docid, (Document) updatelist.get(i), analyzer);
@@ -1336,17 +1334,14 @@ public class LuceneManager{
 				f.setBoost(boost);
 			}
 			doc.add(f);
-			System.out.println("addToDoc::String with analyzer "+analyzer);
 			if (analyzer != null) {
 				String docid = doc.getField(ID).stringValue() + DeletedInfos.KEY_SEPERATOR + doc.getField(LAYER_OF_SAVE).stringValue();
 				PerFieldAnalyzerWrapper ret = 
 					(PerFieldAnalyzerWrapper) analyzerMap.get(docid);
 				if (ret == null) {
 					ret = buildAnalyzer();
-					//System.out.println(docid+" using "+ret);
 					analyzerMap.put(docid, ret);
 				}
-				System.out.println(docid+" using "+ret+" with key "+key+" and analyzer "+analyzer);
 				ret.addAnalyzer(key, analyzer);
 			}
 			break;
@@ -2438,10 +2433,7 @@ public class LuceneManager{
 			return new StandardAnalyzer();
 		} else {
 			try {
-				System.out.println("asking for "+analyzerName);
-				Analyzer analyzerInstance = (Analyzer) Class.forName(analyzerName).newInstance();
-				System.out.println("got "+analyzerInstance.getClass().getName());
-				return analyzerInstance;
+				return (Analyzer) Class.forName(analyzerName).newInstance();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
