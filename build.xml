@@ -22,7 +22,7 @@
 	<property name="launcher-jar.name" value="launcher.jar"/>
 	<property name="js-jar.name" value="js.zip"/>
 	<property name="test.app" value="test"/>
-	<!-- <property name="axiom_version" value="3.2.9"/> -->
+	<property name="axiom_version" value="3.2.8.2"/>
 	<property name="base_dir" value="axiom-stack-${axiom_version}"/>
 	<property environment="env"/>
 
@@ -264,9 +264,9 @@
 		</condition>
 		<fail message="To build a release, 'version' must be set" unless="ver"/>
 
-		<exec executable="./release.sh">
+		<!--<exec executable="./release.sh">
 		    <arg value="${axiom_version}"/>
-		</exec>
+		</exec>-->
 
 		<mkdir dir="${release.dir}/${base_dir}"/>
 
