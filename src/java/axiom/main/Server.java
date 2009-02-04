@@ -404,6 +404,7 @@ public class Server implements IPathElement, Runnable {
             requestLog.setRetainDays(90);
             requestLog.setAppend(true);
             requestLog.setExtended(true);
+            requestLog.setLogServer(true);
             requestLog.setLogTimeZone("GMT");
             requestLogHandler.setRequestLog(requestLog);
         } 
