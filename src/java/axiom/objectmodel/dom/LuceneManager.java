@@ -1335,7 +1335,7 @@ public class LuceneManager{
 			}
 			doc.add(f);
 			if (analyzer != null) {
-				String docid = doc.get(LuceneManager.ID);
+				String docid = doc.getField(ID).stringValue() + DeletedInfos.KEY_SEPERATOR + doc.getField(LAYER_OF_SAVE).stringValue();
 				PerFieldAnalyzerWrapper ret = 
 					(PerFieldAnalyzerWrapper) analyzerMap.get(docid);
 				if (ret == null) {
@@ -1393,7 +1393,7 @@ public class LuceneManager{
 			if (prop instanceof axiom.objectmodel.db.Property) {
 				axiom.objectmodel.db.Property p = 
 					(axiom.objectmodel.db.Property) prop;
-				Object xml = p.getValue();
+				Object xml = p.getXMLValue();
 				if (xml != null) {
 					f = new Field(key, XmlUtils.objectToXMLString(xml), store, index);
 					if (boost > -1f) {
@@ -1406,7 +1406,7 @@ public class LuceneManager{
             if (prop instanceof axiom.objectmodel.db.Property) {
                 axiom.objectmodel.db.Property p = 
                     (axiom.objectmodel.db.Property) prop;
-                Object xml = p.getValue();
+                Object xml = p.getXHTMLValue();
                 if (xml != null) {
                 	f = new Field(key, XmlUtils.objectToXMLString(xml), store, index);
                 	if (boost > -1f) {
@@ -2262,12 +2262,13 @@ public class LuceneManager{
 
 		try {
 			String sql = "UPDATE Lucene SET valid = ?, version = ? " +
-						 "WHERE valid = ?";
+						 "WHERE valid = ? AND db_home = ?";
 			pstmt = conn.prepareStatement(sql);
 			int count = 1;
 			pstmt.setBoolean(count++, false);
             pstmt.setInt(count++, getLuceneVersion());
 			pstmt.setBoolean(count++, true);
+			pstmt.setString(count++, app.getDbDir().getName());
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
@@ -2327,16 +2328,7 @@ public class LuceneManager{
 		}
 		IndexInput input = null;
 		try {
-			System.out.println("segmentsNew = " + segmentsNew + ", exists ? " + dir.fileExists(segmentsNew));
 			input = dir.openInput(segmentsNew);
-			SegmentInfos sinfos = new SegmentInfos();
-			sinfos.read(input,dir);
-			System.out.println("FROM segmetns.new = "+sinfos.size());
-	    	for (int i = 0; i < sinfos.size(); i++) {
-	    		System.out.println("info("+i+"): " + sinfos.info(i).name);
-	    	}
-	    	input.clone();
-	    	input = dir.openInput(segmentsNew);
 			int length = (int) input.length();
 			segmentContents = new byte[length];
 			try {
@@ -2367,12 +2359,13 @@ public class LuceneManager{
 
 		try {
 			String sql = "UPDATE Lucene SET valid = ?, version = ? " +
-						 "WHERE valid = ?";
+						 "WHERE valid = ? AND db_home = ?";
 			pstmt = conn.prepareStatement(sql);
 			int count = 1;
 			pstmt.setBoolean(count++, false);
             pstmt.setInt(count++, getLuceneVersion());
 			pstmt.setBoolean(count++, true);
+			pstmt.setString(count++, dbhome.getName());
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
@@ -2424,12 +2417,12 @@ public class LuceneManager{
 		}
 	}
 
-	public static Analyzer getAnalyzer(String analyzer) {
-        if (analyzer == null) {
+	public static Analyzer getAnalyzer(String analyzerName) {
+        if (analyzerName == null) {
             return null;
         }
         
-		analyzer = analyzer.toLowerCase();
+		String analyzer = analyzerName.toLowerCase();
 		if ("whitespaceanalyzer".equals(analyzer)) {
 			return new WhitespaceAnalyzer();
 		} else if ("simpleanalyzer".equals(analyzer)) {
@@ -2438,6 +2431,19 @@ public class LuceneManager{
 			return new StopAnalyzer();
 		} else if ("standardanalyzer".equals(analyzer)) {
 			return new StandardAnalyzer();
+		} else {
+			try {
+				return (Analyzer) Class.forName(analyzerName).newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch(ClassNotFoundException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return null;

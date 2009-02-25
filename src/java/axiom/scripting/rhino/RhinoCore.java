@@ -549,6 +549,7 @@ public final class RhinoCore implements ScopeProvider {
         // get a collection of all prototypes (code directories)
         Collection protos = app.getPrototypes();
 
+        for (Iterator i = protos.iterator(); i.hasNext();) {
         // in order to respect inter-prototype dependencies, we try to update
         // the global prototype before all other prototypes, and parent
         // prototypes before their descendants.
@@ -561,7 +562,6 @@ public final class RhinoCore implements ScopeProvider {
             updatePrototype(type, checked);
         }
 
-        for (Iterator i = protos.iterator(); i.hasNext();) {
             Prototype proto = (Prototype) i.next();
             if (checked.contains(proto)) {
                 continue;
@@ -1002,8 +1002,9 @@ public final class RhinoCore implements ScopeProvider {
 			for(int j = 0; j < talFiles.size(); j++){
             	Resource resource = talFiles.get(j);
         		sourceName = resource.getName();
-        		reader = new StringReader(ResourceConverter.convertTal(resource));
+        		reader = new StringReader(ResourceConverter.convertTal(resource, app.debug()));
         		cx.evaluateReader(op, reader, sourceName, 1, null);
+        		
 	        }
 
         }
