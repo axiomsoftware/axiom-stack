@@ -26,6 +26,7 @@ import java.util.Vector;
 import axiom.framework.IPathElement;
 import axiom.objectmodel.db.DbMapping;
 import axiom.objectmodel.db.Relation;
+import axiom.objectmodel.db.Transactor;
 import axiom.scripting.rhino.MultiValue;
 import axiom.scripting.rhino.Reference;
 import axiom.util.*;
@@ -480,7 +481,11 @@ public class TransientNode implements INode, Serializable {
 
         return true;
     }
-
+    
+    public boolean remove(boolean deep) {
+    	return this.remove();
+    }
+    
     /**
      *
      *
@@ -1008,5 +1013,13 @@ public class TransientNode implements INode, Serializable {
     
     public void setXML(String propname, Object value) {
         // do nothing for now
+    }
+    
+    public Transactor getLock() {
+    	return null;
+    }
+    
+    public boolean isTransient() {
+    	return true;
     }
 } 

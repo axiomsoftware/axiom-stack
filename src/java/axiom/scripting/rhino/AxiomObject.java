@@ -340,6 +340,15 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	}
 
 	/**
+	 * Check whether the AxiomObject is transient or persisted.
+	 * 
+	 * @return {Boolean} True if transient
+	 */
+	public boolean jsFunction_isTransient() {
+		return node.isTransient();
+	}
+	
+	/**
 	 * Get the URL of this object within the application.
 	 *
 	 * @param {String} [action] The action name, or null/undefined for the "main" action
@@ -3173,7 +3182,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  */ 
 
 	 public boolean jsFunction_del() throws Exception{
-		 boolean success = this.node.remove();
+		 return jsFunction_del(true);
+	 }
+	 	 
+	 public boolean jsFunction_del(boolean deep) throws Exception{
+		 boolean success = this.node.remove(deep);
 
 		 if (success) { 
 			 String name;
@@ -3183,12 +3196,21 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			 } else if ((name = node.getName()) != null &&
 					 (parent = (AxiomObject) this.getInternalProperty("_parent")) != null) {
 				 parent.calcComputedProps(name);
-			 } 
+			 }
              this.calcComputedProps("_parent");
 		 }
 
 		 return success;
 	}
 	 
-	 
+	 /**
+	  * Move takes the current object and moves it from the current parent to the specified parent
+	  * 
+	  * 
+	  * @param {Object} The new parent object
+	  * @returns {Boolean} Whether the operation was a success or not
+	  */
+	 public boolean jsFunction_move(Object parent) throws Exception {
+		 return this.setParent(parent);
+	 }
 }

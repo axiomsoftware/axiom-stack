@@ -15,17 +15,20 @@ h5 {margin-bottom: 5px;}
 
 .header {margin-top:20px; margin-bottom:20px; overflow:hidden;}
 .header .global_header {padding-bottom: 15px; overflow:hidden;}
-.header .nav {margin: 0; list-style: none; float:right; text-align:right; color:#acd579; font-size:0.8em; text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif;}
+.header .navigation {float:right;}
+.header .nav {margin: 4px 0 0 0; list-style: none; float:left; text-align:right; color:#acd579; font-size:0.8em; text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif;}
 .header .nav li {display: inline;}
 .header .nav a{color:#3f3f3f;}
 .header .nav a.current {color:#7aaa37;}
 .header .logo {float:left;}
-.header .headlines {margin:0; float:left; clear:both; }
-.header h1, .header h2 {margin:0; padding:0; font-weight:normal; letter-spacing:0px; }
-.header .headlines h1 {font-size:1.75em; color:#666;}
-.header .headlines h2 {font-size:1.25em; color:#999;}
-.header .search {float:right;}
-.header .search fieldset {border:none; float:left;}
+.header .headlines {margin:0; float:left; clear:both;}
+.header h1, .header h2 {margin:0; padding:0; font-weight:normal; letter-spacing:0px;display:inline;}
+.header .headlines h1 {font-size:1.75em; color:#666;margin-right:20px;}
+.header .headlines h2 {font-size:1.15em; color:#999;}
+.header .search {float:right;margin-left:15px;}
+.header .search fieldset {border:none; float:left;margin:0;padding:0;}
+.header .search input {width:60px;border:1px solid #7f9db9;height:18px;}
+.header .search input[type="submit"] {background:url(http://www.axiomstack.com/static/images/search_icon.png) 0 0 no-repeat;border:none;width:25px;height:21px;}
 
 #footer {background:#669933; padding:20px 0; font-weight:bold;}
 #footer .nav {text-align: center; padding:0 0 14px 0; overflow:hidden; margin:0 auto;}
@@ -42,13 +45,12 @@ h5 {margin-bottom: 5px;}
 #footer .legal span {padding:0 15px;}
 #footer .legal a {color:#000;}
 
-.navwrap {background:#669933; padding:15px 0 0 0; margin-bottom:25px;}
-.sub_nav {text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif; font-size:.85em;}
-.sub_nav li {list-style:none; float:left;}
-.sub_nav li a {margin:0; padding:0 15px; color:#fff; width:100%;}
-.sub_nav li.current {background:#fff url(http://www.axiomstack.com/static/images/homepage/rounded_left_nav.png) 0 0 no-repeat;}
-.sub_nav li.current a {color:#669933; background:url(http://www.axiomstack.com/static/images/homepage/rounded_right_nav.png) 100% 0 no-repeat;}
-.sub_nav li.last {border-right:none;}
+.navwrap {padding:15px 0 0 0; margin-bottom:25px;}
+.sub_nav {text-transform:uppercase; font-weight:bold; font-family:"Trebuchet MS", sans-serif; font-size:.85em;border-bottom:1px solid #a8c58a;overflow:visible;}
+.sub_nav li {list-style:none;width:auto;margin:0;padding:0;display:inline;}
+.sub_nav li a {margin:0; padding:0 15px; color:#fff; width:100%;color:#666;text-decoration:none;}
+.sub_nav li.current a {width:auto;border:1px solid #a8c58a;border-width:1px 1px 0;background:#fff;color:#669933;position:relative;bottom:-1px;}
+.sub_nav li.first a {border-left:none;}
 
 .page_content {padding:0; color:#666;}
 .page_content .feature, .release_notes div {overflow:hidden; padding:10px 30px 25px 10px; background:url(http://www.axiomstack.com/static/images/homepage/divider.jpg) 25% 100% no-repeat; margin-bottom: 25px;}

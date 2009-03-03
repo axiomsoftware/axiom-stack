@@ -27,6 +27,7 @@ import java.util.*;
 
 import axiom.framework.IPathElement;
 import axiom.objectmodel.db.DbMapping;
+import axiom.objectmodel.db.Transactor;
 import axiom.scripting.rhino.MultiValue;
 import axiom.scripting.rhino.Reference;
 
@@ -241,6 +242,12 @@ public interface INode extends INodeState, IPathElement {
     public boolean remove();
 
     /**
+     * 
+     * 
+     */
+    public boolean remove(boolean deep);
+    
+    /**
      *
      *
      * @param node ...
@@ -396,4 +403,8 @@ public interface INode extends INodeState, IPathElement {
     public void setMultiValue(String name, MultiValue value);
     
     public void setXML(String name, Object value);
+    
+    public boolean isTransient();
+    
+    public Transactor getLock();
 }
