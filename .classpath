@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="lib/jetty.jar"/>
 	<classpathentry kind="lib" path="lib/jimi.jar"/>
 	<classpathentry kind="lib" path="lib/jmxri.jar"/>
-	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar" sourcepath="/home/ncampbell/Downloads/rhino1_7R1/xmlimplsrc"/>
 	<classpathentry kind="lib" path="lib/jtidy-r8.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/ldap.jar"/>
@@ -39,4 +39,4 @@
 	<classpathentry kind="lib" path="lib/mime-util.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_07/lib/tools.jar"/>
 	<classpathentry kind="output" path="bin"/>
-</classpath>
+</classpath>

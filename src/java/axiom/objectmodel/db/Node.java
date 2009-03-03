@@ -1542,16 +1542,28 @@ public class Node implements INode, Serializable {
     }
 
     /**
+     * Remove a node including it's children.
+     * 
+     * @return {Boolean} True if successful.
+     */
+	public boolean remove() {
+		return this.remove(true);
+	}
+    
+    /**
      *
      *
      * @return ...
      */
-    public boolean remove() {
+    public boolean remove(boolean deep) {
         INode parent = getParent();
         if (parent != null) {
             parent.removeNode(this);
         }
-        deepRemoveNode();
+        
+        if (deep) {
+        	deepRemoveNode();
+        }
         return true;
     }
 
@@ -3543,4 +3555,15 @@ public class Node implements INode, Serializable {
     	}
     }
     
+    public boolean isTransient() {
+    	if (state == TRANSIENT) {
+    		return true;
+    	}
+    	
+    	return false;
+    }
+    
+    public Transactor getLock() {
+    	return lock;
+    }
 }

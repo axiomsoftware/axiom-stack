@@ -84,6 +84,7 @@ import axiom.util.ResourceProperties;
 public class LuceneQueryDispatcher extends QueryDispatcher {
   
     public static final String PATH_FIELD = "path";
+    static final String EXTENDS_FIELD = "extend";
     static final String RECURSE_PATH_MARKER = "**";
 
 	public LuceneQueryDispatcher(){
@@ -99,6 +100,11 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 		SortObject sort = getSortObject((Scriptable)options);
 		ArrayList opaths = getPaths((Scriptable)options);
 		int _layer = getLayer((Scriptable) options);
+		boolean ext = extendPrototypes((Scriptable) options);
+		
+		if (ext) {
+			prototypes = getAllPrototypes(prototypes);
+		}
 		
 		ArrayList results = new ArrayList();
 		IndexSearcher searcher = null;
@@ -1315,6 +1321,46 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 
     }
 
+    private ArrayList<String> getAllPrototypes(ArrayList prototypes) {
+    	ArrayList<String> newPrototypes = new ArrayList<String>(prototypes);
+    	for (Object p : prototypes) {
+    		String proto = p.toString();
+    		Prototype childPrototypes = app.typemgr.getPrototype(proto);
+    		if (childPrototypes != null) {
+	    		for (Prototype prototype : childPrototypes.getChildPrototypes()) {
+	    			newPrototypes.add(prototype.getName());
+	    		}
+    		}
+    	}
+    	return newPrototypes;
+    }
+    
+    private boolean extendPrototypes(Object options) throws Exception {
+    	try {
+    		boolean ext = false;
+    		if (options != null) {
+    			Object value = null;
+    			if (options instanceof Scriptable) {
+    				value = ((Scriptable) options).get(EXTENDS_FIELD, (Scriptable) options);
+    			} else if (options instanceof Map) {
+    				value = ((Map) options).get(EXTENDS_FIELD);
+    			}
+		    	if (value != null) {
+		       		if (value instanceof Scriptable) {
+		       			ext = ScriptRuntime.toBoolean(value);
+		       		} else if (value instanceof Boolean) {
+		       			ext = ((Boolean) value).booleanValue();
+		       		} else if (value instanceof String) {
+		       			ext = Boolean.parseBoolean((String) value);
+		       		}
+		    	}
+    		}
+    		return ext;
+    	} catch (Exception e) {
+    		throw e;
+    	}
+    }
+    
     public Object hits(ArrayList prototypes, IFilter filter, Object options) throws Exception {
     	Object results = null;
 
