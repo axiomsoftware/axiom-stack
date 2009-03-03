@@ -3562,8 +3562,4 @@ public class Node implements INode, Serializable {
     	
     	return false;
     }
-    
-    public Transactor getLock() {
-    	return lock;
-    }
 }

@@ -405,6 +405,4 @@ public interface INode extends INodeState, IPathElement {
     public void setXML(String name, Object value);
     
     public boolean isTransient();
-    
-    public Transactor getLock();
 }
