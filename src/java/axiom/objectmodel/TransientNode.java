@@ -1014,11 +1014,7 @@ public class TransientNode implements INode, Serializable {
     public void setXML(String propname, Object value) {
         // do nothing for now
     }
-    
-    public Transactor getLock() {
-    	return null;
-    }
-    
+        
     public boolean isTransient() {
     	return true;
     }
