@@ -51,10 +51,25 @@ public class LuceneUtils {
 		    		name.appendChild(xmldoc.createTextNode(field.name()));
 		    		doc_elem.appendChild(name);
 		    		
+		    		Element tokenized = xmldoc.createElement("tokenized");
+		    		tokenized.appendChild(xmldoc.createTextNode(field.isTokenized()+""));
+		    		doc_elem.appendChild(tokenized);
+		    		
+		    		Element compressed = xmldoc.createElement("compressed");
+		    		compressed.appendChild(xmldoc.createTextNode(field.isCompressed()+""));
+		    		doc_elem.appendChild(compressed);
+		    		
+		    		Element indexed = xmldoc.createElement("indexed");
+		    		indexed.appendChild(xmldoc.createTextNode(field.isIndexed()+""));
+		    		doc_elem.appendChild(indexed);
+
+		    		Element stored = xmldoc.createElement("stored");
+		    		stored.appendChild(xmldoc.createTextNode(field.isStored()+""));
+		    		doc_elem.appendChild(stored);
+		    		
 		    		Element value = xmldoc.createElement("value");
 		    		value.appendChild(xmldoc.createCDATASection(field.stringValue()));
 		    		doc_elem.appendChild(value);
-		    		
 		    		
 		    		root.appendChild(doc_elem);
 		    	}
