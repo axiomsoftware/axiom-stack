@@ -227,7 +227,7 @@ public abstract class LuceneManipulator {
 	    }
 	}
 	
-	private static String getUrl(File dbhome) {
+	public static String getUrl(File dbhome) {
         String url = DEFAULT_URL + dbhome.getPath();
         if (!url.endsWith(File.separator)) url += File.separator;
         url += TRANS_DB_DIR + File.separator + TRANS_DB_NAME;
