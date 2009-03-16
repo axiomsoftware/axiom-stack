@@ -141,6 +141,10 @@ public class LuceneManager{
 		_lmMap.clear();
 	}
 	
+    public String dump(){
+    	return "dump test";
+    }
+	
 	public synchronized void shutdown() {
         if (this.optimizerThread != null) {
             //TODO:this.optimizerThread.stopOptimizer();

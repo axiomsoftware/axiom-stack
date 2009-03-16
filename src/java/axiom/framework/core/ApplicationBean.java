@@ -72,7 +72,7 @@ public class ApplicationBean implements Serializable {
     public ApplicationBean(Application app) {
         this.app = app;
     }
-
+    
     public void addCronJob(String functionName) {
         CronJob job = new CronJob(functionName);
 

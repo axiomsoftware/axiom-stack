@@ -9,10 +9,15 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.TransFSDirectory;
 
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import javax.xml.transform.dom.*; 
+
 import axiom.objectmodel.db.TransSource;
 
 public class LuceneUtils {
-
 	
 	public void export(File dir){
 		try{
@@ -25,17 +30,42 @@ public class LuceneUtils {
 		        d.setUser(null);
 		        d.setPassword(null);
 			}
+
+			org.w3c.dom.Document xmldoc = null;
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			DOMImplementation impl = builder.getDOMImplementation();
+			xmldoc = impl.createDocument(null, "documents", null);
+			Element root = xmldoc.getDocumentElement();
+			
 			IndexSearcher searcher = new IndexSearcher(directory);
 		    for(int i=0; i< searcher.maxDoc(); i++){
 		    	Document doc = searcher.doc(i);
 		    	Enumeration fields = doc.fields();
 		    	while(fields.hasMoreElements()){
 		    		Field field = (Field) fields.nextElement();
-		    		System.out.println(field.name() +" : "+field.stringValue());
+		    		
+		    		Element doc_elem = xmldoc.createElement("document");
+		    		
+		    		Element name = xmldoc.createElement("name");
+		    		name.appendChild(xmldoc.createTextNode(field.name()));
+		    		doc_elem.appendChild(name);
+		    		
+		    		Element value = xmldoc.createElement("value");
+		    		value.appendChild(xmldoc.createCDATASection(field.stringValue()));
+		    		doc_elem.appendChild(value);
+		    		
+		    		
+		    		root.appendChild(doc_elem);
 		    	}
-		    System.out.println("\n\n----------\n\n");
 		    }
-    	} catch(IOException e){
+		    DOMSource domSource = new DOMSource(xmldoc);
+		    StreamResult streamResult = new StreamResult(System.out);
+		    TransformerFactory tf = TransformerFactory.newInstance();
+		    Transformer serializer = tf.newTransformer();
+		    serializer.setOutputProperty(OutputKeys.INDENT,"yes");
+		    serializer.transform(domSource, streamResult); 
+    	} catch(Exception e){
     		e.printStackTrace();
     	}
 	}

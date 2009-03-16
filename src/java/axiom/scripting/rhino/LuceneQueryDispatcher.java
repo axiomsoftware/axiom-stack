@@ -23,6 +23,7 @@ package axiom.scripting.rhino;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -93,8 +94,8 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 	
 	public LuceneQueryDispatcher(Application app, String name) throws Exception {
     	super(app, name);
-    }
-    
+	}
+	
     public ArrayList executeQuery(ArrayList prototypes, IFilter filter,
 			Object options) throws Exception {
 		SortObject sort = getSortObject((Scriptable)options);
