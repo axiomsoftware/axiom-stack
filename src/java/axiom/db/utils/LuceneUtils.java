@@ -10,6 +10,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.TransFSDirectory;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
@@ -19,7 +21,7 @@ import axiom.objectmodel.db.TransSource;
 
 public class LuceneUtils {
 	
-	public void export(File dir){
+	public void exportDocuments(File dir){
 		try{
 			Directory directory = FSDirectory.getDirectory(dir,false);
 			if(directory instanceof TransFSDirectory){
@@ -42,37 +44,39 @@ public class LuceneUtils {
 		    for(int i=0; i< searcher.maxDoc(); i++){
 		    	Document doc = searcher.doc(i);
 		    	Enumeration fields = doc.fields();
+		    	Element doc_elem = xmldoc.createElement("document");
 		    	while(fields.hasMoreElements()){
 		    		Field field = (Field) fields.nextElement();
 		    		
-		    		Element doc_elem = xmldoc.createElement("document");
+		    		Element field_elem = xmldoc.createElement("field"); 
 		    		
 		    		Element name = xmldoc.createElement("name");
 		    		name.appendChild(xmldoc.createTextNode(field.name()));
-		    		doc_elem.appendChild(name);
+		    		field_elem.appendChild(name);
 		    		
 		    		Element tokenized = xmldoc.createElement("tokenized");
 		    		tokenized.appendChild(xmldoc.createTextNode(field.isTokenized()+""));
-		    		doc_elem.appendChild(tokenized);
+		    		field_elem.appendChild(tokenized);
 		    		
 		    		Element compressed = xmldoc.createElement("compressed");
 		    		compressed.appendChild(xmldoc.createTextNode(field.isCompressed()+""));
-		    		doc_elem.appendChild(compressed);
+		    		field_elem.appendChild(compressed);
 		    		
 		    		Element indexed = xmldoc.createElement("indexed");
 		    		indexed.appendChild(xmldoc.createTextNode(field.isIndexed()+""));
-		    		doc_elem.appendChild(indexed);
+		    		field_elem.appendChild(indexed);
 
 		    		Element stored = xmldoc.createElement("stored");
 		    		stored.appendChild(xmldoc.createTextNode(field.isStored()+""));
-		    		doc_elem.appendChild(stored);
+		    		field_elem.appendChild(stored);
 		    		
 		    		Element value = xmldoc.createElement("value");
 		    		value.appendChild(xmldoc.createCDATASection(field.stringValue()));
-		    		doc_elem.appendChild(value);
+		    		field_elem.appendChild(value);
 		    		
-		    		root.appendChild(doc_elem);
+		    		doc_elem.appendChild(field_elem);
 		    	}
+	    		root.appendChild(doc_elem);
 		    }
 		    DOMSource domSource = new DOMSource(xmldoc);
 		    StreamResult streamResult = new StreamResult(System.out);
@@ -80,9 +84,55 @@ public class LuceneUtils {
 		    Transformer serializer = tf.newTransformer();
 		    serializer.setOutputProperty(OutputKeys.INDENT,"yes");
 		    serializer.transform(domSource, streamResult); 
-    	} catch(Exception e){
+    	} catch(ParserConfigurationException e){
+    		// TODO Auto-generated catch block
     		e.printStackTrace();
-    	}
+    	} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void importDocuments(File xml_file) {
+		DocumentBuilder builder;
+		try {
+			builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
+			org.w3c.dom.Document doc = builder.parse(xml_file);
+			
+			Element root = doc.getDocumentElement();
+			NodeList documents = root.getChildNodes();
+			for(int i=0; i < documents.getLength(); i++){
+				Element document = (Element) documents.item(i);
+				NodeList fields = document.getChildNodes();
+				for(int j=0; j < fields.getLength(); j++){
+					Element field = (Element) fields.item(j);
+					String tag = field.getTagName();
+
+					// TODO: begin add fields to new docs to be written
+
+				}
+			}
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	/**
@@ -90,7 +140,7 @@ public class LuceneUtils {
 	 */
 	public static void main(String[] args) {
 		LuceneUtils utils = new LuceneUtils();
-		utils.export(new File(args[0]));
+		utils.exportDocuments(new File(args[0]));
 	}
 
 }
