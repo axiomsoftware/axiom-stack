@@ -1,9 +1,16 @@
 package axiom.db.utils;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.Enumeration;
 
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexObjectsFactory;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.SegmentInfos;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -18,6 +25,8 @@ import javax.xml.transform.stream.*;
 import javax.xml.transform.dom.*; 
 
 import axiom.objectmodel.db.TransSource;
+import axiom.objectmodel.dom.IndexWriterManager;
+import axiom.objectmodel.dom.LuceneManager;
 
 public class LuceneUtils {
 	
@@ -102,25 +111,130 @@ public class LuceneUtils {
 		}
 	}
 	
-	public void importDocuments(File xml_file) {
-		DocumentBuilder builder;
+	public void importDocuments(File xml_file, File target) {
+		DocumentBuilder builder = null;
+		IndexWriter writer = null;
 		try {
+			PerFieldAnalyzerWrapper analyzer = LuceneManager.buildAnalyzer();
+			FSDirectory newIndexDir = FSDirectory.getDirectory(target, true);
+            writer = IndexWriterManager.getWriter(newIndexDir, analyzer, true);
+    	    if (newIndexDir instanceof TransFSDirectory) {
+    	        FSDirectory.setDisableLocks(true);
+    	        TransFSDirectory d = (TransFSDirectory) newIndexDir;
+    	        d.setDriverClass(TransSource.DEFAULT_DRIVER);
+    	        d.setUrl(LuceneManipulator.getUrl(target));
+    	        d.setUser(null);
+    	        d.setPassword(null);
+    	    }
+			
 			builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
 			org.w3c.dom.Document doc = builder.parse(xml_file);
 			
 			Element root = doc.getDocumentElement();
-			NodeList documents = root.getChildNodes();
+			NodeList documents = root.getElementsByTagName("document");
 			for(int i=0; i < documents.getLength(); i++){
 				Element document = (Element) documents.item(i);
-				NodeList fields = document.getChildNodes();
+				NodeList fields = document.getElementsByTagName("field");
+				Document luceneDocument = new Document();
+				
+				// begin add fields to new lucene docs to be written
 				for(int j=0; j < fields.getLength(); j++){
 					Element field = (Element) fields.item(j);
 					String tag = field.getTagName();
 
-					// TODO: begin add fields to new docs to be written
-
+					Field.Store currstore = Field.Store.YES;
+					Field.Index curridx = Field.Index.UN_TOKENIZED;
+					String name = "";
+					String value = "";
+					
+					NodeList nameList = field.getElementsByTagName("name");
+					if (nameList.getLength() > 0) {
+						name = nameList.item(0).getTextContent();
+					}
+					
+					NodeList valueList = field.getElementsByTagName("value");
+					if (valueList.getLength() > 0) {
+						value = valueList.item(0).getTextContent();
+					}
+					
+					NodeList stored = field.getElementsByTagName("stored");
+					if (stored.getLength() > 0 && stored.item(0).getTextContent().equals("false")) {
+						currstore = Field.Store.NO;
+					}
+					
+					NodeList compressed = field.getElementsByTagName("compressed");
+					if (compressed.getLength() > 0 && compressed.item(0).getTextContent().equals("true")) {
+						currstore = Field.Store.COMPRESS;
+					}
+					
+					NodeList indexed = field.getElementsByTagName("indexed");
+					if (indexed.getLength() > 0 && indexed.item(0).getTextContent().equals("false")) {
+						curridx = Field.Index.NO;
+					}
+					
+					NodeList tokenized = field.getElementsByTagName("tokenized");
+					if (tokenized.getLength() > 0 && tokenized.item(0).getTextContent().equals("true")) {
+						curridx = Field.Index.TOKENIZED;
+					}
+					System.out.println("processing "+name+" : "+value);
+					luceneDocument.add(new Field(name, value, currstore, curridx));                    
 				}
+				writer.addDocument(luceneDocument);
 			}
+			
+			Connection conn = null;
+		    boolean exceptionOccured = false;
+
+		    try {
+		        if (writer != null) {
+		        	conn = DriverManager.getConnection(LuceneManipulator.getUrl(target));
+		        	conn.setAutoCommit(false);
+		        	PreparedStatement ps = conn.prepareStatement(TransSource.TRANS_SQL_LUCENE);
+	                ps.execute();
+	                ps.close();
+	                ps = conn.prepareStatement(TransSource.TRANS_SQL_IDGEN);
+	                ps.execute();
+	                ps.close();
+	                ps = conn.prepareStatement(TransSource.TRANS_SQL_PATHINDICES);
+	                ps.execute();
+	                ps.close();
+	                ps = conn.prepareStatement(TransSource.TRANS_SQL_INDEX);
+	                ps.execute();
+	                ps.close();
+	                ps = null;
+	                conn.commit();
+		        	
+		            writer.close();
+		            writer.flushCache();
+		            LuceneManager.commitSegments(null, conn, target.getAbsoluteFile(), writer.getDirectory());
+		            writer.finalizeTrans();
+		        }
+		    } catch (Exception ex) {
+	            ex.printStackTrace();
+		        exceptionOccured = true;
+		        throw new RuntimeException(ex);
+		    } finally {
+		        if (conn != null) {
+		            try { 
+		                if (!conn.getAutoCommit()) {
+		                    if (!exceptionOccured) {
+		                        conn.commit();
+		                    } else {
+		                        conn.rollback();
+		                    }
+		                }
+		                conn.close();
+		            } catch (Exception ex) {
+		            	ex.printStackTrace();
+		            }
+		            conn = null;
+		        }
+
+		        newIndexDir.close();
+	            SegmentInfos newSegmentInfos = IndexObjectsFactory.getFSSegmentInfos(newIndexDir);
+	            newSegmentInfos.clear();
+	            IndexObjectsFactory.removeDeletedInfos(newIndexDir);
+		    }
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,17 +244,20 @@ public class LuceneUtils {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.setProperty("org.apache.lucene.FSDirectory.class","org.apache.lucene.store.TransFSDirectory");
 		LuceneUtils utils = new LuceneUtils();
-		utils.exportDocuments(new File(args[0]));
+		//utils.exportDocuments(new File(args[0]));
+		utils.importDocuments(new File("test.xml"), new File("test-import"));
 	}
 
 }
