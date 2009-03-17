@@ -54,7 +54,7 @@ public class LuceneUtils {
 			IndexSearcher searcher = new IndexSearcher(directory);
 	    	Connection conn = DriverManager.getConnection(LuceneManipulator.getUrl(dir));
 	    	PreparedStatement pathIndexQuery = conn.prepareStatement("SELECT path,layer FROM PathIndices WHERE id = ?");
-			for(int i=0; i< searcher.maxDoc(); i++){
+	    	for(int i=0; i< searcher.maxDoc(); i++){
 		    	Document doc = searcher.doc(i);
 		    	Enumeration fields = doc.fields();
 		    	Element doc_elem = xmldoc.createElement("document");
@@ -95,7 +95,7 @@ public class LuceneUtils {
 		    		doc_elem.appendChild(field_elem);
 		    	}
 		    	
-		    	// grab path from pathindex table
+		    	// grab path and layer from pathindex table
 		    	pathIndexQuery.setInt(1, Integer.parseInt(luceneId));
 		    	ResultSet rows = pathIndexQuery.executeQuery();
 		    	rows.beforeFirst();
@@ -144,6 +144,7 @@ public class LuceneUtils {
 	public void importDocuments(File xml_file, File target) {
 		DocumentBuilder builder = null;
 		IndexWriter writer = null;
+		Connection conn = null;
 		try {
 			PerFieldAnalyzerWrapper analyzer = LuceneManager.buildAnalyzer();
 			FSDirectory newIndexDir = FSDirectory.getDirectory(target, true);
@@ -157,20 +158,44 @@ public class LuceneUtils {
     	        d.setPassword(null);
     	    }
 			
+    	    // parse xml dump
 			builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
 			org.w3c.dom.Document doc = builder.parse(xml_file);
 			
-			Element root = doc.getDocumentElement();
+			// initialize h2 tables
+	    	conn = DriverManager.getConnection(LuceneManipulator.getUrl(target));
+		  	conn.setAutoCommit(false);
+		  	PreparedStatement initStatement = conn.prepareStatement(TransSource.TRANS_SQL_LUCENE);
+		  	initStatement.execute();
+		  	initStatement.close();
+		  	initStatement = conn.prepareStatement(TransSource.TRANS_SQL_IDGEN);
+		  	initStatement.execute();
+		  	initStatement.close();
+		  	initStatement = conn.prepareStatement(TransSource.TRANS_SQL_PATHINDICES);
+		  	initStatement.execute();
+		  	initStatement.close();
+		  	initStatement = conn.prepareStatement(TransSource.TRANS_SQL_INDEX);
+		  	initStatement.execute();
+		  	initStatement.close();
+		  	initStatement = null;
+		  	conn.commit();
+			
+		  	// prepared statement for updating pathindex
+		  	PreparedStatement pathIndexUpdater = conn.prepareStatement("INSERT INTO PathIndices (id, layer, path) VALUES (?,?,?)");
+		  	
+		  	// start walking the xml for documents to import
+		  	Element root = doc.getDocumentElement();
 			NodeList documents = root.getElementsByTagName("document");
+	    	int maxId = -1; //assuming numerical lucene ids. almost certainly evil.
 			for(int i=0; i < documents.getLength(); i++){
 				Element document = (Element) documents.item(i);
+								
+				// begin add fields to new lucene docs to be written
+				String luceneId = null;
 				NodeList fields = document.getElementsByTagName("field");
 				Document luceneDocument = new Document();
-				
-				// begin add fields to new lucene docs to be written
 				for(int j=0; j < fields.getLength(); j++){
 					Element field = (Element) fields.item(j);
-					String tag = field.getTagName();
 
 					Field.Store currstore = Field.Store.YES;
 					Field.Index curridx = Field.Index.UN_TOKENIZED;
@@ -206,65 +231,39 @@ public class LuceneUtils {
 					if (tokenized.getLength() > 0 && tokenized.item(0).getTextContent().equals("true")) {
 						curridx = Field.Index.TOKENIZED;
 					}
-					System.out.println("processing "+name+" : "+value);
+					
+					if(name.equals("_id")){
+						luceneId = value;
+						maxId = Math.max(Integer.parseInt(luceneId),maxId);
+					}
+
 					luceneDocument.add(new Field(name, value, currstore, curridx));                    
 				}
 				writer.addDocument(luceneDocument);
+				
+				// grab layer and path, insert into path index table
+				int layer = Integer.parseInt(document.getElementsByTagName("layer").item(0).getTextContent());
+				String path = document.getElementsByTagName("path").item(0).getTextContent();
+				pathIndexUpdater.setString(1, luceneId);
+				pathIndexUpdater.setInt(2, layer);
+				pathIndexUpdater.setString(3, path);
+				pathIndexUpdater.execute();
 			}
 			
-			Connection conn = null;
-		    boolean exceptionOccured = false;
+			// update igen table with last id found
+			conn.createStatement().execute("INSERT INTO IdGen (id, cluster_host) VALUES( "+maxId+ ", '')");
+			
+			conn.commit();
+			writer.close();
+		    writer.flushCache();
+		    LuceneManager.commitSegments(null, conn, target.getAbsoluteFile(), writer.getDirectory());
+		    writer.finalizeTrans();
+		    
+		    newIndexDir.close();
+		    SegmentInfos newSegmentInfos = IndexObjectsFactory.getFSSegmentInfos(newIndexDir);
+		    newSegmentInfos.clear();
+		    IndexObjectsFactory.removeDeletedInfos(newIndexDir);
 
-		    try {
-		        if (writer != null) {
-		        	conn = DriverManager.getConnection(LuceneManipulator.getUrl(target));
-		        	conn.setAutoCommit(false);
-		        	PreparedStatement ps = conn.prepareStatement(TransSource.TRANS_SQL_LUCENE);
-	                ps.execute();
-	                ps.close();
-	                ps = conn.prepareStatement(TransSource.TRANS_SQL_IDGEN);
-	                ps.execute();
-	                ps.close();
-	                ps = conn.prepareStatement(TransSource.TRANS_SQL_PATHINDICES);
-	                ps.execute();
-	                ps.close();
-	                ps = conn.prepareStatement(TransSource.TRANS_SQL_INDEX);
-	                ps.execute();
-	                ps.close();
-	                ps = null;
-	                conn.commit();
-		        	
-		            writer.close();
-		            writer.flushCache();
-		            LuceneManager.commitSegments(null, conn, target.getAbsoluteFile(), writer.getDirectory());
-		            writer.finalizeTrans();
-		        }
-		    } catch (Exception ex) {
-	            ex.printStackTrace();
-		        exceptionOccured = true;
-		        throw new RuntimeException(ex);
-		    } finally {
-		        if (conn != null) {
-		            try { 
-		                if (!conn.getAutoCommit()) {
-		                    if (!exceptionOccured) {
-		                        conn.commit();
-		                    } else {
-		                        conn.rollback();
-		                    }
-		                }
-		                conn.close();
-		            } catch (Exception ex) {
-		            	ex.printStackTrace();
-		            }
-		            conn = null;
-		        }
-
-		        newIndexDir.close();
-	            SegmentInfos newSegmentInfos = IndexObjectsFactory.getFSSegmentInfos(newIndexDir);
-	            newSegmentInfos.clear();
-	            IndexObjectsFactory.removeDeletedInfos(newIndexDir);
-		    }
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -286,8 +285,8 @@ public class LuceneUtils {
 	public static void main(String[] args) {
 		System.setProperty("org.apache.lucene.FSDirectory.class","org.apache.lucene.store.TransFSDirectory");
 		LuceneUtils utils = new LuceneUtils();
-		utils.exportDocuments(new File(args[0]));
-		//utils.importDocuments(new File("test.xml"), new File("test-import"));
+		//utils.exportDocuments(new File(args[0]));
+		utils.importDocuments(new File("test.xml"), new File("manage"));
 	}
 
 }

@@ -136,7 +136,7 @@ public final class LuceneDatabase implements IDatabase {
             
             try {
                this.id = setupId(txn);
-
+               
                 if (this.id.idCounter < idBaseValue) {
                     this.id.idCounter = idBaseValue;
                 }
@@ -150,6 +150,7 @@ public final class LuceneDatabase implements IDatabase {
             try { 
                getNode(txn, "0");
             } catch (ObjectNotFoundException onfe) {
+            	onfe.printStackTrace();
                 node = new Node("root", "0", "Root", nmgr.safe);
                 node.setDbMapping(app.getDbMapping("root"));
                 insertNode(txn, node.getID(), node);

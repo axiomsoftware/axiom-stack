@@ -347,6 +347,7 @@ public class LuceneManager{
                 app.logError(ErrorReporter.errorMsg(this.getClass(), "retrieveFromIndex") +
                 		"Occured on query " + query, ioex);
             }
+            ioex.printStackTrace();
             doc = null;
         } catch (Exception ex) {
             if (!("_id".equals(field) && ("0".equals(key) || "1".equals(key) || "2".equals(key)))) {
@@ -2525,7 +2526,8 @@ public class LuceneManager{
             try {
                 this.searcher = new IndexSearcher(this.directory);
             } catch (Exception ex) {
-                throw new IOException("FATAL ERROR::LuceneManager.getIndexSearcher(), Could not create IndexSearcher");
+            	app.logError("printSegInfo", ex);
+            	throw new IOException("FATAL ERROR::LuceneManager.getIndexSearcher(), Could not create IndexSearcher");
             }
         }
         this.searcher.refCount++;
