@@ -53,7 +53,7 @@ public class LuceneUtils {
 			
 			IndexSearcher searcher = new IndexSearcher(directory);
 	    	Connection conn = DriverManager.getConnection(LuceneManipulator.getUrl(dir));
-	    	PreparedStatement pathQuery = conn.prepareStatement("SELECT path FROM PathIndices WHERE id = ?");
+	    	PreparedStatement pathIndexQuery = conn.prepareStatement("SELECT path,layer FROM PathIndices WHERE id = ?");
 			for(int i=0; i< searcher.maxDoc(); i++){
 		    	Document doc = searcher.doc(i);
 		    	Enumeration fields = doc.fields();
@@ -96,16 +96,21 @@ public class LuceneUtils {
 		    	}
 		    	
 		    	// grab path from pathindex table
-		    	pathQuery.setInt(1, Integer.parseInt(luceneId));
-		    	ResultSet rows = pathQuery.executeQuery();
+		    	pathIndexQuery.setInt(1, Integer.parseInt(luceneId));
+		    	ResultSet rows = pathIndexQuery.executeQuery();
 		    	rows.beforeFirst();
 		    	String path = null;
+		    	String layer = null;
 		    	while(rows.next()){
 		    		path = rows.getString("path");
+		    		layer = rows.getInt("layer")+"";
 		    	} 
 		    	Element path_elem = xmldoc.createElement("path");
 		    	path_elem.appendChild(xmldoc.createTextNode(path));
 		    	doc_elem.appendChild(path_elem);
+		    	Element layer_elem = xmldoc.createElement("layer");
+		    	layer_elem.appendChild(xmldoc.createTextNode(layer));
+		    	doc_elem.appendChild(layer_elem);
 		    	
 	    		root.appendChild(doc_elem);
 		    }
