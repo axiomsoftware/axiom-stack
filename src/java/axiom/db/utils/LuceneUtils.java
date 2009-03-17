@@ -3,6 +3,8 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -50,10 +52,13 @@ public class LuceneUtils {
 			Element root = xmldoc.getDocumentElement();
 			
 			IndexSearcher searcher = new IndexSearcher(directory);
-		    for(int i=0; i< searcher.maxDoc(); i++){
+	    	Connection conn = DriverManager.getConnection(LuceneManipulator.getUrl(dir));
+	    	PreparedStatement pathQuery = conn.prepareStatement("SELECT path FROM PathIndices WHERE id = ?");
+			for(int i=0; i< searcher.maxDoc(); i++){
 		    	Document doc = searcher.doc(i);
 		    	Enumeration fields = doc.fields();
 		    	Element doc_elem = xmldoc.createElement("document");
+		    	String luceneId = null;
 		    	while(fields.hasMoreElements()){
 		    		Field field = (Field) fields.nextElement();
 		    		
@@ -83,8 +88,25 @@ public class LuceneUtils {
 		    		value.appendChild(xmldoc.createCDATASection(field.stringValue()));
 		    		field_elem.appendChild(value);
 		    		
+		    		if(field.name().equals("_id")){
+		    			luceneId = field.stringValue();
+		    		}
+		    		
 		    		doc_elem.appendChild(field_elem);
 		    	}
+		    	
+		    	// grab path from pathindex table
+		    	pathQuery.setInt(1, Integer.parseInt(luceneId));
+		    	ResultSet rows = pathQuery.executeQuery();
+		    	rows.beforeFirst();
+		    	String path = null;
+		    	while(rows.next()){
+		    		path = rows.getString("path");
+		    	} 
+		    	Element path_elem = xmldoc.createElement("path");
+		    	path_elem.appendChild(xmldoc.createTextNode(path));
+		    	doc_elem.appendChild(path_elem);
+		    	
 	    		root.appendChild(doc_elem);
 		    }
 		    DOMSource domSource = new DOMSource(xmldoc);
@@ -106,6 +128,9 @@ public class LuceneUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -256,8 +281,8 @@ public class LuceneUtils {
 	public static void main(String[] args) {
 		System.setProperty("org.apache.lucene.FSDirectory.class","org.apache.lucene.store.TransFSDirectory");
 		LuceneUtils utils = new LuceneUtils();
-		//utils.exportDocuments(new File(args[0]));
-		utils.importDocuments(new File("test.xml"), new File("test-import"));
+		utils.exportDocuments(new File(args[0]));
+		//utils.importDocuments(new File("test.xml"), new File("test-import"));
 	}
 
 }
