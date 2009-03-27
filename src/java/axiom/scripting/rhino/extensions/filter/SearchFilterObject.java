@@ -177,45 +177,43 @@ public class SearchFilterObject extends ScriptableObject implements IFilter {
     }
 
     private void searchSetup(String param) {
-    	this.analyzerString = param;
-    	this.analyzer = LuceneManager.getAnalyzer(param);
+		Application app = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore().app;
+		ResourceProperties sprops = app.getSearchProfiles();
+		
+    	//this.analyzerString = param;
+    	this.analyzer = LuceneManager.getAnalyzer(sprops.getProperty(param + ".analyzer", DEFAULT_ANALYZER));
+    	this.analyzerString = this.analyzer.toString();
+    	String fields = sprops.getProperty(param + ".fields");
 
-    	if (this.analyzer == null) {
-    		Application app = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore().app;
-    		ResourceProperties sprops = app.getSearchProperties();
-    		this.analyzer = LuceneManager.getAnalyzer(sprops.getProperty(param + ".analyzer", DEFAULT_ANALYZER));
-    		String fields = sprops.getProperty(param + ".fields");
-
-    		this.profile = new SearchProfile();
-    		if (sprops.getProperty(param + ".filter") != null && sprops.getProperty(param + ".filter.operator") != null) {
-    			this.profile.filter = sprops.getProperty(param + ".filter").trim();
-        		this.profile.operator = sprops.getProperty(param + ".filter.operator").trim();
-    		}
-    		
-    		if (fields != null && filter instanceof String) {
-    			StringBuffer sb = new StringBuffer(fields);
-    			int idx;
-    			while ((idx = sb.indexOf("{")) > -1) {
-    				sb.deleteCharAt(idx);
-    			}
-    			while ((idx = sb.indexOf("}")) > -1) {
-    				sb.deleteCharAt(idx);
-    			}
-    			fields = sb.toString().trim();
-    			String[] pairs = fields.split(",");
-    			this.profile.fields = new String[pairs.length];
-    			this.profile.boosts = new float[pairs.length];
-    			for (int i = 0; i < pairs.length; i++) {
-    				String[] pair = pairs[i].split(":");
-    				this.profile.fields[i] = pair[0].trim();
-    				try {
-    					this.profile.boosts[i] = Float.parseFloat(pair[1].trim());
-    				} catch (Exception ex) {
-    					this.profile.boosts[i] = 1.0f;
-    				}
-    			}
-    		}
-    	}
+    	this.profile = new SearchProfile();
+		if (sprops.getProperty(param + ".filter") != null && sprops.getProperty(param + ".filter.operator") != null) {
+			this.profile.filter = sprops.getProperty(param + ".filter").trim();
+    		this.profile.operator = sprops.getProperty(param + ".filter.operator").trim();
+		}
+		
+		if (fields != null && filter instanceof String) {
+			StringBuffer sb = new StringBuffer(fields);
+			int idx;
+			while ((idx = sb.indexOf("{")) > -1) {
+				sb.deleteCharAt(idx);
+			}
+			while ((idx = sb.indexOf("}")) > -1) {
+				sb.deleteCharAt(idx);
+			}
+			fields = sb.toString().trim();
+			String[] pairs = fields.split(",");
+			this.profile.fields = new String[pairs.length];
+			this.profile.boosts = new float[pairs.length];
+			for (int i = 0; i < pairs.length; i++) {
+				String[] pair = pairs[i].split(":");
+				this.profile.fields[i] = pair[0].trim();
+				try {
+					this.profile.boosts[i] = Float.parseFloat(pair[1].trim());
+				} catch (Exception ex) {
+					this.profile.boosts[i] = 1.0f;
+				}
+			}
+		}
     }
     
     public class SearchProfile {
