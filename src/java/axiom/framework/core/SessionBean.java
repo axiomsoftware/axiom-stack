@@ -184,6 +184,16 @@ public class SessionBean implements Serializable {
     }
 
     /**
+     * Tells you whether the user is logged in or not.
+     * 
+     * @jsfunction
+     * @return Boolean
+     */
+    public boolean isLoggedIn() {
+    	return session.isLoggedIn();
+    }
+    
+    /**
      * Associates the current session with the user object.
      *
      * @jsfunction
