@@ -84,7 +84,7 @@ import axiom.util.ResourceProperties;
 public class LuceneQueryDispatcher extends QueryDispatcher {
   
     public static final String PATH_FIELD = "path";
-    static final String EXTENDS_FIELD = "extend";
+    static final String POLYMORPHIC_FIELD = "polymorphic";
     static final String RECURSE_PATH_MARKER = "**";
 
 	public LuceneQueryDispatcher(){
@@ -1332,6 +1332,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 	    		}
     		}
     	}
+    	
     	return newPrototypes;
     }
     
@@ -1341,9 +1342,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     		if (options != null) {
     			Object value = null;
     			if (options instanceof Scriptable) {
-    				value = ((Scriptable) options).get(EXTENDS_FIELD, (Scriptable) options);
+    				value = ((Scriptable) options).get(POLYMORPHIC_FIELD, (Scriptable) options);
     			} else if (options instanceof Map) {
-    				value = ((Map) options).get(EXTENDS_FIELD);
+    				value = ((Map) options).get(POLYMORPHIC_FIELD);
     			}
 		    	if (value != null) {
 		       		if (value instanceof Scriptable) {
