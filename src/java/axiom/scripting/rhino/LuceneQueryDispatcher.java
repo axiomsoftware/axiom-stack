@@ -1368,6 +1368,12 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     	int maxResults = getMaxResults((Scriptable)options);
     	SortObject sort = getSortObject((Scriptable)options);
     	int _layer = getLayer((Scriptable) options);
+		boolean ext = extendPrototypes((Scriptable) options);
+		
+		if (ext) {
+			prototypes = getAllPrototypes(prototypes);
+		}
+    	
     	ArrayList opaths = getPaths((Scriptable)options);
     	IndexSearcher searcher = this.lmgr.getIndexSearcher();
     	LuceneQueryParams params = new LuceneQueryParams();
