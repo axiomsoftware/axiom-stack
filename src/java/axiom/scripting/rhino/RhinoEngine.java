@@ -552,7 +552,7 @@ public class RhinoEngine implements ScriptingEngine {
         try {
             // use a special ScriptableOutputStream that unwraps Wrappers
             ScriptableOutputStream sout = new ScriptableOutputStream(out, core.global) {
-                protected Object replaceObject(Object obj) throws IOException {
+                protected Object replaceObject(Object obj) {
                     if (obj instanceof Wrapper)
                         obj = ((Wrapper) obj).unwrap();
                     return super.replaceObject(obj);
