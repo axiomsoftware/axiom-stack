@@ -515,7 +515,7 @@ public class ImageObject extends FileObject {
         return null;
     }
     
-    private boolean exec(String command) {
+    private boolean exec(String command){
         Process proc = null;
         Runtime rt = Runtime.getRuntime();
         try {
@@ -537,6 +537,19 @@ public class ImageObject extends FileObject {
     
         rt.gc(); /** GARBAGE COLLECT, image magick takes up memory! */
         
+        if(exitStatus != 0){
+        	this.core.app.logEvent("exec ["+command+"] failed with exit code "+exitStatus+". error was:");
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+        	String str = null; 
+        	try{
+        		while( (str = reader.readLine()) != null){
+        			this.core.app.logEvent("\t"+str);
+        		}
+        	} catch(IOException e){
+        		this.core.app.logEvent("Error reading error stream from exec ["+command+"]: "+e.getMessage());
+        	}
+        	
+        }
         return (exitStatus == 0);
     }
 	
