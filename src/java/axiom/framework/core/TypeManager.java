@@ -162,13 +162,15 @@ public final class TypeManager {
             	// it's an prototype
             	String name = null;
             	name = list[i].getShortName();
-            	if (list[i].hasResource("prototype.properties") || isDefaultStandardType(name)) {
+            	
+            	if (list[i].hasResource("prototype.properties") || isDefaultStandardType(name) || prototypes.containsKey(name.toLowerCase())) {
             		Prototype proto = getPrototype(name);
 
             		// if prototype doesn't exist, create it
             		if (proto == null) {
             			// create new prototype if type name is valid
             			if (isValidTypeName(name)) 
+            				
             				createPrototype(name, list[i]);
             		} else {
             			proto.addRepository(list[i]);
