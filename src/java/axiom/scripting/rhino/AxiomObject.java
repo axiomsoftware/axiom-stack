@@ -3076,16 +3076,17 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 public Object jsFunction_renderTAL(Object tal, Scriptable data) 
 	 throws Exception {
 		 Object result = null;
-		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();
 		 Context cx = Context.getCurrentContext();
-         RhinoEngine re = (RhinoEngine) core.app.getCurrentRequestEvaluator().getScriptingEngine();
+		 RhinoCore core = ((RhinoEngine) cx.getThreadLocal("engine")).getCore();
+		 RhinoEngine re = (RhinoEngine) core.app.getCurrentRequestEvaluator().getScriptingEngine();
 		 Scriptable scope = re.global;
 		 String proto = this.getClassName();
 		 String name = tal.toString();
 		 if (data == null || data == Undefined.instance) {
 			 data = cx.newObject(scope); // empty javascript object 
 		 } 
-         
+		 data.setParentScope(null);
+		 
          ExecutionCache cache = (ExecutionCache) this.core.app.getTALCache();
          result = cache.getFunctionResult(this, name);
          if (result != null) {
@@ -3103,31 +3104,33 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				 throw new RuntimeException("Could not find the TAL file " + name);
 			 }
 			 
-			 synchronized (scope) {
+			 synchronized (scope) {			 
 				 data.put("this", data, this);
-			     data.put("app", data, Context.toObject(new ApplicationBean(core.app), scope));
-			     Object req = new RequestBean(core.app.getCurrentRequestEvaluator().getRequest());
-			     data.put("req", data, Context.toObject(req, scope));
-			     data.put("root", data, core.getNodeWrapper(core.app.getNodeManager().getRootNode()));
-			     
-			     Object f = ScriptableObject.getProperty(scope, "TAL");
-                 Object[] fargs = { xml, data };
-                 for (int i = 0; i < fargs.length; i++) {
-                     // convert java objects to JavaScript
-                     if (fargs[i] != null) {
-                         fargs[i] = Context.javaToJS(fargs[i], scope);
-                     }
-                 }
+				 data.put("app", data, Context.toObject(new ApplicationBean(core.app), scope));
+				 Object req = new RequestBean(core.app.getCurrentRequestEvaluator().getRequest());
+				 data.put("req", data, Context.toObject(req, scope));
+				 data.put("root", data, core.getNodeWrapper(core.app.getNodeManager().getRootNode()));
 
-                 Function func = null;
-                 try {
-                	 func = (Function) f;
-                 } catch (Exception e) {
-                	 throw new RuntimeException("Unable to load TAL, check that tal.js exists in the lib directory");
-                 }
-                 
-                 Object ret = func.call(cx, scope, scope, fargs);
-                 result = Context.toObject(ret, scope);
+				 Object[] fargs = { xml, data };
+				 for (int i = 0; i < fargs.length; i++) {
+					 // convert java objects to JavaScript
+					 if (fargs[i] != null) {
+						 fargs[i] = Context.javaToJS(fargs[i], scope);
+					 }
+				 }
+				 
+				 Object f = ScriptableObject.getProperty(scope, "TAL");
+				 synchronized(f){
+					 Function func = null;
+					 try {
+						 func = (Function) f;
+					 } catch (Exception e) {
+						 throw new RuntimeException("Unable to load TAL, check that tal.js exists in the lib directory");
+					 }
+
+					 Object ret = func.call(cx, scope, scope, fargs);
+					 result = Context.toObject(ret, scope);
+				 }
 			 }
              
 			 if (this.core.app.isFunctionResultCachable(this, result, name)) {
