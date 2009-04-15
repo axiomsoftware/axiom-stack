@@ -162,7 +162,7 @@ public abstract class AbstractRepository implements Repository {
         for (int i = 0; i < repositories.length; i++) {
             allResources.addAll(repositories[i].getAllResources());
         }
-
+        
         return allResources;
     }
 

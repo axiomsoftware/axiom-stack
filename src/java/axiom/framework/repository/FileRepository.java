@@ -144,7 +144,7 @@ public class FileRepository extends AbstractRepository {
             lastModified = 0;
             return;
         }
-
+        
         if (directory.lastModified() != lastModified) {
             lastModified = directory.lastModified();
 
