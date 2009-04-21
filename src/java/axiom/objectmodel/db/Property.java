@@ -652,7 +652,13 @@ public final class Property implements IProperty, Serializable, Cloneable, Compa
             	RequestEvaluator reqeval = this.node.dbmap.app.getCurrentRequestEvaluator();
             	if (reqeval != null) {
                     RhinoCore core = ((RhinoEngine) reqeval.getScriptingEngine()).getCore();
-                    value = (Scriptable) Context.getCurrentContext().newObject(((RhinoEngine) reqeval.getScriptingEngine()).getGlobal(), "XMLList", new Object[]{value});
+                    try{
+                    	value = (Scriptable) Context.getCurrentContext().newObject(((RhinoEngine) reqeval.getScriptingEngine()).getGlobal(), "XMLList", new Object[]{value});
+                    } catch(Exception e){
+                    	core.app.logEvent("Error parsing XML value for property "+this.propname+" of "+this.node.getProperty("_prototype")+":"+this.node.getID());
+                    	core.app.logEvent(e);
+                    	return null;
+                    }
                 }
             }
             return value;
