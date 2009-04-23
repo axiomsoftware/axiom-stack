@@ -34,12 +34,12 @@ import java.util.Date;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.DocumentFragment;
 
 import axiom.framework.ErrorReporter;
 import axiom.framework.core.RequestEvaluator;
 import axiom.objectmodel.INode;
 import axiom.objectmodel.IProperty;
+import axiom.scripting.rhino.AxiomObject;
 import axiom.scripting.rhino.MultiValue;
 import axiom.scripting.rhino.Reference;
 import axiom.scripting.rhino.RhinoCore;
@@ -651,12 +651,22 @@ public final class Property implements IProperty, Serializable, Cloneable, Compa
             if (value instanceof String) {
             	RequestEvaluator reqeval = this.node.dbmap.app.getCurrentRequestEvaluator();
             	if (reqeval != null) {
-                    RhinoCore core = ((RhinoEngine) reqeval.getScriptingEngine()).getCore();
-                    try{
-                    	value = (Scriptable) Context.getCurrentContext().newObject(((RhinoEngine) reqeval.getScriptingEngine()).getGlobal(), "XMLList", new Object[]{value});
+        			RhinoEngine re = (RhinoEngine) reqeval.getScriptingEngine();
+            		try{
+            			Context cx = Context.getCurrentContext();
+            			value = (Scriptable) cx.newObject(re.getGlobal(), "XMLList", new Object[]{value});
                     } catch(Exception e){
-                    	core.app.logEvent("Error parsing XML value for property "+this.propname+" of "+this.node.getProperty("_prototype")+":"+this.node.getID());
-                    	core.app.logEvent(e);
+            			RhinoCore core = re.getCore(); 
+                    	try{
+                    		core.app.logEvent("Error parsing XML value for property "
+                    							+this.propname+" of "
+                    							+AxiomObject.getPath(this.node, this.node.getPrototype(), core.app)
+                    							+":"+this.node.getID());
+                    		core.app.logEvent("Value was:\n"+value);
+                        	core.app.logEvent(e);
+                    	} catch(IOException ioex){
+                        	core.app.logEvent(ioex);
+                    	}
                     	return null;
                     }
                 }
