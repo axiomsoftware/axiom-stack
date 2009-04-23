@@ -477,13 +477,13 @@ public class Transactor extends Thread {
                                     	xhtml = updateRefsInXhtml(xhtml, n);
                                     	currobj.put(p.getName(), currobj, xhtml);
                                     	if (this.nmgr.app.debug()) this.nmgr.app.logEvent("Updating XHTML property " + p.getName());
+
+                                    	if (curr.getState() != Node.DELETED) {
+                                            curr.setState(Node.MODIFIED);
+                                        }
+                                        commitNodes.put(curr.getID(), curr);
                                     }
                                 }
-                                
-                                if (curr.getState() != Node.DELETED) {
-                                    curr.setState(Node.MODIFIED);
-                                }
-                                commitNodes.put(curr.getID(), curr);
                             }
                         }
                 	} 
