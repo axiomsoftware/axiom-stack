@@ -718,8 +718,10 @@ public class LuceneManager{
 				}
 				break;
 			case IProperty.XML:
-            case IProperty.XHTML:
 				prop.setXMLValue(fieldvalue);
+				break;
+			case IProperty.XHTML:
+				prop.setXHTMLValue(fieldvalue);
 				break;
 			
             case IProperty.JAVAOBJECT:
