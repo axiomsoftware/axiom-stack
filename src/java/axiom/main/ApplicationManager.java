@@ -291,6 +291,9 @@ public class ApplicationManager implements XmlRpcHandler {
             
             staticMountpoint = getPathPattern(conf.getProperty("staticMountpoint",
                                         joinMountpoint(mountpoint, "static")));
+            if (staticMountpoint != "/") {
+                staticMountpoint = staticMountpoint.substring(0, staticMountpoint.length() - 2);
+            }
             protectedStaticDir = conf.getProperty("protectedStatic");
 
             cookieDomain = conf.getProperty("cookieDomain");
@@ -431,8 +434,8 @@ public class ApplicationManager implements XmlRpcHandler {
                     								staticContent.getAbsolutePath());
                     		server.getLogger().info("Mounting static at " +
                     								staticMountpoint);
-                    		app.addContextPath(staticMountpoint.substring(0, staticMountpoint.length() - 2));
-                    		ch = new ContextHandler(server.contexts, staticMountpoint.substring(0, staticMountpoint.length() - 2));
+                    		app.addContextPath(staticMountpoint);
+                                ch = new ContextHandler(server.contexts, staticMountpoint);
                             ResourceHandler rh = new ResourceHandler();
                             rh.setResourceBase(staticContent.getAbsolutePath());
                             ch.addHandler(rh);
