@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Shell script for starting Axiom with a JDK-like virtual machine.
 
 # To add JAR files to the classpath, simply place them into the
