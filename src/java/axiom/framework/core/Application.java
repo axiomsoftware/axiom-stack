@@ -306,7 +306,7 @@ public final class Application implements IPathElement, Runnable {
 		} catch (Exception ex) {
 			System.out.println("Adding application directory "+ appDir+ " failed. " +
 								"Will not use that repository. Check your initArgs!");
-		}          
+		}
 		
 		// create app-level properties
 		props = new ResourceProperties(this, "app.properties", sysProps);
@@ -328,7 +328,7 @@ public final class Application implements IPathElement, Runnable {
 				sa.setupSampleApp(appDir);
 			}
 		}
-		
+				
 		String dbdir = props.getProperty("dbdir");
 		if (dbdir != null) {
 			dbDir = new File(dbdir);
