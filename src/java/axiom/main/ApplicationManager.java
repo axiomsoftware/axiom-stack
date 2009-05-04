@@ -305,6 +305,13 @@ public class ApplicationManager implements XmlRpcHandler {
 
             // got ignore dirs
             ignoreDirs = conf.getProperty("ignore");
+            
+            // libs directory is "special" by convention
+            if (ignoreDirs != null && ignoreDirs.length() > 0) {
+            	ignoreDirs += "libs";
+            } else {
+            	ignoreDirs = "libs";
+            }    
         }
 
         void start() {
