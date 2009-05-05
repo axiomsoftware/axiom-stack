@@ -308,9 +308,9 @@ public class ApplicationManager implements XmlRpcHandler {
             
             // libs directory is "special" by convention
             if (ignoreDirs != null && ignoreDirs.length() > 0) {
-            	ignoreDirs += "libs";
+            	ignoreDirs += "lib";
             } else {
-            	ignoreDirs = "libs";
+            	ignoreDirs = "lib";
             }    
         }
 
