@@ -21,6 +21,13 @@ _test = {
 	    Assert.assertEquals("test_checkJarLoaded", "Hello World", str);
 	}
     },
+    configuration_suite: {
+	test_dynamicallyAddRewriteRule: function() {
+	    app.addRewriteRule('/blah', '/home');
+	    var rules = app.__app__.getRewriteRules()[0];
+	    Assert.assertIterableEquals("test_checkJarLoaded", ['/blah','/home'], rules);
+	}
+    },
 	app_suite: {
 		setup: function() {
 			app.log("Global app_suite Setup");
