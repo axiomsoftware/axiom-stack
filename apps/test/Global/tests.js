@@ -19,6 +19,16 @@ _test = {
 				root.remove(child);
 			}
 		},
+	    test_checkJarLoaded: function() {
+		var str = null;
+		try {
+		    str = {
+
+		    };
+		} catch (e) {
+		}
+		Assert.assertNotNull("test_checkJarLoaded", str);
+	    },
 		getPlaceHolder: function(){
  			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
@@ -569,7 +579,7 @@ _test = {
 	    var a = ['a','b','a','c','b','a','d'];
 
 	    var control = ['a','b','c','d'];
-	    Assert.assertEquals("test_Array_unique failed", control, a.unique());
+	    Assert.assertIterableEquals("test_Array_unique failed", control, a.unique());
 	},
 	test_Array_remove_index: function() {
 	    var a = ['a','b','c'];
@@ -595,7 +605,7 @@ _test = {
 	},
 	test_Array_lastIndexOf: function() {
 	    var a = ['a','b','c','a'];
-	    Assert.assertEquals("test_Array_lastIndexOf failed", 3, a.lastIndexOf('a'));
+	    Assert.assertIterableEquals("test_Array_lastIndexOf failed", 3, a.lastIndexOf('a'));
 	},
 	test_Array_indexOf: function() {
 	    var a = ['a','b','c','a'];
@@ -606,14 +616,14 @@ _test = {
 	    var b = ['q','a','b','e','r'];
 
 	    var control = ['a','b'];
-	    Assert.assertEquals("test_Array_intersection failed", control, Array.intersection(a,b));
+	    Assert.assertIterableEquals("test_Array_intersection failed", control, Array.intersection(a,b));
 	},
 	test_Array_union: function() {
 	    var a = ['a','b','c','a'];
 	    var b = ['q','a','b','e','r'];
 
-	    var control = ['a','b','c','e','q','r'];
-	    Assert.assertEquals("test_Array_union failed", control, Array.union(a,b));
+	    var control = ['a','b','c','q','e','r'];
+	    Assert.assertIterableEquals("test_Array_union failed", control, Array.union(a,b));
 	}
     }
 }

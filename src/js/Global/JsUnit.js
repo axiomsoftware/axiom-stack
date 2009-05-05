@@ -85,13 +85,6 @@ Assert.assertEquals = function( msg, expected, actual )
 
     if ( actual == expected ) {
 	equiv = true;
-    } else if ((typeof expected != "string" && typeof actual != "string") && (expected instanceof Array && actual instanceof Array) && (expected.length == actual.length)) {
-	for (var i = 0; i < expected.length; i++) {
-	    if (expected[i] != actual[i]) {
-		break;
-	    }
-	}
-	equiv = true;
     }
 
     if(!equiv){
@@ -99,6 +92,39 @@ Assert.assertEquals = function( msg, expected, actual )
 				   , /*new CallStack()*/'', msg );
 	}
 }
+
+/**
+ * Asserts that the two iterables (Array/Object) are equal.
+ * @param {String} msg An optional error message
+ * @param {Object} expected The expected value
+ * @param {Object} actual The actual value
+ * @exception {AssertionFailedError} Thrown if the expected value is not the
+ * actual one
+ */
+Assert.assertIterableEquals = function( msg, expected, actual )
+{
+    var equiv = true;
+    if( arguments.length == 2 )
+    {
+        actual = expected;
+        expected = msg;
+        msg = null;
+	equiv = true;
+    }
+
+    for (var i = 0; i < expected.length; i++) {
+	if (expected[i] != actual[i]) {
+	    equiv = false;
+	    break;
+	}
+    }
+
+    if(!equiv){
+	Assert.fail( "Expected:[" + expected + "], but was:[" + actual + "]"
+				   , /*new CallStack()*/'', msg );
+    }
+}
+
 /**
  * Asserts that a regular expression matches a string.
  * @param {String} msg An optional error message

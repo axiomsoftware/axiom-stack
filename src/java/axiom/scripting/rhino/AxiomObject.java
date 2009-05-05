@@ -3182,16 +3182,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * from the database. 
 	  *                      
 	  * @returns {Boolean} Whether the operation was a success or not
-	  */ 
+	  */ 	 
+	 public boolean jsFunction_del() throws Exception {
+		 boolean success = this.node.remove();
 
-	 public boolean jsFunction_del() throws Exception{
-		 return jsFunction_del(true);
-	 }
-	 	 
-	 public boolean jsFunction_del(boolean deep) throws Exception{
-		 boolean success = this.node.remove(deep);
-
-		 if (success) { 
+		 if (success) {
 			 String name;
 			 AxiomObject parent;
 			 if (!"axiomobject".equals(this.node.getPrototype().toLowerCase())) {
