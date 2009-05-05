@@ -5,6 +5,22 @@ _test = {
 	teardown: function() {
 		app.log("Global Outer Teardown");
 	},
+    liveconnect_suite: {
+	test_checkJarLoaded: function() {
+	    var clazz = null;
+	    try {
+		clazz = Packages.HelloWorld.HelloWorld;
+	    } catch (e) {}
+	    Assert.assertNotNull("test_checkJarLoaded", clazz);
+	},
+	test_checkJarLoaded_getMessage: function() {
+	    var str = "Not Hello World";
+	    try {
+		str = Packages.HelloWorld.HelloWorld.getMessage();
+	    } catch (e) {}
+	    Assert.assertEquals("test_checkJarLoaded", "Hello World", str);
+	}
+    },
 	app_suite: {
 		setup: function() {
 			app.log("Global app_suite Setup");
@@ -19,16 +35,6 @@ _test = {
 				root.remove(child);
 			}
 		},
-	    test_checkJarLoaded: function() {
-		var str = null;
-		try {
-		    str = {
-
-		    };
-		} catch (e) {
-		}
-		Assert.assertNotNull("test_checkJarLoaded", str);
-	    },
 		getPlaceHolder: function(){
  			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
