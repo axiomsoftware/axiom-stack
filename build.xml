@@ -87,6 +87,8 @@
 	</target>
 
 	<target name="test">
+		<delete><fileset dir="${home.dir}/db" /></delete>
+		
 		<move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
 
 		<move todir="${apps.dir}" includeemptydirs="false">
@@ -97,7 +99,11 @@
 			<mapper type="glob" from="*" to="*.testing"/>
 		</move>
 
-		<antcall target="build">
+		<antcall target="clean">
+			<param name="version" value="${java_version}"/>
+		</antcall>	
+		
+		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
 		</antcall>		
 

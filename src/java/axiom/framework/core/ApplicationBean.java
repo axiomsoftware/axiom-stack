@@ -153,6 +153,21 @@ public class ApplicationBean implements Serializable {
     }
 
     /**
+     * Add an application level rewrite rule.
+     * 
+     * @param {String} from - External url
+     * @param {String} to - Internal url
+     * 
+     * For example:
+     * 		To remap '/' to '/home', use: app.addRewriteRule('/', '/home');
+     * 
+     * @jsfunction
+     */
+    public void addRewriteRule(String from, String to) {
+    	app.addRewriteRule(from, to);
+    }
+    
+    /**
      * Clear the application cache.
      * 
      * @jsfunction

@@ -28,6 +28,7 @@ public class FileRepository extends AbstractRepository {
 
     // Directory serving sub-repositories and file resources
     protected File directory;
+	protected File libDir;
 
     protected long lastModified = -1;
     protected long lastChecksum = 0;
@@ -69,12 +70,15 @@ public class FileRepository extends AbstractRepository {
         } else {
             directory = dir.getAbsoluteFile();
         }
+        
+        libDir = new File(dir.getAbsolutePath() + "/lib");
+        
         if (!directory.exists()) {
             create();
         } else if (!directory.isDirectory()) {
             throw new IllegalArgumentException("File " + directory + " is not a directory");
         }
-
+        
         if (parent == null) {
             name = shortName = directory.getAbsolutePath();
         } else {
@@ -136,7 +140,7 @@ public class FileRepository extends AbstractRepository {
     public synchronized void update() {
         if (!directory.exists()) {
             repositories = emptyRepositories;
-            if (resources != null) {
+            if (resources == null) {
                 resources = new HashMap<String, Resource>();
             } else {
                 resources.clear();
@@ -167,6 +171,16 @@ public class FileRepository extends AbstractRepository {
                 }
             }
 
+    		try {
+    			if (libDir.exists()) {
+    				// assume that the appLibDir is, in fact, a directory...
+    				newRepositories.add(new FileRepository(libDir));
+    			}
+    		} catch (Exception ex) {
+    			System.out.println("Adding application lib directory "+ libDir+ " failed. " +
+    								"Will not add additional libraries to the application.");
+    		}
+            
             repositories = (Repository[])
                     newRepositories.toArray(new Repository[newRepositories.size()]);
             resources = newResources;

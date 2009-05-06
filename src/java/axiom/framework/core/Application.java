@@ -306,7 +306,7 @@ public final class Application implements IPathElement, Runnable {
 		} catch (Exception ex) {
 			System.out.println("Adding application directory "+ appDir+ " failed. " +
 								"Will not use that repository. Check your initArgs!");
-		}          
+		}
 		
 		// create app-level properties
 		props = new ResourceProperties(this, "app.properties", sysProps);
@@ -328,7 +328,7 @@ public final class Application implements IPathElement, Runnable {
 				sa.setupSampleApp(appDir);
 			}
 		}
-		
+				
 		String dbdir = props.getProperty("dbdir");
 		if (dbdir != null) {
 			dbDir = new File(dbdir);
@@ -2640,8 +2640,29 @@ public final class Application implements IPathElement, Runnable {
             url = url.substring(0, url.length() - 1);
         }
         url = url.substring(1);
-        
         return url;
+    }
+    
+    /**
+     * Adds a rewrite rule to the head of the array.
+     * 
+     * @param from
+     * @param to
+     */
+    public void addRewriteRule(String from, String to) {
+    	// need to synchronize because the length and items within can change
+    	synchronized(this.rewriteRules) {
+    		final int rrlen = this.rewriteRules.length;
+    		String[][] rules = new String[rrlen+1][2];
+    		rules[0][0] = from;
+    		rules[0][1] = to;
+    	
+    		for (int i = 0; i < rrlen; i++) {
+    			rules[i+1] = this.rewriteRules[i];
+    		}
+    	
+    		this.rewriteRules = rules;
+    	}
     }
     
     protected String[][] setupRewriteRules() {
@@ -2650,6 +2671,7 @@ public final class Application implements IPathElement, Runnable {
             BufferedReader br = null;
             boolean found_resource = false;
             try {
+            	//properties aren't ordered, must read lines
                 Resource res = repository.getResource("rewrite.properties");
                 if (res != null && res.exists()) {
                     br = new BufferedReader(new InputStreamReader(res.getInputStream()));
