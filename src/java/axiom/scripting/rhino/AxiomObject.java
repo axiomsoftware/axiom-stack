@@ -2025,43 +2025,23 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			break;
 		case IProperty.XHTML:
 		case IProperty.XML:
-			if (value instanceof Scriptable) {
-				Scriptable s = (Scriptable) value;
-				String className = s.getClassName();
-				if ("String".equals(className)) {
-					try {
-                        Context cx = Context.getCurrentContext();
-                        String fixed = ScriptRuntime.toString(s);
-                        if(type == IProperty.XHTML){
-                        	fixed = DOMParser.replaceEntitiesWithChars(fixed);                        	
-                        }
-                        newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{fixed});
-                        //newvalue = cx.evaluateString(this.core.getScope(), 
-                        //            "new XMLList(\""+fixed.replaceAll("\"", "\\\\\"").replaceAll("\r?\n","\\\\\n") + "\");", "typecast()", 1, null); 
-					} catch (Exception ex) {
-						emsg = ex.getMessage();
-						newvalue = null;
-						errorflag = true;
-					}
-				} else if ("XML".equals(className) || "XMLList".equals(className)) {
-				    newvalue = value;
-                }
-			} else if (value instanceof String) {
+			if (value instanceof String || (value instanceof Scriptable && ((Scriptable) value).getClassName().equals("String") )) {
 				try {
-                    Context cx = Context.getCurrentContext();
-                    String fixed = (String)value;
-                    if(type == IProperty.XHTML){
-                    	fixed = DOMParser.replaceEntitiesWithChars(fixed);                        	
+					Context cx = Context.getCurrentContext();
+					String strval = value.toString();
+					if(type == IProperty.XHTML){
+						newvalue = cx.newObject(this.core.getScope(), "XHTML", new Object[]{strval});	
+                    } else {
+                    	newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{strval});	
                     }
-                    newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{fixed});
-                    //newvalue = cx.evaluateString(this.core.getScope(), 
-                    //			"new XMLList(\""+fixed.replaceAll("\"", "\\\\\"").replaceAll("\r?\n","\\\\\n") + "\");", "typecast()", 1, null);
 				} catch (Exception ex) {
 					emsg = ex.getMessage();
 					newvalue = null;
 					errorflag = true;
 				}
-			} 
+			} else if ("XML".equals(className) || "XMLList".equals(className) || "XHTML".equals(className)) {
+				    newvalue = value;
+			}
 			break;
 		}
 
@@ -3096,9 +3076,9 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 try {
 			 Object xml = null;
 			 if (tal instanceof String || (tal instanceof Scriptable && ((Scriptable) tal).getClassName().equals("String"))) {
-			     xml = TALExtension.stringToXmlObject((String) getTALDoc(proto, name), scope, core.app);
+			     xml = TALExtension.stringToXHTMLObject((String) getTALDoc(proto, name), scope, core.app);
 			 } else {
-				 xml = TALExtension.stringToXmlObject(TALExtension.xmlObjectToString(((Scriptable) tal), core.app), scope, core.app);
+				 xml = TALExtension.stringToXHTMLObject(TALExtension.xmlObjectToString(((Scriptable) tal), core.app), scope, core.app);
 			 }
 			 if (xml == null) {
 				 throw new RuntimeException("Could not find the TAL file " + name);

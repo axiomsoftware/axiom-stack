@@ -228,10 +228,10 @@ public final class ResponseTrans extends Writer implements Serializable {
     public void write(Scriptable jsobj) {
         if (jsobj != null && jsobj != Undefined.instance) {
         	String className = jsobj.getClassName();
-        	if (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList")) {
+        	if (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList") || className.equalsIgnoreCase("XHTML") ) {
         	    // allow bare ampersands within title tags and urls
                 String result = XmlUtils.objectToXMLString(jsobj);
-                if(this.contentType.startsWith("text/html")){
+                if( (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList")) && this.contentType.startsWith("text/html")){
                 	Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);
                 	StringBuffer newResult = new StringBuffer();
                 	while(urlAndTitleMatcher.find()){
@@ -239,9 +239,6 @@ public final class ResponseTrans extends Writer implements Serializable {
                 	}
                 	urlAndTitleMatcher.appendTail(newResult);
                 	result = newResult.toString();
-
-                	// fix self closing tags
-                    result = result.replaceAll("\\<(?!img|br|hr|input|frame|link|meta|param)(\\w+)([^\\<]*)/\\>","<$1$2></$1>");
                 }
         		String doctype = app.getProperty("doctype");
         		this.write(((doctype != null)?doctype+"\n":"\n")+result);
