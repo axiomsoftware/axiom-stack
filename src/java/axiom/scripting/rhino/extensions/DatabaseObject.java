@@ -302,7 +302,7 @@ public class DatabaseObject {
      * @jsfunction
      * @param {String} sql A SQL statement such as an INSERT, UPDATE, or DELETE statement
      * @returns {Number} Either the row count for rows modified or 0 for sql statements that return
-     * 					 nothing
+     * 					 nothing. -1 Means that the execution failed.
      */
     public int executeUpdate(String sql) {
         int count = 0;
