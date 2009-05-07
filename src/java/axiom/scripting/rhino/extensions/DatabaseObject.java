@@ -20,6 +20,7 @@
 
 package axiom.scripting.rhino.extensions;
 
+import axiom.framework.core.Application;
 import axiom.objectmodel.db.DbSource;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -279,9 +280,8 @@ public class DatabaseObject {
 
         try {
             connection.setReadOnly(true);
-            statement = connection.createStatement();
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             resultSet = statement.executeQuery(sql);     // will return true if first result is a result set
-
             return new RowSet(sql, this, statement, resultSet);
         } catch (SQLException e) {
             //System.err.println("##Cannot retrieve: " + e);
@@ -320,8 +320,6 @@ public class DatabaseObject {
             statement = connection.createStatement();
             count = statement.executeUpdate(sql);     // will return true if first result is a result set
         } catch (SQLException e) {
-            //System.err.println("##Cannot retrieve: " + e);
-            //e.printStackTrace();
             lastError = e;
             try {
                 if (statement != null) statement.close();
@@ -333,7 +331,7 @@ public class DatabaseObject {
         if (statement!=null) try {
             statement.close();
         } catch (SQLException e) {
-            // ignored
+        	lastError = e;
         }
         return count;
     }
@@ -463,6 +461,25 @@ public class DatabaseObject {
             } else {
                 return lastError;
             }
+        }
+        
+        /**
+         * This function gets the size of the result set.
+         * 
+         * @jsfunction
+         * @return {Number} The size of the result set.
+         * @throws SQLException
+         */
+        public int size() throws SQLException {
+        	int size = 0;
+        	if (this.resultSet != null) {
+        		int current = this.resultSet.getRow();
+        		this.resultSet.beforeFirst();
+        		this.resultSet.last();
+        		size = this.resultSet.getRow();
+        		this.resultSet.absolute(current);
+        	}
+        	return size;
         }
 
         /**
@@ -757,7 +774,7 @@ public class DatabaseObject {
 
         /**
          * Returns an enumerator for the key elements of this object.
-         * @jsconstructor
+         * @jsfunction
          * @returns {Object} The enumerator - may have 0 length of coulmn names where not found
          */
        public Enumeration getProperties() {
@@ -774,8 +791,8 @@ public class DatabaseObject {
 
 
         /**
-         * Moves the cursor froward one row from its current position.
-         * @jsconstructor
+         * Moves the cursor forward one row from its current position.
+         * @jsfunction
          * @returns {Boolean} True if the new current row is valid; false if there are no more rows.
          */
         public boolean next() {
