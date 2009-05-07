@@ -33,8 +33,8 @@ function TAL(doc, data) {
     var tal = new Namespace('tal', 'http://axiomstack.com/tale');
     TAL.Scope.prototype = data;
     var local_data = new TAL.Scope();
-	default xml namespace = doc.namespace('');
-	if(doc.namespace('tal')==tal) {
+    default xml namespace = doc.namespace('');
+    if(doc.namespace('tal')==tal) {
         TAL.TALE(doc, local_data, tal);
     } else {
         tal = new Namespace('tal', 'http://xml.zope.org/namespaces/tal');

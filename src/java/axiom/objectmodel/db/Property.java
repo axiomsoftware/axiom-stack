@@ -654,7 +654,11 @@ public final class Property implements IProperty, Serializable, Cloneable, Compa
         			RhinoEngine re = (RhinoEngine) reqeval.getScriptingEngine();
             		try{
             			Context cx = Context.getCurrentContext();
-            			value = (Scriptable) cx.newObject(re.getGlobal(), "XMLList", new Object[]{value});
+            			if(type == XHTML){
+            				value = (Scriptable) cx.newObject(re.getGlobal(), "XHTML", new Object[]{value});
+            			} else {
+            				value = (Scriptable) cx.newObject(re.getGlobal(), "XMLList", new Object[]{value});
+            			}
                     } catch(Exception e){
             			RhinoCore core = re.getCore(); 
                     	try{

@@ -338,6 +338,20 @@ public class TALExtension extends AxiomExtension {
         return map;
     }
 
+    public static Object stringToXHTMLObject(String xmlStr, Scriptable scope, Application app){
+    	Object xml = null;
+    	try {
+    		Context cx = Context.getCurrentContext();
+    		cx.evaluateString(scope, "XML.ignoreWhitespace=false;", "", 1, null);
+    		cx.evaluateString(scope, "XML.prettyPrinting=false;", "", 1, null);
+    		xml = cx.newObject(scope, "XHTML", new Object[]{ xmlStr });
+    	}  catch (Exception ex) {
+    		app.logError(ErrorReporter.errorMsg(TALExtension.class, "stringToXHTMLObject") 
+    				+ "Could not create the XHTML object for " + xmlStr, ex);
+    	}
+    	return xml;
+    }
+    
     public static Object stringToXmlObject(String xmlStr, Scriptable scope, Application app) {
     	Object xml = null;
     	if (xmlStr.startsWith("<?")) {
