@@ -24,6 +24,6 @@ public interface NodeChangeListener {
      * Called when a transaction is committed that has created, modified, 
      * deleted or changed the child collection one or more nodes.
      */
-    public void nodesChanged(List inserted, List updated, List deleted, List parents);
+    public void nodesChanged(List<Node> inserted, List<Node> updated, List<Node> deleted, List<Node> parents);
 
 }
