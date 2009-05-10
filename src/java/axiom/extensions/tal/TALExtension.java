@@ -26,6 +26,7 @@ import java.io.*;
 import org.mozilla.javascript.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
+import org.mozilla.javascript.xmlimpl.*;
 
 import axiom.extensions.ConfigurationException;
 import axiom.extensions.AxiomExtension;
@@ -209,6 +210,8 @@ public class TALExtension extends AxiomExtension {
         TemplateLoader loader = new TemplateLoader(app);
         HashMap map = retrieveTemplatesForApp(app);
         HashMap templSources = loader.getAllTemplateSources();
+        RhinoEngine re = (RhinoEngine) app.getCurrentRequestEvaluator().getScriptingEngine();
+        Scriptable scope = re.getGlobal();
         
         synchronized (map) {
             TALTemplate template = null;
@@ -226,16 +229,33 @@ public class TALExtension extends AxiomExtension {
                 else {
                     boolean success = true;
                     Reader reader = null;
+                    BufferedReader br = null;
                     try {
                         reader = loader.getReader(templateSource, null);
-                        org.xml.sax.InputSource isource = new org.xml.sax.InputSource(reader);
+                        br = new BufferedReader(reader);
+                        StringBuffer stringbuf = new StringBuffer();
+                        String line = null;
+                        while((line = br.readLine()) != null) {
+                        	stringbuf.append(line);
+                        }
+                        
+                        XHTML xml = (XHTML) TALExtension.stringToXHTMLObject(stringbuf.toString(), scope, app);
+                        org.xml.sax.InputSource isource = new org.xml.sax.InputSource(new StringReader(xml.toString()));
                         isource.setEncoding("UTF-8");
                         doc = getDOMFromSource(isource);
+                        
+                        stringbuf = null;
+                        
                     } catch (Exception ex) {
                         success = false;
                         app.logError(ErrorReporter.errorMsg(TALExtension.class, "loadTemplates") 
                         		+ "Could not load the TAL for " + name, ex);
                     } finally {
+                        if (br != null) {
+                        	br.close();
+                        	br = null;
+                        }
+                        
                         if (reader != null) {
                             reader.close();
                             reader = null;
