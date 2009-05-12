@@ -32,6 +32,7 @@ public class TransactionManager {
     TransSource source;
     Connection conn;
     ArrayList transactionUnits = new ArrayList();
+    HashMap<Thread, Transaction> transactions;
     
     protected TransactionManager(TransSource source) throws TransactionException {
         this.source = source;
