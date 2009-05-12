@@ -376,7 +376,7 @@ abstract class INodeManager {
     /**
      * Updates the cache with the new node 
      * 
-     * @param node
+     * @param node - Node to update the cache with
      */
     public void cacheUpdate(Node node) {
     	// synchronize with cache
@@ -400,7 +400,7 @@ abstract class INodeManager {
     
     /**
      * Gets the current size of the cache.    
-     * @return
+     * @return The size of the cache.
      */
     public int getCurrentCacheSize() {
         return cache.size();
@@ -409,20 +409,11 @@ abstract class INodeManager {
     /**
      * Get a node in a layer
      * 
-     * @param node
-     * @param layer
-     * @return
+     * @param node - The node you are looking for.
+     * @param layer - The node you are looking for.
+     * @return The new node within the layer.
      */
-    protected Node getNodeInLayer(Node node, final int layer) {
-    	DbKey dkey = new DbKey(node.getDbMapping(), node.getID(), layer);
-    	Node nnode = null;
-    	try {
-    		nnode = getNode(dkey, false);
-    	} catch (Exception ex) {
-    		nnode = null;
-    	}
-    	return nnode;
-    }
+    abstract Node getNodeInLayer(Node node, final int layer);
     
     /**
      * Will retrieve or create a node from a specified layer.
@@ -433,179 +424,27 @@ abstract class INodeManager {
      * @return The new node within the layer.
      * @throws Exception
      */
-    public Node getNodeInLayer(Node node, final int layer, boolean create) throws Exception {
-    	if (app.debug()) 
-    		app.logEvent("NodeManager.getNodeInLayer() for " + node.logString() 
-    				+ " on layer " + layer);
-    	
-    	Node nnode = getNodeInLayer(node, layer);
-    	
-    	Node parent = (Node) node.getParent();
-        if (parent != null) {
-        	Node nparent = getNodeInLayer(parent, layer);
-        	if (nparent != null) {
-        		parent = nparent;
-        	}
-        }
-        
-    	if (nnode != null) {
-    		if (app.debug())
-        		app.logEvent("NodeManager.getNodeInLayer(), getting node " 
-        				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
-        				+ ", state = " + nnode.getState()
-        				+ ", id = " + nnode.getString("id")
-        				+ ", layer = " + nnode.getLayer() 
-        				+ ", layerinStorage = " + nnode.getLayerInStorage()
-        				+ " by thread " + Thread.currentThread());
-    		
-    		final int state = nnode.getState();
-    		if (state == Node.DELETED || (state == Node.MODIFIED && nnode.getParent() == null)) {
-    			nnode.checkWriteLock();
-    			nnode.markAs(Node.MODIFIED);
-    			nnode.setParent(parent);
-    			nnode.cloneProperties(node);
-    		}
-    		return nnode;
-    	}
-    	
-    	if (nnode == null && create) {
-    		nnode = this.createNodeInLayer(node, layer);
-    	}
-        
-        cacheUpdate(nnode);
-        
-    	return nnode;
-    }
+    abstract Node getNodeInLayer(Node node, final int layer, boolean create) throws Exception;
     
-    protected Node createNodeInLayer(Node node, final int mode) throws Exception {
-    	Node parent = (Node) node.getParent();
-        if (parent != null) {
-        	Node nparent = getNodeInLayer(parent, mode);
-        	if (nparent != null) {
-        		parent = nparent;
-        	}
-        }
-    	
-    	Node nnode = new Node(node.getName(), node.getID(), node.getPrototype(), safe, node.created, node.lastmodified);
-    	nnode.getKey(mode);
-    	nnode.setLayer(mode);
-    	nnode.setLayerInStorage(mode);
-        nnode.setParent(parent);
-        nnode.setSubnodes(node.getSubnodeList());
-        nnode.cloneProperties(node);
-        nnode.markAs(Node.NEW);
-        
-        if (app.debug())
-    		app.logEvent("NodeManager.getNodeInLayer(), created new node "
-    				+ nnode.logString() + ", hashcode = " + nnode.hashCode()
-    				+ ", id = " + nnode.getString("id")
-    				+ " by thread " + Thread.currentThread());
-    	
-    	return nnode;
-    }
+    /**
+     * Creates the node specified in the layer specified.
+     * 
+     * @param node - Node to create
+     * @param layer - Layer to create the node in
+     * @return The new node set within the specified layer.
+     * @throws Exception
+     */
+    abstract Node createNodeInLayer(Node node, final int layer) throws Exception;
     
-    public void deleteNodeInLayer(Node node, final int mode) {
-    	if (app.debug())
-    		app.logEvent("NodeManager.deleteNodeInLayer() for " + node.logString()
-    				+ " on layer " + mode);
-    	
-    	DbKey dkey = new DbKey(node.getDbMapping(), node.getID(), mode);
-    	Node nnode = null;
-    	try {
-    		nnode = getNode(dkey, false);
-    	} catch (Exception ex) {
-    		nnode = null;
-    	}
-    	
-    	if (nnode != null) {
-    		nnode.checkWriteLock();
-    		if (app.debug())
-        		app.logEvent("NodeManager.deleteNodeInLayer(), setting delete status on " 
-        				+ nnode.logString() + ", hashcode = " + nnode.hashCode() 
-        				+ ", state = " + nnode.getState()
-        				+ ", id = " + nnode.getString("id")
-        				+ " by thread " + Thread.currentThread());
-        	
-    		nnode.markAs(Node.DELETED);
-    		INode parent = nnode.getParent();
-    		if (parent != null) {
-    			parent.removeNode(nnode);
-    		}
-    		nnode.setParentHandle(null);
-    	}
-
-    	if (app.debug())
-    		app.logEvent("NodeManager.deleteNodeInLayer(), evict key = " + dkey);
-    	
-    	this.evictKey(dkey);
-    }
+    /**
+     * Deletes the specified Node from the layer.
+     * 
+     * @param node - Node to delete.
+     * @param layer - Layer to remove the node from.
+     */
+    abstract void deleteNodeInLayer(Node node, final int layer);
     
-    public void saveNodeInLayer(Node node, final int layer) {
-    	Key oldkey = node.getKey();
-    	Transactor tx = (Transactor) Thread.currentThread();
-    	IDatabase db = this.getDatabaseForMapping(node.dbmap);
-    	ITransaction txn = tx.getTransaction(db);
-		
-    	DbKey dkey = new DbKey(node.dbmap, node.getID(), layer);
-    	node.setKey(dkey);
-    	node.updateLayersOnReferences(layer);
-    	tx.visitCleanNode(dkey, node);
-
-		Node dbNode = null;
-    	try {
-    		if (db instanceof LuceneDatabase) {
-    			dbNode = ((LuceneDatabase) db).getLuceneManager().retrieveFromIndexFixedMode(dkey.getID(), dkey.getLayer(), true);
-    		}
-    		String newPath = AxiomObject.getPath(node, node.getPrototype(), this.app);
-    		String oldPath = null;
-    		if (dbNode != null) {
-    			oldPath = AxiomObject.getPath(dbNode, dbNode.getPrototype(), this.app);
-    		}
-    		if (newPath != null && oldPath != null && !newPath.equals(oldPath)) {
-    			node.hasPathChanged = true;
-    			if (this.app.debug()) 
-    	        	this.app.logEvent("Node.saveNodeInLayer(): Path has changed on " 
-    	        			+ node.logString());
-    		}
-    	} catch (Exception ignore) {
-    		// object not found in current layer, ignore
-    	}
-    	
-    	try {
-    		INode oldnode = null;
-    		try {
-    			oldnode = ((LuceneDatabase) db).getLuceneManager().retrieveFromIndexFixedMode(oldkey.getID(), oldkey.getLayer(), true);
-    		} catch (Exception ex) {
-    			oldnode = null;
-    		}
-    		if (oldnode != null) {
-    			db.deleteNode(txn, oldkey.getID(), oldkey.getLayer());
-    			tx.deleteFromPathIndices(oldkey);
-    		}
-    	} catch (Exception ex) {
-    		this.app.logError(ErrorReporter.errorMsg(this.getClass(), "saveNodeInLayer") 
-    				+ ": Could not delete " + oldkey, ex);
-    	}
-    	
-    	node.checkWriteLock();
-    	if (dbNode != null) {
-    		node.markAs(Node.MODIFIED);
-    	} else {
-    		node.markAs(Node.NEW);
-    	}
-    	
-    	// synchronize with cache
-        synchronized (cache) {
-        	this.evictNodeByKey(oldkey);
-            Node oldnode = (Node) cache.put(node.getKey(), node);
-
-            if ((oldnode != null) && !oldnode.isNullNode() &&
-                    (oldnode.getState() != Node.INVALID)) {
-                cache.put(oldnode.getKey(), oldnode);
-            }
-        }
-        // end of cache-synchronized section
-    }
+    abstract void saveNodeInLayer(Node node, final int layer);
     
     public IDatabase getDatabaseForMapping(DbMapping dbm) {
     	IDatabase db = null;
@@ -638,5 +477,9 @@ abstract class INodeManager {
         	}
     	}
     }
+    
+    /****************************************************
+     * Cache methods
+     ****************************************************/
     
 } 

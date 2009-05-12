@@ -52,7 +52,7 @@ import axiom.scripting.rhino.*;
 
 /**
  * A subclass of thread that keeps track of changed nodes and triggers
- * changes in the database when a transaction is commited.
+ * changes in the database when a transaction is committed.
  */
 public class Transactor extends Thread {
 
@@ -60,28 +60,28 @@ public class Transactor extends Thread {
     NodeManager nmgr;
 
     // List of nodes to be updated
-    private HashMap dirtyNodes;
+    private HashMap<Key, Node> dirtyNodes;
 
     // List of visited clean nodes
-    private HashMap cleanNodes;
+    private HashMap<Key, Node> cleanNodes;
     
-    private ConcurrentHashMap txnNodes;
+    private ConcurrentHashMap<Key, Node> txnNodes;
 
     // List of nodes whose child index has been modified
-    private HashSet parentNodes;
+    private HashSet<Node> parentNodes;
 
     // Is a transaction in progress?
     private volatile boolean active;
     private volatile boolean killed;
 
     // Transactions for the databases
-    protected HashMap<IDatabase,ITransaction> txns; 
+    protected HashMap<IDatabase, ITransaction> txns;
 
     // Transactions for SQL data sources
-    private HashMap sqlConnections;
+    private HashMap<DbSource, Connection> sqlConnections;
 
     // Set of SQL connections that already have been verified
-    private HashSet testedConnections;
+    private HashSet<DbSource> testedConnections;
 
     // when did the current transaction start?
     private long tstart;
