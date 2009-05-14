@@ -637,6 +637,30 @@ _test = {
 
 	    var control = ['a','b','c','q','e','r'];
 	    Assert.assertIterableEquals("test_Array_union failed", control, Array.union(a,b));
+	},
+	test_Array_insert_params: function() {
+	    var a = ['a','b','c','d'];
+	    a.insert('e', 1);
+
+	    var control = ['a','e','b','c','d'];
+	    Assert.assertIterableEquals("test_Array_insert_params failed", control, a);
+	},
+	test_Array_insert_noindex: function() {
+	    var a = ['a','b','c','d'];
+	    a.insert('e');
+
+	    var control = ['a','b','c','d','e'];
+	    Assert.assertIterableEquals("test_Array_insert_noindex failed", control, a);
+	},
+	test_Array_insert_noparams: function() {
+	    var a = ['a','b','c','a'];
+	    var ex = null;
+	    try {
+		a.insert();
+	    } catch (e) {
+		ex = e;
+	    }
+	    Assert.assertNotNull("test_Array_insert_noparams failed", ex);
 	}
     }
 }

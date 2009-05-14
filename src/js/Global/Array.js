@@ -80,6 +80,27 @@ Array.prototype.indexOf = function(val) {
 
 
 /**
+ * Insert some object within the array at some index. If index is null, the element is
+ * pushed to the end of the array.
+ *
+ * @param {Object} val Object to insert
+ * @param {Number} index The place within the array to insert val
+ * @throws Throws an error when you try to insert a null value into the array
+ */
+Array.prototype.insert = function(val, index) {
+    if (!val) {
+	throw "Cannot insert a null value into the array. val is null.";
+    }
+
+    if (!index) {
+	this.push(val);
+    } else {
+	this.splice(index, 0, val);
+    }
+};
+
+
+/**
  * Return the last index position of the specified value
  * contained in this array.
  *

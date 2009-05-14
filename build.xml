@@ -87,7 +87,7 @@
 	</target>
 
 	<target name="test">
-		<delete><fileset dir="${home.dir}/db" /></delete>
+		<delete failonerror="false" ><fileset dir="${home.dir}/db" /></delete>
 		
 		<move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
 
@@ -102,7 +102,7 @@
 		<antcall target="clean">
 			<param name="version" value="${java_version}"/>
 		</antcall>	
-		
+				
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
 		</antcall>		
