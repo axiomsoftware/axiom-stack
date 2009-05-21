@@ -113,7 +113,8 @@ Assert.assertIterableEquals = function( msg, expected, actual )
     }
 
     if (expected.length == actual.length) {
-	for (var i = 0; i < expected.length; i++) {
+	var len = expected.length;
+	for (var i = 0; i < len; i++) {
 	    if (expected[i] != actual[i]) {
 		equiv = false;
 		break;

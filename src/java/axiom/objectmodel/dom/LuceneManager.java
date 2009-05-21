@@ -36,6 +36,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.ScriptRuntime;
 
 import axiom.extensions.trans.TransactionException;
 import axiom.framework.ErrorReporter;
@@ -1610,12 +1611,18 @@ public class LuceneManager{
 				valueBuffer.append(serializeBoolean(((Boolean) values[i]).booleanValue()));
 				valueBuffer.append(DELIM);
 				break;
-			case IProperty.DATE: 
-				valueBuffer.append(serializeDate((Date) values[i]));
+			case IProperty.DATE:
+				valueBuffer.append(serializeTimestamp(new Date((long) ScriptRuntime.toNumber(values[i]))));
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.FLOAT:
-				valueBuffer.append(serializeFloat(((Float) values[i]).floatValue()));
+				if (values[i] instanceof Double) {
+					valueBuffer.append(serializeFloat(((Double) values[i]).doubleValue()));
+				} else if (values[i] instanceof Float){
+					valueBuffer.append(serializeFloat(((Float) values[i]).floatValue()));
+				} else {
+					valueBuffer.append(serializeFloat(((Integer) values[i]).intValue()));
+				}
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.INTEGER:

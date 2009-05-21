@@ -382,6 +382,15 @@ public class MultiValue extends ScriptableObject implements Serializable {
     }
     
     /**
+     * Gets the values within the MultiValue in an array format.
+     * 
+     * @return Object array
+     */
+    public Object[] jsFunction_toArray() {
+    	return this.getValues();
+    }
+    
+    /**
      * Remove the input object from the list of elements in this MultiValue and return a
      * new MultiValue with all the elements in this MultiValue minus the input object (if
      * it exists in this MultiValue).
