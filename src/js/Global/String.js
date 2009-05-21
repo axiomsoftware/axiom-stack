@@ -23,6 +23,16 @@ String.prototype.md5 = function() {
     return Packages.axiom.util.MD5Encoder.encode(this);
 };
 
+/**
+ * Trim whitespace from the beginning and end of a string.
+ *
+ * @returns {String} The trimmed string
+ */
+String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, "");
+}
+
+
 // prevent any newly added properties from being enumerated
 for (var i in String)
 	if(i != 'prototype')

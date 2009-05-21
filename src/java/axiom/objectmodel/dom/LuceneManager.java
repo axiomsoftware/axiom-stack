@@ -774,6 +774,12 @@ public class LuceneManager{
 			case IProperty.DATE: 
 				node.setDate(fieldname, strToDate(fieldvalue)); 
 				break;
+			case IProperty.TIME: 
+				node.setDate(fieldname, strToTime(fieldvalue)); 
+				break;
+			case IProperty.TIMESTAMP: 
+				node.setDate(fieldname, strToTimestamp(fieldvalue)); 
+				break;
 			case IProperty.FLOAT: 
 				node.setFloat(fieldname, Double.parseDouble(fieldvalue)); 
 				break;
@@ -925,6 +931,12 @@ public class LuceneManager{
 				break;
 			case IProperty.DATE:
 				list.add(strToDate(values[i]));
+				break;
+			case IProperty.TIME:
+				list.add(strToTime(values[i]));
+				break;
+			case IProperty.TIMESTAMP:
+				list.add(strToTimestamp(values[i]));
 				break;
 			case IProperty.FLOAT:
 				list.add(new Double(values[i]));
@@ -1612,7 +1624,15 @@ public class LuceneManager{
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.DATE:
-				valueBuffer.append(serializeTimestamp(new Date((long) ScriptRuntime.toNumber(values[i]))));
+				valueBuffer.append(serializeDate((Date) Context.jsToJava(values[i], Date.class)));
+				valueBuffer.append(DELIM);
+				break;
+			case IProperty.TIME:
+				valueBuffer.append(serializeTime((Date) Context.jsToJava(values[i], Date.class)));
+				valueBuffer.append(DELIM);
+				break;
+			case IProperty.TIMESTAMP:
+				valueBuffer.append(serializeTimestamp((Date) Context.jsToJava(values[i], Date.class)));
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.FLOAT:
