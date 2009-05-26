@@ -1,25 +1,5 @@
 #!/usr/bin/env bash
-# Shell script for starting Axiom with a JDK-like virtual machine.
-
-# To add JAR files to the classpath, simply place them into the
-# lib/ext directory.
-
-# Guess which jre to use.
-JAVA_HOME="`which java`"
-JAVA_HOME=${JAVA_HOME/%bin\/java/}
-
-if [ "$JAVA_HOME" == "" ]; then
-    case "`uname`" in
-	Darwin*)
-	    JAVA_HOME=/usr/
-	    ;;
-	*)
-	    #Only uncomment the line below if your instance of Java does not reside in /bin.
-	    #JAVA_HOME=/usr/jdk/jdk1.6.0
-	    ;;
-    esac
-fi
-echo "JAVA_HOME=$JAVA_HOME"
+# Shell script for starting Axiom Stack
 
 # uncomment to set AXIOM_HOME, otherwise we get it from the script path
 # AXIOM_HOME=/usr/local/axiom
@@ -43,18 +23,46 @@ FSDIRECTORY=org.apache.lucene.store.TransFSDirectory
 ###### No user configuration needed below this line #######
 ###########################################################
 
-# if JAVA_HOME variable is set, use it. Otherwise, Java executable
-# must be contained in PATH variable.
-if [ "$JAVA_HOME" ]; then
-   JAVACMD="$JAVA_HOME/bin/java"
-   # Check if java command is executable
-   if [ ! -x $JAVACMD ]; then
-      echo "Warning: JAVA_HOME variable may be set incorrectly:"
-      echo "         No executable found at $JAVACMD"
-   fi
-else
-   JAVACMD=java
+# OS Support
+cygwin=false;
+darwin=false;
+case "`uname`" in
+  CYGWIN*) cygwin=true ;;
+  Darwin*) darwin=true
+           if [ -z "$JAVA_HOME" ] ; then
+             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+           fi
+           ;;
+esac
+
+if $cygwin; then
+    [ -n "$JAVA_HOME" ] &&
+        JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
+
+if [ -z "$JAVACMD" ] ; then
+  if [ -n "$JAVA_HOME"  ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+      # IBM's JDK on AIX uses strange locations for the executables
+      JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+      JAVACMD="$JAVA_HOME/bin/java"
+    fi
+  else
+    JAVACMD=`which java 2> /dev/null `
+    if [ -z "$JAVACMD" ] ; then
+        JAVACMD=java
+    fi
+  fi
+fi
+
+if [ ! -x "$JAVACMD" ] ; then
+  echo "Error: JAVA_HOME is not defined correctly."
+  echo "  We cannot execute $JAVACMD"
+  exit 1
+fi
+
+echo "JAVA=$JAVACMD"
 
 # Get the Axiom installation directory
 INSTALL_DIR="${0%/*}"
