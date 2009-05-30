@@ -892,6 +892,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					String xml = value.toString();
 					n.setXML(name, xml);
+				} else if (type == IProperty.XHTML && node instanceof axiom.objectmodel.db.Node) {
+					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+					String xml = value.toString();
+					n.setXHTML(name, xml);
 				} else {
 					String strval = (String) value;
 					validateString(name, strval, props);
@@ -926,6 +930,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					n.setXML(name, value);
+				}
+			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XHTML")) { // added by ali
+				String xml = value.toString();
+				if (this.node instanceof axiom.objectmodel.db.Node) {
+					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+					n.setXHTML(name, value);
 				}
 			} else {
 				node.setJavaObject(name, value);
