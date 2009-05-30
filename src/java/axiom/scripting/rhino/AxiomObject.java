@@ -841,11 +841,15 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				String className = s.getClassName();
 				if ("Date".equals(className)) {
 					node.setDate(name, new Date((long) ScriptRuntime.toNumber(s)));
-				} else if ("String".equals(className)) {   
+				} else if ("String".equals(className)) {
 					if (type == IProperty.XML && node instanceof axiom.objectmodel.db.Node) {
 						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 						String xml = ScriptRuntime.toString(s);
 						n.setXML(name, xml);
+					} else if (type == IProperty.XHTML && node instanceof axiom.objectmodel.db.Node) {
+						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+						String xml = ScriptRuntime.toString(s);
+						n.setXHTML(name, xml);
 					} else {
 						String strval = ScriptRuntime.toString(s);
 						validateString(name, strval, props);
@@ -871,7 +875,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 						checkValidity(mv);
 						n.setMultiValue(name, mv);
 					}
-				} else if ("XML".equals(className) || "XMLList".equals(className)) { 
+				} else if ("XML".equals(className) || "XMLList".equals(className) || "XHTML".equals(className)) { 
 					if (this.node instanceof axiom.objectmodel.db.Node) {
 						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 						if (type == IProperty.XHTML) {
