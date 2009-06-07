@@ -3205,4 +3205,15 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 public boolean jsFunction_move(Object parent) throws Exception {
 		 return this.setParent(parent);
 	 }
+	 
+	 /**
+	  * Sets the lastmodified property of the Node to the system time when called.
+	  * 
+	  * @return {Date} The date that the lastmodified time was set to.
+	  */
+	 public Date jsFunction_touch() {
+		 long millis = System.currentTimeMillis();
+		 this.node.setLastModified(millis);
+		 return new Date(millis);
+	 }
 }
