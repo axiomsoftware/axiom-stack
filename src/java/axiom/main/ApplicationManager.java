@@ -28,6 +28,7 @@ import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.servlet.*;
 
 import axiom.framework.core.*;
+import axiom.handlers.AxiomResourceHandler;
 import axiom.util.ResourceProperties;
 
 import java.io.*;
@@ -443,7 +444,7 @@ public class ApplicationManager implements XmlRpcHandler {
                     								staticMountpoint);
                     		app.addContextPath(staticMountpoint);
                                 ch = new ContextHandler(server.contexts, staticMountpoint);
-                            ResourceHandler rh = new ResourceHandler();
+                            ResourceHandler rh = new AxiomResourceHandler();
                             rh.setResourceBase(staticContent.getAbsolutePath());
                             ch.addHandler(rh);
                             ch.start();

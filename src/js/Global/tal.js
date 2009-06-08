@@ -157,7 +157,7 @@ TAL.TALE = function (n, data, tal) {
                 for each(var t in n.text()){
 					var text_str = t.toXMLString();
                     n.replace(t.childIndex(),
-                              (/^\s/.test(text_str) ? ' ' : '') + new XMLList(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})) + (/\s$/.test(text_str) ? ' ' : '')
+                              (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})) + (/\s$/.test(text_str) ? ' ' : '')
 							 );
             }
         }

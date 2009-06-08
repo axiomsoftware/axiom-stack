@@ -1321,18 +1321,28 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 
     }
 
-    private ArrayList<String> getAllPrototypes(ArrayList prototypes) {
+    private ArrayList<String> getAllPrototypes(ArrayList<String> prototypes) {
     	ArrayList<String> newPrototypes = new ArrayList<String>(prototypes);
     	for (Object p : prototypes) {
     		String proto = p.toString();
-    		Prototype childPrototypes = app.typemgr.getPrototype(proto);
-    		if (childPrototypes != null) {
-	    		for (Prototype prototype : childPrototypes.getChildPrototypes()) {
-	    			newPrototypes.add(prototype.getName());
-	    		}
-    		}
+    		newPrototypes.add(proto);
+    		newPrototypes.addAll(this.getSubPrototypes(proto));
     	}
     	
+    	return newPrototypes;
+    }
+    
+    private ArrayList<String> getSubPrototypes(String proto) {
+    	ArrayList<String> newPrototypes = new ArrayList<String>();
+    	Prototype prototype = app.typemgr.getPrototype(proto);
+		if (prototype != null) {
+    		for (Prototype subprototype : prototype.getChildPrototypes()) {
+    			String subproto = subprototype.getName();
+    				newPrototypes.add(subproto);
+    		    	newPrototypes.addAll(this.getSubPrototypes(subproto));
+    		}
+		}
+    
     	return newPrototypes;
     }
     

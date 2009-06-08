@@ -917,7 +917,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					n.setReference(name, relobj);
 				}
-			} else if (value instanceof MultiValue) { 
+			} else if (value instanceof MultiValue) {
 				MultiValue mv = (MultiValue) value;
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
@@ -925,13 +925,13 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					checkValidity(mv);
 					n.setMultiValue(name, mv);
 				}
-			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XML")) { // added by ali
+			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XML")) {
 				String xml = value.toString();
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					n.setXML(name, xml);
 				}
-			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XHTML")) { // added by ali
+			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XHTML")) {
 				String xml = value.toString();
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
@@ -3204,5 +3204,16 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  */
 	 public boolean jsFunction_move(Object parent) throws Exception {
 		 return this.setParent(parent);
+	 }
+	 
+	 /**
+	  * Sets the lastmodified property of the Node to the system time when called.
+	  * 
+	  * @return {Date} The date that the lastmodified time was set to.
+	  */
+	 public Date jsFunction_touch() {
+		 long millis = System.currentTimeMillis();
+		 this.node.setLastModified(millis);
+		 return new Date(millis);
 	 }
 }
