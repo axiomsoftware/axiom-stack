@@ -228,10 +228,11 @@ public final class ResponseTrans extends Writer implements Serializable {
     public void write(Scriptable jsobj) {
         if (jsobj != null && jsobj != Undefined.instance) {
         	String className = jsobj.getClassName();
-        	if (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList") || className.equalsIgnoreCase("XHTML") ) {
+        	boolean is_html = (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList") || className.equalsIgnoreCase("XHTML"));
+        	if (is_html) {
         	    // allow bare ampersands within title tags and urls
                 String result = XmlUtils.objectToXMLString(jsobj);
-                if( (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList")) && this.contentType.startsWith("text/html")){
+                if(is_html && this.contentType.startsWith("text/html")){
                 	Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);
                 	StringBuffer newResult = new StringBuffer();
                 	while(urlAndTitleMatcher.find()){
@@ -266,7 +267,9 @@ public final class ResponseTrans extends Writer implements Serializable {
     public void write(Object obj, String doctype) {
     	Scriptable jsobj = (Scriptable)obj;
         if (jsobj != null && jsobj != Undefined.instance) {
-        	if (jsobj.getClassName().equalsIgnoreCase("XML") || jsobj.getClassName().equalsIgnoreCase("XMLList")) {
+        	String classname = jsobj.getClassName();
+        	boolean is_html = (classname.equalsIgnoreCase("XML") || classname.equalsIgnoreCase("XMLList") || classname.equalsIgnoreCase("XHTML"));
+        	if (is_html) {
         		// allow bare ampersands within title tags and urls
                 String result = XmlUtils.objectToXMLString(jsobj);
                 Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);

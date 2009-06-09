@@ -63,8 +63,27 @@ TAL.namespace_transform = function(doc, ns_transform){
 }
 
 TAL.Scope = function () {;}
-TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d)}
-TAL.func = function (d, e) {return (new Function('data', 'with(data) return '+e)).call(d['this'],d)}
+TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
+TAL.func = function (d, e) {
+    try {
+	return (new Function('data', 'with(data) {return '+e+';}')).call(d['this'],d);
+    } catch (ex) {
+	if (ex instanceof TAL.Error) {
+	    throw ex;
+	} else {
+	    throw new TAL.Error("<h1>TALE Error</h1><b>node: </b> "
+				+ "<code>"+(d.node.toXMLString().replace(/\n/g, '').replace(/>.*/g, '>').replace(/</g, '&lt;'))+"</code><br/><br/>"
+				+ " <b>expression:</b> <code>"+e+"</code><br/><br/>"
+				+ " <b>exception:</b> "+ex.toString());
+	}
+    }
+}
+
+TAL.Error = function(str) {
+    this.toString = function() {
+	return str;
+    };
+};
 
 TAL.TALE = function (n, data, tal) {
         var tn;
@@ -141,24 +160,30 @@ TAL.TALE = function (n, data, tal) {
         if((tn=n.@tal::content).length()) {
 	    TAL.Scope.prototype = data;
             data = new TAL.Scope();
-                n.replace('*', TAL.func(data, tn));
-                delete n.@tal::content;
-
+            n.replace('*', TAL.func(data, tn));
+            delete n.@tal::content;
         }
         if((tn=n.@tal::replace).length()) {
 	    TAL.Scope.prototype = data;
             data = new TAL.Scope();
-                n.parent().replace(n.childIndex(), TAL.func(data, tn));
-                return;
+            n.parent().replace(n.childIndex(), TAL.func(data, tn));
+        }
+        if((tn=n.@tal::['replace-if']).length()) {
+	    TAL.Scope.prototype = data;
+            data = new TAL.Scope();
+            var r = TAL.func(data, tn);
+            if(r) {
+                n.parent().replace(n.childIndex(), r);
+            } else {
+                delete n.parent().*[n.childIndex()];
+            }
         }
         if((tn=n.@tal::text).length()) {
                 var r=new RegExp('\\'+tn+'\\{([^}]+)\\}|\\'+tn+'(\\w+)','g');
                 delete n.@tal::text;
                 for each(var t in n.text()){
-					var text_str = t.toXMLString();
-                    n.replace(t.childIndex(),
-                              (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})) + (/\s$/.test(text_str) ? ' ' : '')
-							 );
+		    var text_str = t.toXMLString();
+                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
             }
         }
         if((tn=n.@tal::omit).length()) {
