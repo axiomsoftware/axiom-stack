@@ -23,7 +23,6 @@ package axiom.scripting.rhino;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -85,7 +84,7 @@ import axiom.util.ResourceProperties;
 public class LuceneQueryDispatcher extends QueryDispatcher {
   
     public static final String PATH_FIELD = "path";
-    static final String EXTENDS_FIELD = "extend";
+    static final String POLYMORPHIC_FIELD = "polymorphic";
     static final String RECURSE_PATH_MARKER = "**";
 
 	public LuceneQueryDispatcher(){
@@ -94,8 +93,8 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 	
 	public LuceneQueryDispatcher(Application app, String name) throws Exception {
     	super(app, name);
-	}
-	
+    }
+    
     public ArrayList executeQuery(ArrayList prototypes, IFilter filter,
 			Object options) throws Exception {
 		SortObject sort = getSortObject((Scriptable)options);
@@ -1322,17 +1321,28 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 
     }
 
-    private ArrayList<String> getAllPrototypes(ArrayList prototypes) {
+    private ArrayList<String> getAllPrototypes(ArrayList<String> prototypes) {
     	ArrayList<String> newPrototypes = new ArrayList<String>(prototypes);
     	for (Object p : prototypes) {
     		String proto = p.toString();
-    		Prototype childPrototypes = app.typemgr.getPrototype(proto);
-    		if (childPrototypes != null) {
-	    		for (Prototype prototype : childPrototypes.getChildPrototypes()) {
-	    			newPrototypes.add(prototype.getName());
-	    		}
-    		}
+    		newPrototypes.add(proto);
+    		newPrototypes.addAll(this.getSubPrototypes(proto));
     	}
+    	
+    	return newPrototypes;
+    }
+    
+    private ArrayList<String> getSubPrototypes(String proto) {
+    	ArrayList<String> newPrototypes = new ArrayList<String>();
+    	Prototype prototype = app.typemgr.getPrototype(proto);
+		if (prototype != null) {
+    		for (Prototype subprototype : prototype.getChildPrototypes()) {
+    			String subproto = subprototype.getName();
+    				newPrototypes.add(subproto);
+    		    	newPrototypes.addAll(this.getSubPrototypes(subproto));
+    		}
+		}
+    
     	return newPrototypes;
     }
     
@@ -1342,9 +1352,9 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     		if (options != null) {
     			Object value = null;
     			if (options instanceof Scriptable) {
-    				value = ((Scriptable) options).get(EXTENDS_FIELD, (Scriptable) options);
+    				value = ((Scriptable) options).get(POLYMORPHIC_FIELD, (Scriptable) options);
     			} else if (options instanceof Map) {
-    				value = ((Map) options).get(EXTENDS_FIELD);
+    				value = ((Map) options).get(POLYMORPHIC_FIELD);
     			}
 		    	if (value != null) {
 		       		if (value instanceof Scriptable) {
@@ -1368,6 +1378,12 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
     	int maxResults = getMaxResults((Scriptable)options);
     	SortObject sort = getSortObject((Scriptable)options);
     	int _layer = getLayer((Scriptable) options);
+		boolean ext = extendPrototypes((Scriptable) options);
+		
+		if (ext) {
+			prototypes = getAllPrototypes(prototypes);
+		}
+    	
     	ArrayList opaths = getPaths((Scriptable)options);
     	IndexSearcher searcher = this.lmgr.getIndexSearcher();
     	LuceneQueryParams params = new LuceneQueryParams();
@@ -2003,5 +2019,4 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
 
 		return versions;
     }
-    
 }

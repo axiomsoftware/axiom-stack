@@ -206,6 +206,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
         switch (valueType) {
         case IProperty.BOOLEAN: return "Boolean";
         case IProperty.DATE: return "Date";
+        case IProperty.TIME: return "Date";
+        case IProperty.TIMESTAMP: return "Date";
         case IProperty.FLOAT: return "Number";
         case IProperty.INTEGER: return "Number";
         case IProperty.JAVAOBJECT: return "JavaObject";
@@ -322,7 +324,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
         		if (this.length > 0 && !(o instanceof Date || (o instanceof Scriptable && "Date".equalsIgnoreCase(((Scriptable) o).getClassName())))) {
         			return this;
         		}
-        		objType = IProperty.DATE;
+        		objType = type;
         		break;
         	case IProperty.STRING:
         		if (this.length > 0 && !(o instanceof String || (o instanceof Scriptable && "String".equalsIgnoreCase(((Scriptable) o).getClassName())))) {
@@ -379,6 +381,15 @@ public class MultiValue extends ScriptableObject implements Serializable {
         }
         
         return this;
+    }
+    
+    /**
+     * Gets the values within the MultiValue in an array format.
+     * 
+     * @return Object array
+     */
+    public Object[] jsFunction_toArray() {
+    	return this.getValues();
     }
     
     /**

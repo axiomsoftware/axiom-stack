@@ -51,6 +51,20 @@ public class SessionBean implements Serializable {
     }
 
     /**
+     * This method will return the time that is remaining on the session.
+     * This calculation is the difference between the session timeout and
+     * the amount of time since the session was last active from the time 
+     * of the call to this method.
+     * 
+     * @jsfunction
+     * @return {Number} The time remaining on the session.
+     */
+    public long getTimeRemaining() {
+		long now = System.currentTimeMillis();
+    	return ((session.app.getSessionTimeout()) - (now - session.lastTouched()));
+    }
+    
+    /**
      * Turn on object layering for the AxiomObject id specified, on a given layer.
      * This method adds to the current list of draft ids, and does not replace any of the
      * previously set draft ids. 
@@ -183,6 +197,16 @@ public class SessionBean implements Serializable {
         return session.getUserNode();
     }
 
+    /**
+     * Tells you whether the user is logged in or not.
+     * 
+     * @jsfunction
+     * @return Boolean
+     */
+    public boolean isLoggedIn() {
+    	return session.isLoggedIn();
+    }
+    
     /**
      * Associates the current session with the user object.
      *

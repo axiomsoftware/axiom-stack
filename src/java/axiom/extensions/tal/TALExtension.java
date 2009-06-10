@@ -26,6 +26,7 @@ import java.io.*;
 import org.mozilla.javascript.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
+import org.mozilla.javascript.xmlimpl.*;
 
 import axiom.extensions.ConfigurationException;
 import axiom.extensions.AxiomExtension;
@@ -76,7 +77,7 @@ public class TALExtension extends AxiomExtension {
         }
     }
 
-    public void applicationUpdated(Application app) {    
+    public void applicationUpdated(Application app) {
     	if ("true".equalsIgnoreCase(app.getProperty("tal"))) {
            if (retrieveTemplatesForApp(app) == null) {
                app.logEvent("Creating TALExtension for " + app.getName());
@@ -88,11 +89,10 @@ public class TALExtension extends AxiomExtension {
 
     public HashMap initScripting(Application app, ScriptingEngine engine) throws ConfigurationException {
         try {
-            loadTemplates(app);
+            loadTemplates(app, engine);
         } catch (Exception ex) {
             throw new ConfigurationException(ex.getMessage());
         }
-        
         if (templates.get(app) != null) {
     		// initialize prototypes and global vars here
     		RhinoCore core = ((RhinoEngine) engine).getCore();
@@ -107,7 +107,7 @@ public class TALExtension extends AxiomExtension {
     			throw new ConfigurationException(e.getMessage());
     		} 
     	}    	
-        
+
     	return null;
     }
     
@@ -205,13 +205,13 @@ public class TALExtension extends AxiomExtension {
         return null;
     }
     
-    private static void loadTemplates(Application app) throws Exception {
+    private static void loadTemplates(Application app, ScriptingEngine engine) throws Exception {
         TemplateLoader loader = new TemplateLoader(app);
         HashMap map = retrieveTemplatesForApp(app);
         HashMap templSources = loader.getAllTemplateSources();
+        Scriptable scope = ((RhinoEngine)engine).getGlobal();
         
         synchronized (map) {
-            TALTemplate template = null;
             Iterator keys = templSources.keySet().iterator();
             int count = 0;
             while (keys.hasNext()) {
@@ -219,23 +219,42 @@ public class TALExtension extends AxiomExtension {
                 String name = keys.next().toString();
                 Resource templateSource = (Resource) templSources.get(name);
                 Document doc = null;
-                if ((template = (TALTemplate) map.get(name)) != null 
-                        && (!app.autoUpdate() ||
-                            template.getLastModified() >= templateSource.lastModified()))
+                TALTemplate template = (TALTemplate) map.get(name);
+                if ((template != null) && (!app.autoUpdate() || template.getLastModified() >= templateSource.lastModified())) {
                     doc = template.getDocument();
-                else {
+                } else {
                     boolean success = true;
                     Reader reader = null;
+                    BufferedReader br = null;
+                    StringBuffer stringbuf = null;
                     try {
                         reader = loader.getReader(templateSource, null);
-                        org.xml.sax.InputSource isource = new org.xml.sax.InputSource(reader);
+                        br = new BufferedReader(reader);
+                        stringbuf = new StringBuffer();
+                        String line = br.readLine();
+                        while(line != null) {
+                        	String nextline = br.readLine();
+                        	stringbuf.append(line + ((nextline != null)?'\n':""));
+                        	line = nextline;
+                        }
+                        
+                        XHTML xml = (XHTML) TALExtension.stringToXHTMLObject(stringbuf.toString(), scope, app);
+                        org.xml.sax.InputSource isource = xml.toInputSource();
                         isource.setEncoding("UTF-8");
                         doc = getDOMFromSource(isource);
+                       
                     } catch (Exception ex) {
                         success = false;
                         app.logError(ErrorReporter.errorMsg(TALExtension.class, "loadTemplates") 
                         		+ "Could not load the TAL for " + name, ex);
                     } finally {
+                    	stringbuf = null;
+                    	
+                        if (br != null) {
+                        	br.close();
+                        	br = null;
+                        }
+                        
                         if (reader != null) {
                             reader.close();
                             reader = null;
@@ -338,6 +357,20 @@ public class TALExtension extends AxiomExtension {
         return map;
     }
 
+    public static Object stringToXHTMLObject(String xmlStr, Scriptable scope, Application app){
+    	Object xml = null;
+    	try {
+    		Context cx = Context.getCurrentContext();
+    		cx.evaluateString(scope, "XML.ignoreWhitespace=false;", "", 1, null);
+    		cx.evaluateString(scope, "XML.prettyPrinting=false;", "", 1, null);
+    		xml = cx.newObject(scope, "XHTML", new Object[]{ xmlStr });
+    	}  catch (Exception ex) {
+    		app.logError(ErrorReporter.errorMsg(TALExtension.class, "stringToXHTMLObject") 
+    				+ "Could not create the XHTML object for " + xmlStr, ex);
+    	}
+    	return xml;
+    }
+    
     public static Object stringToXmlObject(String xmlStr, Scriptable scope, Application app) {
     	Object xml = null;
     	if (xmlStr.startsWith("<?")) {

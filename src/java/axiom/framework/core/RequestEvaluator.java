@@ -142,7 +142,7 @@ public final class RequestEvaluator implements Runnable {
                 } else {
                     throw new RuntimeException(t.toString());
                 }
-            } 
+            }
         }
     }
     
@@ -536,7 +536,7 @@ public final class RequestEvaluator implements Runnable {
                                 int base = 800 * tries;
                                 Thread.sleep((long) (base + (Math.random() * base * 2)));
                             } catch (InterruptedException interrupt) {
-                                // we got interrrupted, create minimal error message 
+                                // we got interrupted, create minimal error message 
                                 res.reportError(app.getName(), error);
                                 done = true;
                                 // and release resources and thread

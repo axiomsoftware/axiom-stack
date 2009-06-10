@@ -28,6 +28,7 @@ import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.servlet.*;
 
 import axiom.framework.core.*;
+import axiom.handlers.AxiomResourceHandler;
 import axiom.util.ResourceProperties;
 
 import java.io.*;
@@ -291,6 +292,9 @@ public class ApplicationManager implements XmlRpcHandler {
             
             staticMountpoint = getPathPattern(conf.getProperty("staticMountpoint",
                                         joinMountpoint(mountpoint, "static")));
+            if (staticMountpoint != "/") {
+                staticMountpoint = staticMountpoint.substring(0, staticMountpoint.length() - 2);
+            }
             protectedStaticDir = conf.getProperty("protectedStatic");
 
             cookieDomain = conf.getProperty("cookieDomain");
@@ -302,6 +306,13 @@ public class ApplicationManager implements XmlRpcHandler {
 
             // got ignore dirs
             ignoreDirs = conf.getProperty("ignore");
+            
+            // libs directory is "special" by convention
+            if (ignoreDirs != null && ignoreDirs.length() > 0) {
+            	ignoreDirs += "lib";
+            } else {
+            	ignoreDirs = "lib";
+            }    
         }
 
         void start() {
@@ -431,9 +442,9 @@ public class ApplicationManager implements XmlRpcHandler {
                     								staticContent.getAbsolutePath());
                     		server.getLogger().info("Mounting static at " +
                     								staticMountpoint);
-                    		app.addContextPath(staticMountpoint.substring(0, staticMountpoint.length() - 2));
-                    		ch = new ContextHandler(server.contexts, staticMountpoint.substring(0, staticMountpoint.length() - 2));
-                            ResourceHandler rh = new ResourceHandler();
+                    		app.addContextPath(staticMountpoint);
+                                ch = new ContextHandler(server.contexts, staticMountpoint);
+                            ResourceHandler rh = new AxiomResourceHandler();
                             rh.setResourceBase(staticContent.getAbsolutePath());
                             ch.addHandler(rh);
                             ch.start();

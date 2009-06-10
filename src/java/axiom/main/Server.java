@@ -63,7 +63,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Server implements IPathElement, Runnable {
 
 	// version string
-    public static final String version = "3.2.8.2";
+    public static final String version = "3.2.10";
     
 	protected ContextHandlerCollection contexts = new ContextHandlerCollection();
 	protected HandlerCollection handlers = new HandlerCollection();

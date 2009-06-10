@@ -20,7 +20,7 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_getObjects_no_params: function(){
 			var index = 10;
@@ -35,7 +35,7 @@ this._test = {
 		test_getObjects_one_proto: function(){
 			var index = 10;
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
-			Assert.assertEquals('test_getObjects_one_proto failed', app.getObjects('LuceneKitchenSink').length, index); 
+			Assert.assertEquals('test_getObjects_one_proto failed', app.getObjects('LuceneKitchenSink').length, index);
 		},
 		test_getObjects_two_protos: function(){
 			var index = 5;
@@ -91,7 +91,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_sort_object_asc failed', 
+			Assert.assertTrue('test_getObjects_sort_object_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4');
 		},
 		test_getObjects_sort_object_desc: function(){
@@ -99,7 +99,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_sort_object_desc failed', 
+			Assert.assertTrue('test_getObjects_sort_object_desc failed',
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_max_length_sort_object_asc: function(){
@@ -108,7 +108,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'asc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort, maxlength:maxlength});
-			Assert.assertTrue('test_getObjects_max_length_sort_object_asc failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4' &&
 				objects.length == maxlength);
 		},
@@ -117,7 +117,7 @@ this._test = {
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var sort = new Sort({'id':'desc'});
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {sort:sort});
-			Assert.assertTrue('test_getObjects_max_length_sort_object_desc failed', 
+			Assert.assertTrue('test_getObjects_max_length_sort_object_desc failed',
 				objects[0].id == 'ks4' && objects[1].id == 'ks3' && objects[2].id == 'ks2' && objects[3].id == 'ks1' && objects[4].id == 'ks0');
 		},
 		test_getObjects_by_path: function(){
@@ -139,7 +139,7 @@ this._test = {
 			var path = '/';
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {path:path, maxlength:maxlength, sort:sort});
-			Assert.assertTrue('test_getObjects_maxlength_path_sort_asc failed', 
+			Assert.assertTrue('test_getObjects_maxlength_path_sort_asc failed',
 				objects[0].id == 'ks0' && objects[1].id == 'ks1' && objects[2].id == 'ks2' && objects[3].id == 'ks3' && objects[4].id == 'ks4' &&
 				objects.length == maxlength);
 
@@ -151,7 +151,7 @@ this._test = {
 			var path = '/';
 			_add_kitchen_sinks(this.getPlaceHolder(), 'LuceneKitchenSink', index);
 			var objects = app.getObjects(['LuceneKitchenSink'], {}, {path:path, maxlength:maxlength, sort:sort});
-			Assert.assertTrue('test_getObjects_maxlength_path_sort_desc failed', 
+			Assert.assertTrue('test_getObjects_maxlength_path_sort_desc failed',
 				objects[0].id == 'ks9' && objects[1].id == 'ks8' && objects[2].id == 'ks7' && objects[3].id == 'ks6' && objects[4].id == 'ks5' &&
 				objects.length == maxlength);
 
@@ -188,7 +188,7 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_AxiomObject_add: function() {
 			var lph = this.getPlaceHolder();
@@ -425,46 +425,6 @@ this._test = {
 			res.commit();
 
 			Assert.assertEquals("test_AxiomObject_getURI", "/test/lph/axiomobject_geturi_test", ks.getURI());
-		}, 
-		test_AxiomObject_hasChildren: function() {
-			var lph = this.getPlaceHolder();
-			var ks1 = new LuceneKitchenSink();
-			ks1.title = "AxiomObject hasChildren Test1";
-			ks1.id = "axiomobject_haschildren_test1";
-			lph.add(ks1);
-			res.commit();
-			var ks2 = new LuceneKitchenSink();
-			ks2.title = "AxiomObject hasChildren Test2";
-			ks2.id = "axiomobject_haschildren_test2";
-			ks1.add(ks2);
-			res.commit();
-
-			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());			
-		},
-		test_AxiomObject_href: function() {
-			var lph = this.getPlaceHolder();
-			var ks = new LuceneKitchenSink();
-			ks.title = "AxiomObject href Test";
-			ks.id = "axiomobject_href_test";
-			lph.add(ks);
-			res.commit();
-
-			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
-		}, 
-		test_AxiomObject_isChild: function() {
-			var lph = this.getPlaceHolder();
-			var ks1 = new LuceneKitchenSink();
-			ks1.title = "AxiomObject isChild Test1";
-			ks1.id = "axiomobject_ischild_test1";
-			lph.add(ks1);
-			res.commit();
-			var ks2 = new LuceneKitchenSink();
-			ks2.title = "AxiomObject isChild Test2";
-			ks2.id = "axiomobject_ischild_test2";
-			ks1.add(ks2);
-			res.commit();
-
-			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));			
 		},
 		test_AxiomObject_hasChildren: function() {
 			var lph = this.getPlaceHolder();
@@ -479,7 +439,7 @@ this._test = {
 			ks1.add(ks2);
 			res.commit();
 
-			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());			
+			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());
 		},
 		test_AxiomObject_href: function() {
 			var lph = this.getPlaceHolder();
@@ -490,7 +450,7 @@ this._test = {
 			res.commit();
 
 			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
-		}, 
+		},
 		test_AxiomObject_isChild: function() {
 			var lph = this.getPlaceHolder();
 			var ks1 = new LuceneKitchenSink();
@@ -504,7 +464,47 @@ this._test = {
 			ks1.add(ks2);
 			res.commit();
 
-			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));			
+			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));
+		},
+		test_AxiomObject_hasChildren: function() {
+			var lph = this.getPlaceHolder();
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject hasChildren Test1";
+			ks1.id = "axiomobject_haschildren_test1";
+			lph.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject hasChildren Test2";
+			ks2.id = "axiomobject_haschildren_test2";
+			ks1.add(ks2);
+			res.commit();
+
+			Assert.assertTrue("test_AxiomObject_hasChildren failed", ks1.hasChildren());
+		},
+		test_AxiomObject_href: function() {
+			var lph = this.getPlaceHolder();
+			var ks = new LuceneKitchenSink();
+			ks.title = "AxiomObject href Test";
+			ks.id = "axiomobject_href_test";
+			lph.add(ks);
+			res.commit();
+
+			Assert.assertEquals("test_AxiomObject_href failed", "/test/lph/axiomobject_href_test/", ks.href());
+		},
+		test_AxiomObject_isChild: function() {
+			var lph = this.getPlaceHolder();
+			var ks1 = new LuceneKitchenSink();
+			ks1.title = "AxiomObject isChild Test1";
+			ks1.id = "axiomobject_ischild_test1";
+			lph.add(ks1);
+			res.commit();
+			var ks2 = new LuceneKitchenSink();
+			ks2.title = "AxiomObject isChild Test2";
+			ks2.id = "axiomobject_ischild_test2";
+			ks1.add(ks2);
+			res.commit();
+
+			Assert.assertTrue("test_AxiomObject_isChild failed", ks1.isChild(ks2));
 		},
 		test_AxiomObject_remove: function() {
 			var lph = this.getPlaceHolder();
@@ -531,7 +531,6 @@ this._test = {
 	Performance_suite: {
 		setup: function(){
 			app.log('Performance suite setup');
-			app.log('app_getObjects_suite setup');
 			var lph = new LucenePlaceHolder();
 			lph.id = 'lph';
 			root.add(lph);
@@ -544,7 +543,7 @@ this._test = {
 			}
 		},
 		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0]; 
+ 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
 		},
 		test_Performance_1000_objects_insert: function() {
 			var lph = this.getPlaceHolder();
@@ -561,8 +560,140 @@ this._test = {
 			var now = new Date();
 			var persec = num / ((now.getTime()-start.getTime()) / 1000);
 //			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);			
-		}		
+			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);
+		}
+	},
+    multivalue_suite: {
+	setup: function(){
+	    app.log('multivalue_suite setup');
+	    var lks = new LuceneKitchenSink();
+	    lks.id = 'lks';
+	    root.add(lks);
+	    res.commit();
+	},
+	teardown: function(){
+	    app.log('multivalue_suite teardown');
+	    for each(var child in root.getChildren()){
+		root.remove(child);
+	    }
+	},
+	getKitchenSink: function(){
+	    app.log('KITCHEN SINK --> ' + app.getObjects('LuceneKitchenSink'));
+ 	    return app.getObjects('LuceneKitchenSink', {id:'lks'})[0];
+	},
+	addToMV: function(property, value) {
+	    var sink = this.getKitchenSink();
+	    if (!(sink[property]) || sink[property].length == 0) {
+		sink[property] = new MultiValue(value);
+	    } else {
+		sink[property] = sink[property].concat(new MultiValue(value));
+	    }
+	},
+	test_mv_number_add_number_int: function() {
+	    var val = 5;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_number', val);
+	    Assert.assertNotUndefined("test_mv_number_add_number failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_number failed.", val, sink.mv_number[0]);
+	},
+	test_mv_number_add_number_double: function() {
+	    var val = 45345543.0;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_number', val);
+	    Assert.assertNotUndefined("test_mv_number_add_number_double failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_number_double failed.", val, sink.mv_number[0]);
+	},
+	test_mv_number_add_number_float: function() {
+	    var val = 4353452346.543523452345;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_number', val);
+	    Assert.assertNotUndefined("test_mv_number_add_number_float failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_number_float failed.", val, sink.mv_number[0]);
+	},
+	test_mv_number_add_numbers: function() {
+	    var val1 = 5; // Integer
+	    var val2 = new Date().getTime(); // converts to a Double
+	    var val3 = 4353452346.543523452345; // Float
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_number', val1);
+	    Assert.assertNotUndefined("test_mv_number_add_numbers failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_numbers failed.", val1, sink.mv_number[0]);
+	    this.addToMV('mv_number', val2);
+	    Assert.assertNotUndefined("test_mv_number_add_numbers failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_numbers failed.", val2, sink.mv_number[1]);
+	    this.addToMV('mv_number', val3);
+	    Assert.assertNotUndefined("test_mv_number_add_numbers failed.", sink.mv_number);
+	    Assert.assertEquals("test_mv_number_add_numbers failed.", val3, sink.mv_number[2]);
+	    Assert.assertIterableEquals("test_mv_number_add_numbers failed.", new MultiValue(val1,val2,val3), sink.mv_number);
+	},
+	test_mv_number_add_string: function() {
+	    try {
+		this.addToMV('mv_number', 'helloworld');
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_number_add_date: function() {
+	    try {
+		this.addToMV('mv_number', new Date());
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_number_add_boolean: function() {
+	    try {
+		this.addToMV('mv_number', false);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_date_add_date: function() {
+	    var val = new Date();
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_date', val);
+	    Assert.assertNotUndefined("test_mv_date_add_date failed.", sink.mv_date);
+	    Assert.assertEquals("test_mv_date_add_date failed.", val, sink.mv_date[0]);
+	},
+	test_mv_date_add_dates: function() {
+	    var val1 = new Date();
+	    var val2 = new Date();
+	    var val3 = new Date();
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_date', val1);
+	    Assert.assertNotUndefined("test_mv_date_add_dates failed.", sink.mv_date);
+	    this.addToMV('mv_date', val2);
+	    Assert.assertNotUndefined("test_mv_date_add_dates failed.", sink.mv_date);
+	    this.addToMV('mv_date', val3);
+	    Assert.assertNotUndefined("test_mv_date_add_dates failed.", sink.mv_date);
+	    Assert.assertIterableEquals("test_mv_date_add_dates failed.", new MultiValue(val1,val2,val3), sink.mv_date);
+	},
+	test_mv_date_add_string: function() {
+	    try {
+		this.addToMV('mv_date', 'helloworld');
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_date_add_number: function() {
+	    try {
+		this.addToMV('mv_date', 5);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_date_add_boolean: function() {
+	    try {
+		this.addToMV('mv_date', false);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
 	}
+    }
 }
 

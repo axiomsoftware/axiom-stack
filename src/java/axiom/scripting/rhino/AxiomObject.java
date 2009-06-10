@@ -841,11 +841,15 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 				String className = s.getClassName();
 				if ("Date".equals(className)) {
 					node.setDate(name, new Date((long) ScriptRuntime.toNumber(s)));
-				} else if ("String".equals(className)) {   
+				} else if ("String".equals(className)) {
 					if (type == IProperty.XML && node instanceof axiom.objectmodel.db.Node) {
 						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 						String xml = ScriptRuntime.toString(s);
 						n.setXML(name, xml);
+					} else if (type == IProperty.XHTML && node instanceof axiom.objectmodel.db.Node) {
+						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+						String xml = ScriptRuntime.toString(s);
+						n.setXHTML(name, xml);
 					} else {
 						String strval = ScriptRuntime.toString(s);
 						validateString(name, strval, props);
@@ -871,7 +875,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 						checkValidity(mv);
 						n.setMultiValue(name, mv);
 					}
-				} else if ("XML".equals(className) || "XMLList".equals(className)) { 
+				} else if ("XML".equals(className) || "XMLList".equals(className) || "XHTML".equals(className)) { 
 					if (this.node instanceof axiom.objectmodel.db.Node) {
 						axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 						if (type == IProperty.XHTML) {
@@ -888,6 +892,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					String xml = value.toString();
 					n.setXML(name, xml);
+				} else if (type == IProperty.XHTML && node instanceof axiom.objectmodel.db.Node) {
+					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+					String xml = value.toString();
+					n.setXHTML(name, xml);
 				} else {
 					String strval = (String) value;
 					validateString(name, strval, props);
@@ -909,7 +917,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
 					n.setReference(name, relobj);
 				}
-			} else if (value instanceof MultiValue) { 
+			} else if (value instanceof MultiValue) {
 				MultiValue mv = (MultiValue) value;
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
@@ -917,11 +925,17 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 					checkValidity(mv);
 					n.setMultiValue(name, mv);
 				}
-			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XML")) { // added by ali
+			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XML")) {
 				String xml = value.toString();
 				if (this.node instanceof axiom.objectmodel.db.Node) {
 					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
-					n.setXML(name, value);
+					n.setXML(name, xml);
+				}
+			} else if (value.getClass().getName().equals("org.mozilla.javascript.xmlimpl.XHTML")) {
+				String xml = value.toString();
+				if (this.node instanceof axiom.objectmodel.db.Node) {
+					axiom.objectmodel.db.Node n = (axiom.objectmodel.db.Node) this.node;
+					n.setXHTML(name, xml);
 				}
 			} else {
 				node.setJavaObject(name, value);
@@ -2025,43 +2039,23 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			break;
 		case IProperty.XHTML:
 		case IProperty.XML:
-			if (value instanceof Scriptable) {
-				Scriptable s = (Scriptable) value;
-				String className = s.getClassName();
-				if ("String".equals(className)) {
-					try {
-                        Context cx = Context.getCurrentContext();
-                        String fixed = ScriptRuntime.toString(s);
-                        if(type == IProperty.XHTML){
-                        	fixed = DOMParser.replaceEntitiesWithChars(fixed);                        	
-                        }
-                        newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{fixed});
-                        //newvalue = cx.evaluateString(this.core.getScope(), 
-                        //            "new XMLList(\""+fixed.replaceAll("\"", "\\\\\"").replaceAll("\r?\n","\\\\\n") + "\");", "typecast()", 1, null); 
-					} catch (Exception ex) {
-						emsg = ex.getMessage();
-						newvalue = null;
-						errorflag = true;
-					}
-				} else if ("XML".equals(className) || "XMLList".equals(className)) {
-				    newvalue = value;
-                }
-			} else if (value instanceof String) {
+			if (value instanceof String || (value instanceof Scriptable && ((Scriptable) value).getClassName().equals("String") )) {
 				try {
-                    Context cx = Context.getCurrentContext();
-                    String fixed = (String)value;
-                    if(type == IProperty.XHTML){
-                    	fixed = DOMParser.replaceEntitiesWithChars(fixed);                        	
+					Context cx = Context.getCurrentContext();
+					String strval = value.toString();
+					if(type == IProperty.XHTML){
+						newvalue = cx.newObject(this.core.getScope(), "XHTML", new Object[]{strval});	
+                    } else {
+                    	newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{strval});	
                     }
-                    newvalue = cx.newObject(this.core.getScope(), "XMLList", new Object[]{fixed});
-                    //newvalue = cx.evaluateString(this.core.getScope(), 
-                    //			"new XMLList(\""+fixed.replaceAll("\"", "\\\\\"").replaceAll("\r?\n","\\\\\n") + "\");", "typecast()", 1, null);
 				} catch (Exception ex) {
 					emsg = ex.getMessage();
 					newvalue = null;
 					errorflag = true;
 				}
-			} 
+			} else if ("XML".equals(className) || "XMLList".equals(className) || "XHTML".equals(className)) {
+				    newvalue = value;
+			}
 			break;
 		}
 
@@ -3076,16 +3070,17 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 public Object jsFunction_renderTAL(Object tal, Scriptable data) 
 	 throws Exception {
 		 Object result = null;
-		 RhinoCore core = ((RhinoEngine) Context.getCurrentContext().getThreadLocal("engine")).getCore();
 		 Context cx = Context.getCurrentContext();
-         RhinoEngine re = (RhinoEngine) core.app.getCurrentRequestEvaluator().getScriptingEngine();
+		 RhinoCore core = ((RhinoEngine) cx.getThreadLocal("engine")).getCore();
+		 RhinoEngine re = (RhinoEngine) core.app.getCurrentRequestEvaluator().getScriptingEngine();
 		 Scriptable scope = re.global;
 		 String proto = this.getClassName();
 		 String name = tal.toString();
 		 if (data == null || data == Undefined.instance) {
 			 data = cx.newObject(scope); // empty javascript object 
 		 } 
-         
+		 data.setParentScope(null);
+		 
          ExecutionCache cache = (ExecutionCache) this.core.app.getTALCache();
          result = cache.getFunctionResult(this, name);
          if (result != null) {
@@ -3095,39 +3090,41 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 		 try {
 			 Object xml = null;
 			 if (tal instanceof String || (tal instanceof Scriptable && ((Scriptable) tal).getClassName().equals("String"))) {
-			     xml = TALExtension.stringToXmlObject((String) getTALDoc(proto, name), scope, core.app);
+			     xml = TALExtension.stringToXHTMLObject((String) getTALDoc(proto, name), scope, core.app);
 			 } else {
-				 xml = TALExtension.stringToXmlObject(TALExtension.xmlObjectToString(((Scriptable) tal), core.app), scope, core.app);
+				 xml = TALExtension.stringToXHTMLObject(TALExtension.xmlObjectToString(((Scriptable) tal), core.app), scope, core.app);
 			 }
 			 if (xml == null) {
 				 throw new RuntimeException("Could not find the TAL file " + name);
 			 }
 			 
-			 synchronized (scope) {
+			 synchronized (scope) {			 
 				 data.put("this", data, this);
-			     data.put("app", data, Context.toObject(new ApplicationBean(core.app), scope));
-			     Object req = new RequestBean(core.app.getCurrentRequestEvaluator().getRequest());
-			     data.put("req", data, Context.toObject(req, scope));
-			     data.put("root", data, core.getNodeWrapper(core.app.getNodeManager().getRootNode()));
-			     
-			     Object f = ScriptableObject.getProperty(scope, "TAL");
-                 Object[] fargs = { xml, data };
-                 for (int i = 0; i < fargs.length; i++) {
-                     // convert java objects to JavaScript
-                     if (fargs[i] != null) {
-                         fargs[i] = Context.javaToJS(fargs[i], scope);
-                     }
-                 }
+				 data.put("app", data, Context.toObject(new ApplicationBean(core.app), scope));
+				 Object req = new RequestBean(core.app.getCurrentRequestEvaluator().getRequest());
+				 data.put("req", data, Context.toObject(req, scope));
+				 data.put("root", data, core.getNodeWrapper(core.app.getNodeManager().getRootNode()));
 
-                 Function func = null;
-                 try {
-                	 func = (Function) f;
-                 } catch (Exception e) {
-                	 throw new RuntimeException("Unable to load TAL, check that tal.js exists in the lib directory");
-                 }
-                 
-                 Object ret = func.call(cx, scope, scope, fargs);
-                 result = Context.toObject(ret, scope);
+				 Object[] fargs = { xml, data };
+				 for (int i = 0; i < fargs.length; i++) {
+					 // convert java objects to JavaScript
+					 if (fargs[i] != null) {
+						 fargs[i] = Context.javaToJS(fargs[i], scope);
+					 }
+				 }
+				 
+				 Object f = ScriptableObject.getProperty(scope, "TAL");
+				 synchronized(f){
+					 Function func = null;
+					 try {
+						 func = (Function) f;
+					 } catch (Exception e) {
+						 throw new RuntimeException("Unable to load TAL, check that tal.js exists in the lib directory");
+					 }
+
+					 Object ret = func.call(cx, scope, scope, fargs);
+					 result = Context.toObject(ret, scope);
+				 }
 			 }
              
 			 if (this.core.app.isFunctionResultCachable(this, result, name)) {
@@ -3179,16 +3176,11 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  * from the database. 
 	  *                      
 	  * @returns {Boolean} Whether the operation was a success or not
-	  */ 
+	  */ 	 
+	 public boolean jsFunction_del() throws Exception {
+		 boolean success = this.node.remove();
 
-	 public boolean jsFunction_del() throws Exception{
-		 return jsFunction_del(true);
-	 }
-	 	 
-	 public boolean jsFunction_del(boolean deep) throws Exception{
-		 boolean success = this.node.remove(deep);
-
-		 if (success) { 
+		 if (success) {
 			 String name;
 			 AxiomObject parent;
 			 if (!"axiomobject".equals(this.node.getPrototype().toLowerCase())) {
@@ -3212,5 +3204,16 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	  */
 	 public boolean jsFunction_move(Object parent) throws Exception {
 		 return this.setParent(parent);
+	 }
+	 
+	 /**
+	  * Sets the lastmodified property of the Node to the system time when called.
+	  * 
+	  * @return {Date} The date that the lastmodified time was set to.
+	  */
+	 public Date jsFunction_touch() {
+		 long millis = System.currentTimeMillis();
+		 this.node.setLastModified(millis);
+		 return new Date(millis);
 	 }
 }

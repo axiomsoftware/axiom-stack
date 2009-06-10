@@ -36,6 +36,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.ScriptRuntime;
 
 import axiom.extensions.trans.TransactionException;
 import axiom.framework.ErrorReporter;
@@ -723,8 +724,10 @@ public class LuceneManager{
 				}
 				break;
 			case IProperty.XML:
-            case IProperty.XHTML:
 				prop.setXMLValue(fieldvalue);
+				break;
+			case IProperty.XHTML:
+				prop.setXHTMLValue(fieldvalue);
 				break;
 			
             case IProperty.JAVAOBJECT:
@@ -775,6 +778,12 @@ public class LuceneManager{
 				break;
 			case IProperty.DATE: 
 				node.setDate(fieldname, strToDate(fieldvalue)); 
+				break;
+			case IProperty.TIME: 
+				node.setDate(fieldname, strToTime(fieldvalue)); 
+				break;
+			case IProperty.TIMESTAMP: 
+				node.setDate(fieldname, strToTimestamp(fieldvalue)); 
 				break;
 			case IProperty.FLOAT: 
 				node.setFloat(fieldname, Double.parseDouble(fieldvalue)); 
@@ -927,6 +936,12 @@ public class LuceneManager{
 				break;
 			case IProperty.DATE:
 				list.add(strToDate(values[i]));
+				break;
+			case IProperty.TIME:
+				list.add(strToTime(values[i]));
+				break;
+			case IProperty.TIMESTAMP:
+				list.add(strToTimestamp(values[i]));
 				break;
 			case IProperty.FLOAT:
 				list.add(new Double(values[i]));
@@ -1613,12 +1628,26 @@ public class LuceneManager{
 				valueBuffer.append(serializeBoolean(((Boolean) values[i]).booleanValue()));
 				valueBuffer.append(DELIM);
 				break;
-			case IProperty.DATE: 
-				valueBuffer.append(serializeDate((Date) values[i]));
+			case IProperty.DATE:
+				valueBuffer.append(serializeDate((Date) Context.jsToJava(values[i], Date.class)));
+				valueBuffer.append(DELIM);
+				break;
+			case IProperty.TIME:
+				valueBuffer.append(serializeTime((Date) Context.jsToJava(values[i], Date.class)));
+				valueBuffer.append(DELIM);
+				break;
+			case IProperty.TIMESTAMP:
+				valueBuffer.append(serializeTimestamp((Date) Context.jsToJava(values[i], Date.class)));
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.FLOAT:
-				valueBuffer.append(serializeFloat(((Float) values[i]).floatValue()));
+				if (values[i] instanceof Double) {
+					valueBuffer.append(serializeFloat(((Double) values[i]).doubleValue()));
+				} else if (values[i] instanceof Float){
+					valueBuffer.append(serializeFloat(((Float) values[i]).floatValue()));
+				} else {
+					valueBuffer.append(serializeFloat(((Integer) values[i]).intValue()));
+				}
 				valueBuffer.append(DELIM);
 				break;
 			case IProperty.INTEGER:

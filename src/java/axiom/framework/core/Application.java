@@ -137,7 +137,9 @@ public final class Application implements IPathElement, Runnable {
 	// internal worker thread for scheduler, session cleanup etc.
 	Thread worker;
 	// request timeout defaults to 60 seconds
-	long requestTimeout = 60000;
+	long requestTimeout;
+	// session timeout defaults to 60 minutes
+	long sessionTimeout;
 	ThreadGroup threadgroup;
 	
     // threadlocal variable for the current RequestEvaluator
@@ -306,7 +308,7 @@ public final class Application implements IPathElement, Runnable {
 		} catch (Exception ex) {
 			System.out.println("Adding application directory "+ appDir+ " failed. " +
 								"Will not use that repository. Check your initArgs!");
-		}          
+		}
 		
 		// create app-level properties
 		props = new ResourceProperties(this, "app.properties", sysProps);
@@ -328,7 +330,7 @@ public final class Application implements IPathElement, Runnable {
 				sa.setupSampleApp(appDir);
 			}
 		}
-		
+				
 		String dbdir = props.getProperty("dbdir");
 		if (dbdir != null) {
 			dbDir = new File(dbdir);
@@ -1902,6 +1904,15 @@ public final class Application implements IPathElement, Runnable {
 	}
 
 	/**
+	 * Get the session timeout.
+	 * 
+	 * @return the session timeout in milliseconds.
+	 */
+	public long getSessionTimeout() {
+		return this.sessionTimeout;
+	}
+	
+	/**
 	 * Purge sessions that have not been used for a certain amount of time.
 	 * This is called by run().
 	 *
@@ -1909,24 +1920,11 @@ public final class Application implements IPathElement, Runnable {
 	 * @return the updated lastSessionCleanup value
 	 */
 	private long cleanupSessions(long lastSessionCleanup) {
-
 		long now = System.currentTimeMillis();
 		long sessionCleanupInterval = 60000;
 
 		// check if we should clean up user sessions
 		if ((now - lastSessionCleanup) > sessionCleanupInterval) {
-
-			// get session timeout
-			int sessionTimeout = 30;
-
-			try {
-				sessionTimeout = Math.max(0,
-						Integer.parseInt(props.getProperty("sessionTimeout",
-						"30")));
-			} catch (NumberFormatException nfe) {
-				logEvent("Invalid sessionTimeout setting: " + props.getProperty("sessionTimeout"));
-			}
-
 			RequestEvaluator thisEvaluator = null;
 
 			try {
@@ -1935,7 +1933,7 @@ public final class Application implements IPathElement, Runnable {
 
 				Map<String, Session> sessions = sessionMgr.getSessions();
 				for (Session session : sessions.values()) {
-					if ((now - session.lastTouched()) > (sessionTimeout * 60000)) {
+					if ((now - session.lastTouched()) > (sessionTimeout)) {
 						NodeHandle userhandle = session.userHandle;
 
 						if (userhandle != null) {
@@ -2197,6 +2195,16 @@ public final class Application implements IPathElement, Runnable {
 				requestTimeout = 60000L;
 			}
 
+			// default to 1hour
+			String defaultSessionTimeout = "3600";
+			String sessionTimeout = props.getProperty("sessiontimeout", defaultSessionTimeout);
+			try {
+				this.sessionTimeout = Long.parseLong(sessionTimeout) * 1000L;
+			} catch (Exception ignore) {
+				// go with default value
+				requestTimeout = 3600000L;
+			}
+			
 			// set base URI
 			String base = props.getProperty("baseuri");
 
@@ -2640,8 +2648,29 @@ public final class Application implements IPathElement, Runnable {
             url = url.substring(0, url.length() - 1);
         }
         url = url.substring(1);
-        
         return url;
+    }
+    
+    /**
+     * Adds a rewrite rule to the head of the array.
+     * 
+     * @param from
+     * @param to
+     */
+    public void addRewriteRule(String from, String to) {
+    	// need to synchronize because the length and items within can change
+    	synchronized(this.rewriteRules) {
+    		final int rrlen = this.rewriteRules.length;
+    		String[][] rules = new String[rrlen+1][2];
+    		rules[0][0] = from;
+    		rules[0][1] = to;
+    	
+    		for (int i = 0; i < rrlen; i++) {
+    			rules[i+1] = this.rewriteRules[i];
+    		}
+    	
+    		this.rewriteRules = rules;
+    	}
     }
     
     protected String[][] setupRewriteRules() {
@@ -2650,6 +2679,7 @@ public final class Application implements IPathElement, Runnable {
             BufferedReader br = null;
             boolean found_resource = false;
             try {
+            	//properties aren't ordered, must read lines
                 Resource res = repository.getResource("rewrite.properties");
                 if (res != null && res.exists()) {
                     br = new BufferedReader(new InputStreamReader(res.getInputStream()));

@@ -5,6 +5,29 @@ _test = {
 	teardown: function() {
 		app.log("Global Outer Teardown");
 	},
+    liveconnect_suite: {
+	test_checkJarLoaded: function() {
+	    var clazz = null;
+	    try {
+		clazz = Packages.HelloWorld.HelloWorld;
+	    } catch (e) {}
+	    Assert.assertNotNull("test_checkJarLoaded", clazz);
+	},
+	test_checkJarLoaded_getMessage: function() {
+	    var str = "Not Hello World";
+	    try {
+		str = Packages.HelloWorld.HelloWorld.getMessage();
+	    } catch (e) {}
+	    Assert.assertEquals("test_checkJarLoaded", "Hello World", str);
+	}
+    },
+    configuration_suite: {
+	test_dynamicallyAddRewriteRule: function() {
+	    app.addRewriteRule('/blah', '/home');
+	    var rules = app.__app__.getRewriteRules()[0];
+	    Assert.assertIterableEquals("test_checkJarLoaded", ['/blah','/home'], rules);
+	}
+    },
 	app_suite: {
 		setup: function() {
 			app.log("Global app_suite Setup");
@@ -569,7 +592,7 @@ _test = {
 	    var a = ['a','b','a','c','b','a','d'];
 
 	    var control = ['a','b','c','d'];
-	    Assert.assertEquals("test_Array_unique failed", control, a.unique());
+	    Assert.assertIterableEquals("test_Array_unique failed", control, a.unique());
 	},
 	test_Array_remove_index: function() {
 	    var a = ['a','b','c'];
@@ -595,7 +618,7 @@ _test = {
 	},
 	test_Array_lastIndexOf: function() {
 	    var a = ['a','b','c','a'];
-	    Assert.assertEquals("test_Array_lastIndexOf failed", 3, a.lastIndexOf('a'));
+	    Assert.assertIterableEquals("test_Array_lastIndexOf failed", 3, a.lastIndexOf('a'));
 	},
 	test_Array_indexOf: function() {
 	    var a = ['a','b','c','a'];
@@ -606,14 +629,38 @@ _test = {
 	    var b = ['q','a','b','e','r'];
 
 	    var control = ['a','b'];
-	    Assert.assertEquals("test_Array_intersection failed", control, Array.intersection(a,b));
+	    Assert.assertIterableEquals("test_Array_intersection failed", control, Array.intersection(a,b));
 	},
 	test_Array_union: function() {
 	    var a = ['a','b','c','a'];
 	    var b = ['q','a','b','e','r'];
 
-	    var control = ['a','b','c','e','q','r'];
-	    Assert.assertEquals("test_Array_union failed", control, Array.union(a,b));
+	    var control = ['a','b','c','q','e','r'];
+	    Assert.assertIterableEquals("test_Array_union failed", control, Array.union(a,b));
+	},
+	test_Array_insert_params: function() {
+	    var a = ['a','b','c','d'];
+	    a.insert('e', 1);
+
+	    var control = ['a','e','b','c','d'];
+	    Assert.assertIterableEquals("test_Array_insert_params failed", control, a);
+	},
+	test_Array_insert_noindex: function() {
+	    var a = ['a','b','c','d'];
+	    a.insert('e');
+
+	    var control = ['a','b','c','d','e'];
+	    Assert.assertIterableEquals("test_Array_insert_noindex failed", control, a);
+	},
+	test_Array_insert_noparams: function() {
+	    var a = ['a','b','c','a'];
+	    var ex = null;
+	    try {
+		a.insert();
+	    } catch (e) {
+		ex = e;
+	    }
+	    Assert.assertNotNull("test_Array_insert_noparams failed", ex);
 	}
     }
 }
