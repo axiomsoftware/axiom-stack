@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for String manipulation.
  */
 public class StringUtils {
-
-
     /**
      *  Split a string into an array of strings. Use comma and space
      *  as delimiters.
@@ -63,5 +63,4 @@ public class StringUtils {
         }
         return (String[]) list.toArray(new String[list.size()]);
     }
-
 }
