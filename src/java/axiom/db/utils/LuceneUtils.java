@@ -56,7 +56,7 @@ public class LuceneUtils {
 				exporter.export();
 				task = "Export ";
 			} else if (args[0].equals("-i") && args.length > 2) {
-				AxiomImporter importer = new AxiomImporter(new File(args[1]), new File(args[2]));
+				AxiomImporter importer = new AxiomImporter(new File(args[1]), new File(args[2]), false);
 				importer.run();
 				task = "Import ";
 			} else {

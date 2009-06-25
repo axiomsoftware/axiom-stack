@@ -59,8 +59,9 @@ public class AxiomImporter implements ContentHandler {
 	DOMImplementation impl = null;
 	HashMap<String, String> controlcode_map;
 	int maxId = -1; //assuming numerical lucene ids. almost certainly evil.
-
-	public AxiomImporter(File xml_file, File target) {
+	boolean debug = false;
+	
+	public AxiomImporter(File xml_file, File target, boolean debug) {
 		this.xml_file = xml_file;
 		this.target = target;
 		
@@ -177,9 +178,7 @@ public class AxiomImporter implements ContentHandler {
 	}
 	
 	public void importDocument(org.w3c.dom.Document doc) {
-		System.out.println("start importDocument");
 		System.out.println("writer doc count: " + writer.docCount());
-		serializeDoc(System.out);
 		try {
 		  	// prepared statement for updating pathindex
 		  	PreparedStatement pathIndexUpdater = conn.prepareStatement("INSERT INTO PathIndices (id, layer, path) VALUES (?,?,?)");
@@ -244,7 +243,7 @@ public class AxiomImporter implements ContentHandler {
 			int layer = 0;
 			if (layers != null && layers.item(0) != null) {
 				Element layer_item = (Element)layers.item(0);
-				String content = layer_item.getTextContent();
+				String content = layer_item.getTextContent().trim();
 				if (content != null && !(content.equals("null"))) {
 					//System.out.println("content: " + content);
 					layer = Integer.parseInt(content);
@@ -265,19 +264,13 @@ public class AxiomImporter implements ContentHandler {
 			e.printStackTrace();
 		}
 		System.gc();
-		System.out.println("end importDocument");
 	}
 	
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (element != null && value != null) {
-			value.append(new String(ch));
+			value.append(new String(ch).substring(start, start+length));
 		}
-		/*
-			System.out.println("ch: " + new String(ch));
-			System.out.println("start: " + start);
-			System.out.println("length: " + length);
-		*/
 	}
 
 	@Override
@@ -289,9 +282,7 @@ public class AxiomImporter implements ContentHandler {
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (element != null && value != null) {
 			element.appendChild(doc.createTextNode(value.toString()));
-			//System.out.println("Old Buffer cap: " + value.capacity());
 			value = null;
-			//System.out.println("New Buffer cap: " + value.capacity());
 		}
 		
 		if (localName.equals("document")) {
@@ -299,7 +290,7 @@ public class AxiomImporter implements ContentHandler {
 			doc = null;
 			element = null;
 			field = null;
-			System.exit(-1);
+			if (debug) System.exit(-1);
 		} else if (localName.equals("field")){
 			root.appendChild(element);
 			element = null;
@@ -343,7 +334,6 @@ public class AxiomImporter implements ContentHandler {
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
-		System.out.println("localName --> " + localName);
 		if (localName.equals("document")) {
 			try {
 				org.w3c.dom.Document document = (DocumentBuilderFactory.newInstance()).newDocumentBuilder().getDOMImplementation().createDocument(null, "document", null);
