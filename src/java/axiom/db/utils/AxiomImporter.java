@@ -60,6 +60,7 @@ public class AxiomImporter implements ContentHandler {
 	HashMap<String, String> controlcode_map;
 	int maxId = -1; //assuming numerical lucene ids. almost certainly evil.
 	boolean debug = false;
+	int doc_count = 0;
 	
 	public AxiomImporter(File xml_file, File target, boolean debug) {
 		this.xml_file = xml_file;
@@ -81,7 +82,6 @@ public class AxiomImporter implements ContentHandler {
 	void setup() {
 		try {
 			newIndexDir = FSDirectory.getDirectory(target, true);
-            writer = IndexWriterManager.getWriter(newIndexDir, analyzer, true);
     	    if (newIndexDir instanceof TransFSDirectory) {
     	        FSDirectory.setDisableLocks(true);
     	        TransFSDirectory d = (TransFSDirectory) newIndexDir;
@@ -115,25 +115,22 @@ public class AxiomImporter implements ContentHandler {
 		}
 	}
 	
+	IndexWriter getNewWriter() throws Exception {
+		return IndexWriterManager.getWriter(newIndexDir, analyzer, true);
+	}
+	
+	
 	protected void finalize() {
 		try {
 			// update igen table with last id found
 			conn.createStatement().execute("INSERT INTO IdGen (id, cluster_host) VALUES( "+maxId+ ", '')");
-			
 			conn.commit();
-			writer.close();
-		    writer.flushCache();
-		    LuceneManager.commitSegments(null, conn, target.getAbsoluteFile(), writer.getDirectory());
-		    writer.finalizeTrans();
-		    
 		    newIndexDir.close();
 		    SegmentInfos newSegmentInfos = IndexObjectsFactory.getFSSegmentInfos(newIndexDir);
 		    newSegmentInfos.clear();
 		    IndexObjectsFactory.removeDeletedInfos(newIndexDir);
 		} catch(SQLException sqle) {
 			sqle.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -177,17 +174,20 @@ public class AxiomImporter implements ContentHandler {
 		}
 	}
 	
-	public void importDocument(org.w3c.dom.Document doc) {
-		System.out.println("writer doc count: " + writer.docCount());
+	public void importDocument() {
+		doc_count++;
+		System.out.println("doc count: " + doc_count);
+		if (doc_count == 203) {
+			serializeDoc(System.out);
+		}
 		try {
+			writer = getNewWriter();
 		  	// prepared statement for updating pathindex
 		  	PreparedStatement pathIndexUpdater = conn.prepareStatement("INSERT INTO PathIndices (id, layer, path) VALUES (?,?,?)");
-	    	
-			Element document = root;
 			
 			// begin add fields to new lucene docs to be written
 			String luceneId = null;
-			NodeList fields = document.getElementsByTagName("field");
+			NodeList fields = root.getElementsByTagName("field");
 			Document luceneDocument = new Document();
 			for(int j=0; j < fields.getLength(); j++){
 				Element field = (Element) fields.item(j);
@@ -227,8 +227,8 @@ public class AxiomImporter implements ContentHandler {
 					curridx = Field.Index.TOKENIZED;
 				}
 				
-				if(name.equals("_id")){
-					luceneId = value;
+				if(name.trim().equals("_id")){
+					luceneId = value.trim();
 					maxId = Math.max(Integer.parseInt(luceneId),maxId);
 				}
 
@@ -239,7 +239,7 @@ public class AxiomImporter implements ContentHandler {
 			// grab layer and path, insert into path index table
 			//System.out.println(document.getElementsByTagName("layer"));
 			//System.out.println(document.getElementsByTagName("layer").item(0));
-			NodeList layers = document.getElementsByTagName("layer");
+			NodeList layers = root.getElementsByTagName("layer");
 			int layer = 0;
 			if (layers != null && layers.item(0) != null) {
 				Element layer_item = (Element)layers.item(0);
@@ -249,17 +249,21 @@ public class AxiomImporter implements ContentHandler {
 					layer = Integer.parseInt(content);
 				}
 			}
-			String path = document.getElementsByTagName("path").item(0).getTextContent();
+			String path = root.getElementsByTagName("path").item(0).getTextContent();
 			pathIndexUpdater.setString(1, luceneId);
 			pathIndexUpdater.setInt(2, layer);
 			pathIndexUpdater.setString(3, path);
 			pathIndexUpdater.execute();
 			
-			//writer.flushCache();
+			writer.close();
+		    writer.flushCache();
+		    LuceneManager.commitSegments(null, conn, target.getAbsoluteFile(), writer.getDirectory());
+		    writer.finalizeTrans();
+		    writer = null;
 		} catch(SQLException sqle) {
-			//sqle.printStackTrace();
-		} catch (IOException e) {
-			//e.printStackTrace();
+			sqle.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -286,13 +290,13 @@ public class AxiomImporter implements ContentHandler {
 		}
 		
 		if (localName.equals("document")) {
-			importDocument(doc);
+			importDocument();
 			doc = null;
 			element = null;
 			field = null;
 			if (debug) System.exit(-1);
 		} else if (localName.equals("field")){
-			root.appendChild(element);
+			root.appendChild(field);
 			element = null;
 			field = null;
 		} else if (localName.equals("path") || localName.equals("layer")) {

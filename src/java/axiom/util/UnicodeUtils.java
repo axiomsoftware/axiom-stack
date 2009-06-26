@@ -97,8 +97,8 @@ public class UnicodeUtils {
 
     public static String unescapeControlCodes(String str, HashMap<String, String> codepoints) {
     	String pattern_str = "";
-    	for (String key : codepoints.values()) {
-    		pattern_str += ((pattern_str == "")?"":"|") + "(["+key+"])";
+    	for (String key : codepoints.keySet()) {
+    		pattern_str += ((pattern_str == "")?"":"|") + "("+key+")";
     	}
     	
     	Pattern pattern = Pattern.compile(pattern_str);
@@ -107,7 +107,7 @@ public class UnicodeUtils {
     		String group = matcher.group();
     		String ucodepoint = codepoints.get(group);
     		if (group == null) {
-    			ucodepoint = "\u0000";
+    			ucodepoint = "\\\\u0000";
     		}
     		str = matcher.replaceAll(ucodepoint);
     	}
