@@ -105,11 +105,18 @@ public class UnicodeUtils {
     	Matcher matcher = pattern.matcher(str);
     	while(matcher.find()) {
     		String group = matcher.group();
-    		String ucodepoint = codepoints.get(group);
+    		String ucodepoint = codepoints.get("\\"+group);
     		if (group == null) {
-    			ucodepoint = "\\\\u0000";
+    			ucodepoint = "\\u0000";
     		}
-    		str = matcher.replaceAll(ucodepoint);
+    		try {
+    			str = matcher.replaceAll(ucodepoint);
+    		} catch(NullPointerException npe) {
+    	    	System.out.println("pattern_str: " + pattern_str);
+    			System.out.println("group: " + group);
+    			System.out.println("ucodepoint: " + ucodepoint);
+    			npe.printStackTrace();
+    		}
     	}
     	
     	return str;

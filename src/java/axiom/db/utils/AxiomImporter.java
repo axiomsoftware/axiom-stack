@@ -227,7 +227,8 @@ public class AxiomImporter implements ContentHandler {
 					curridx = Field.Index.TOKENIZED;
 				}
 				
-				if(name.trim().equals("_id")){
+				String trim_name = name.trim();
+				if(trim_name.equals("_id")) {
 					luceneId = value.trim();
 					maxId = Math.max(Integer.parseInt(luceneId),maxId);
 				}
