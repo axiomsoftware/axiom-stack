@@ -3,7 +3,7 @@
 	<title>Axiom Application Manager</title>
   	<link rel="stylesheet" type="text/css" tal:attr="href: app.getStaticMountpoint('axiom/manage.css')"/>
 	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('jquery.js')"></script>
-	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('editarea_0_7/edit_area/edit_area_full.js')"></script>
+	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('edit_area/edit_area_full.js')"></script>
 	<script type="text/javascript" tal:attr="src: app.getStaticMountpoint('scripts/shell.js')"/>
 	<script type="text/javascript" tal:text="$">
 	  var staticMountpoint = '${app.getStaticMountpoint()}';
