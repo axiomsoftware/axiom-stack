@@ -63,8 +63,81 @@ TAL.namespace_transform = function(doc, ns_transform){
 }
 
 TAL.Scope = function () {;}
-TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d)}
-TAL.func = function (d, e) {return (new Function('data', 'with(data) return '+e)).call(d['this'],d)}
+TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
+TAL.func = function (d, e) {
+    try {
+	return (new Function('data', 'with(data) {return '+e+';}')).call(d['this'],d);
+    } catch (ex) {
+	if (ex instanceof TAL.Error) {
+	    throw ex;
+	} else {
+	  var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
+		  <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
+		  <h3 style="text-decoration:underline;">Exception Details</h3>
+		  <ul>
+		    <li>
+		      <strong>Node:</strong>
+		      <code>{d.node.toXMLString()}</code>
+		    </li>
+		    <li>
+		      <strong>Expression:</strong>
+		      <code>{e}</code>
+		    </li>
+		    <li>
+		      <strong>Exception:</strong>
+		      <code>{ex.toString()}</code>
+		    </li>
+		  </ul>
+		  <h3 style="text-decoration:underline;">Additional Information</h3>
+		  <ul>
+		    <li name="scope">
+		      <strong>Rendering Context:</strong>
+		    </li>
+		    <li>
+		      <strong>Parameters:</strong>
+		    </li>
+		    <li>
+		      <strong>Request:</strong>
+		    </li>
+		    <li>
+		      <strong>Session:</strong>
+		    </li>
+		</ul>
+	    </div></>;
+
+	  function gen_list(o) {
+	    var ul = <><ul></ul></>;
+	    for (var p in o) {
+	      var p_data = o[p];
+	      ul.ul += <><li>
+		<strong>{p}:</strong>
+		<code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
+	      </li></>;
+	    }
+	    return ul;
+	  }
+
+	  var scope_data = gen_list(data['this']);
+	  var params_data = gen_list(d);
+	  var req_data = gen_list(req.data);
+	  var session_data = gen_list(session.data);
+
+	  tal_error..ul[1].li[0] += scope_data;
+	  tal_error..ul[1].li[1] += params_data;
+	  tal_error..ul[1].li[2] += req_data;
+	  tal_error..ul[1].li[3] += session_data;
+	    throw new TAL.Error(
+		tal_error.toXMLString()
+	    );
+	}
+    }
+}
+
+TAL.Error = function(str) {
+    this.toString = function() {
+	return str;
+    };
+};
 
 TAL.TALE = function (n, data, tal) {
         var tn;
@@ -141,24 +214,30 @@ TAL.TALE = function (n, data, tal) {
         if((tn=n.@tal::content).length()) {
 	    TAL.Scope.prototype = data;
             data = new TAL.Scope();
-                n.replace('*', TAL.func(data, tn));
-                delete n.@tal::content;
-
+            n.replace('*', TAL.func(data, tn));
+            delete n.@tal::content;
         }
         if((tn=n.@tal::replace).length()) {
 	    TAL.Scope.prototype = data;
             data = new TAL.Scope();
-                n.parent().replace(n.childIndex(), TAL.func(data, tn));
-                return;
+            n.parent().replace(n.childIndex(), TAL.func(data, tn));
+        }
+        if((tn=n.@tal::['replace-if']).length()) {
+	    TAL.Scope.prototype = data;
+            data = new TAL.Scope();
+            var r = TAL.func(data, tn);
+            if(r) {
+                n.parent().replace(n.childIndex(), r);
+            } else {
+                delete n.parent().*[n.childIndex()];
+            }
         }
         if((tn=n.@tal::text).length()) {
                 var r=new RegExp('\\'+tn+'\\{([^}]+)\\}|\\'+tn+'(\\w+)','g');
                 delete n.@tal::text;
                 for each(var t in n.text()){
-					var text_str = t.toXMLString();
-                    n.replace(t.childIndex(),
-                              (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})) + (/\s$/.test(text_str) ? ' ' : '')
-							 );
+		    var text_str = t.toXMLString();
+                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
             }
         }
         if((tn=n.@tal::omit).length()) {
