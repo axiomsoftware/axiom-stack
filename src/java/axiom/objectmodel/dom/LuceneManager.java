@@ -812,6 +812,13 @@ public class LuceneManager{
 			case IProperty.XML:
 				node.setXML(fieldname, fieldvalue);
 				break;
+			case IProperty.XHTML:
+                System.out.println("-- XHTML --");
+                System.out.println("fieldname: " + fieldname);
+                System.out.println("fieldvalue: " + fieldvalue);
+
+				node.setXHTML(fieldname, fieldvalue);
+				break;
 			default: 
 				node.setString(fieldname, fieldvalue); 
 			break;

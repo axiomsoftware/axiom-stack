@@ -407,4 +407,7 @@ public class TALExtension extends AxiomExtension {
     	return stringToXmlObject(xmlObjectToString(xml, app), scope, app);
     }
 
+    public static Object cloneXHTMLObject(Scriptable xml, Scriptable scope, Application app) {
+    	return stringToXHTMLObject(xmlObjectToString(xml, app), scope, app);
+    }
 }
