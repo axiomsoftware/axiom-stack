@@ -3427,6 +3427,9 @@ public class Node implements INode, Serializable {
     	
     	try {
     		Enumeration e = node.properties();
+            
+            RhinoEngine re = null;
+            Object clonedXml = null;
 
     		while (e.hasMoreElements()) {
     			String str = e.nextElement().toString();
@@ -3513,10 +3516,14 @@ public class Node implements INode, Serializable {
     				}
     				break;
     			case IProperty.XML:
-    			case IProperty.XHTML:
-    				RhinoEngine re = (RhinoEngine) this.nmgr.nmgr.app.getCurrentRequestEvaluator().getScriptingEngine();
-    				Object clonedXml = TALExtension.cloneXmlObject((Scriptable) property.getXMLValue(), re.getGlobal(), this.nmgr.nmgr.app);
+    				re = (RhinoEngine) this.nmgr.nmgr.app.getCurrentRequestEvaluator().getScriptingEngine();
+    				clonedXml = TALExtension.cloneXmlObject((Scriptable) property.getXMLValue(), re.getGlobal(), this.nmgr.nmgr.app);
     				this.setXML(str, clonedXml);
+    				break;
+    			case IProperty.XHTML:
+    				re = (RhinoEngine) this.nmgr.nmgr.app.getCurrentRequestEvaluator().getScriptingEngine();
+    				clonedXml = TALExtension.cloneXHTMLObject((Scriptable) property.getXMLValue(), re.getGlobal(), this.nmgr.nmgr.app);
+    				this.setXHTML(str, clonedXml);
     				break;
     			}
     		}
