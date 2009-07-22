@@ -42,20 +42,20 @@ import org.mozilla.javascript.*;
  * The second parameter is the Analyzer. Should you decide that the analyzer we use is not suitable
  * for your needs, you can specify the one you prefer. By default all filters are processed using the StandardAnalyzer.<br /><br />
  * <code>
- * app.getObjects("Post", new Filter({id: "company-picnic"}, new WhitespaceAnalyzer());
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, 'WhitespaceAnalyzer'));
  * </code><br /><br />
  * 
  * The third parameter is to specify whether or not to cache the filter bitset. This is useful
  * when you have to rerun the same filter multiple times. Why reprocess all the documents in your
  * system if you can cache the results. That is what this does. There is a timeout that can be set as well.<br /><br />
  * <code>
- * app.getObjects("Post", new Filter({id: "company-picnic"}, new WhitespaceAnalyzer(), true);
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, 'WhitespaceAnalyzer', true));
  * </code><br /><br />
  * 
  * One thing to note is that the Analyzer, while the second parameter, does not need to be specified. If you don't want
  * to specify it, you can use the cacheFilter parameter in the second parameter slot. Axiom checks the types.<br /><br />
  * <code>
- * app.getObjects("Post", new Filter({id: "company-picnic"}, true);
+ * app.getObjects("Post", new Filter({id: "company-picnic"}, true));
  * </code><br /><br />
  * 
  * @jsconstructor Filter
@@ -116,7 +116,7 @@ public class FilterObject extends ScriptableObject implements IFilter {
         }
         
         if (optional1 != null && optional1 instanceof String) {
-            this.analyzer = (String) analyzer;
+            this.analyzer = (String) optional1;
         } else if (optional1 != null && optional1 instanceof Boolean) {
             this.cached = ((Boolean) optional1).booleanValue();
         }
