@@ -418,7 +418,7 @@ public class ApplicationBean implements Serializable {
      * Get the draft copy of obj residing at layer, creating one if none currently exists.
      * @jsfunction
      * @param {AxiomObject} obj The Object
-     * @param {Number} [layer] The layer on which to delete the object, if no layer is 
+     * @param {Number} [layer] The layer on which to draft the object, if no layer is 
      *                         specified, default to the layer above the one on which
      *                         the AxiomObject resides
      * @returns {AxiomObject} Draft copy of obj at layer
