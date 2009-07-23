@@ -724,10 +724,13 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         if (filter instanceof FilterObject) {
             FilterObject fobj = (FilterObject) filter;
             Query filter_query = getFilterQuery(fobj, combined_props);
-            String analyzer = filter.jsFunction_getAnalyzer();
+            String analyzer = fobj.jsFunction_getAnalyzer();
+            if (app.debug())
+                app.logEvent("analyzer: " + analyzer);
+            if (app.debug() && filter_query != null)
+                app.logEvent("filter_query.toString(): " + filter_query.toString());
             if (analyzer != null) {
-                QueryParser qp = new QueryParser(LuceneManager.ID, 
-                        LuceneManager.getAnalyzer(analyzer));
+                QueryParser qp = new QueryParser(LuceneManager.ID, LuceneManager.getAnalyzer(analyzer));
                 filter_query = qp.parse(filter_query.toString());
                 qp = null;
             }
@@ -908,12 +911,21 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
                 final int vallen = values.length;
                 if (vallen > 1) {
                     for (int i = 0; i < vallen; i++) {
-                        Query q = createLuceneQuery(key, values[i], lmgr, props);
+                        if (app.debug())
+                            app.logEvent("key: " + key + ", value: " + QueryParser.escape((String)values[i]));
+                        Query q = createLuceneQuery(key, QueryParser.escape((String)values[i]), lmgr, props);
+                        if (app.debug())
+                            app.logEvent("q.toString(): " + q.toString());
                         sub_query.add(q, SHOULD);
                     }
                     primary.add(sub_query, MUST);
                 } else if (vallen == 1) {
-                    primary.add(createLuceneQuery(key, values[0], lmgr, props), MUST);
+                    if (app.debug())
+                        app.logEvent("key: " + key + ", value: " + QueryParser.escape((String)values[0]));
+                    Query q = createLuceneQuery(key, QueryParser.escape((String)values[0]), lmgr, props);
+                    if (app.debug())
+                        app.logEvent("q.toString(): " + q.toString());
+                    primary.add(q, MUST);
                 }
             }
             query = primary;
