@@ -19,6 +19,8 @@
  * email: info@axiomsoftwareinc.com
  */
 
+importClass(Packages.org.mozilla.javascript.EcmaError,Packages.org.mozilla.javascript.RhinoException,Packages.org.mozilla.javascript.EvaluatorException);
+
 /**
  * The global TAL function for rendering TAL/TALE documents.  This is called within
  * <code> AxiomObject.renderTAL() </code>, and thus, would generally not be called
@@ -66,76 +68,80 @@ TAL.Scope = function () {;}
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
     try {
-	return (new Function('data', 'with(data) {return '+e+';}')).call(d['this'],d);
+	return (new Function('data', 'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+e+'"); }')).call(d['this'],d);
     } catch (ex) {
 	if (ex instanceof TAL.Error) {
 	    throw ex;
 	} else {
-	  var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
-		  <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
-		  <h3 style="text-decoration:underline;">Exception Details</h3>
-		  <ul>
-		    <li>
-		      <strong>Node:</strong>
-		      <code>{d.node.toXMLString()}</code>
-		    </li>
-		    <li>
-		      <strong>Expression:</strong>
-		      <code>{e}</code>
-		    </li>
-		    <li>
-		      <strong>Exception:</strong>
-		      <code>{ex.toString()}</code>
-		    </li>
-		  </ul>
-		  <h3 style="text-decoration:underline;">Additional Information</h3>
-		  <ul>
-		    <li name="scope">
-		      <strong>Rendering Context:</strong>
-		    </li>
-		    <li>
-		      <strong>Parameters:</strong>
-		    </li>
-		    <li>
-		      <strong>Request:</strong>
-		    </li>
-		    <li>
-		      <strong>Session:</strong>
-		    </li>
-		</ul>
-	    </div></>;
-
-	  function gen_list(o) {
-	    var ul = <><ul></ul></>;
-	    for (var p in o) {
-	      var p_data = o[p];
-	      ul.ul += <><li>
-		<strong>{p}:</strong>
-		<code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
-	      </li></>;
-	    }
-	    return ul;
-	  }
-
-	  var scope_data = gen_list(data['this']);
-	  var params_data = gen_list(d);
-	  var req_data = gen_list(req.data);
-	  var session_data = gen_list(session.data);
-
-	  tal_error..ul[1].li[0] += scope_data;
-	  tal_error..ul[1].li[1] += params_data;
-	  tal_error..ul[1].li[2] += req_data;
-	  tal_error..ul[1].li[3] += session_data;
-	    throw new TAL.Error(
-		tal_error.toXMLString()
-	    );
+	    throw new TAL.Error(ex, d, e);
 	}
     }
 }
 
-TAL.Error = function(str) {
+TAL.Error = function(error, data, expression) {
     this.toString = function() {
-	return str;
+	var error_file = data['this']._prototype + '/' + expression.replace(/this\.|\([^\)]*\)/g,'');
+	var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
+	    <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
+	    <h3 style="text-decoration:underline;">Exception Details</h3>
+	    <ul>
+	    <li>
+	    <strong>Calling Node:</strong>
+	    <code>{data.node.toXMLString()}</code>
+	    </li>
+	    <li>
+	    <strong>Expression:</strong>
+	    <code>{expression}</code>
+	    </li>
+	    <li>
+	    <strong>File With Issue:</strong>
+	    <code>{error_file}</code>
+	    </li>
+	    <li>
+	    <strong>Exception:</strong>
+	    <code>{error.toString()}</code>
+	    </li>
+	    </ul>
+	    <h3 style="text-decoration:underline;">Additional Information</h3>
+	    <ul>
+	    <li name="scope">
+	    <strong>Rendering Context:</strong>
+	    </li>
+	    <li>
+	    <strong>Parameters:</strong>
+	    </li>
+	    <li>
+	    <strong>Request:</strong>
+	    </li>
+	    <li>
+	    <strong>Session:</strong>
+	    </li>
+	    </ul>
+	    </div></>;
+
+	function gen_list(o) {
+	    var ul = <><ul></ul></>;
+	    for (var p in o) {
+		var p_data = o[p];
+		ul.ul += <><li>
+		    <strong>{p}:</strong>
+		    <code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
+		    </li></>;
+	    }
+	    return ul;
+	}
+
+	var scope_data = gen_list(data['this']);
+	var params_data = gen_list(data);
+	var req_data = gen_list(req.data);
+	var session_data = gen_list(session.data);
+
+	tal_error..ul[1].li[0] += scope_data;
+	tal_error..ul[1].li[1] += params_data;
+	tal_error..ul[1].li[2] += req_data;
+	tal_error..ul[1].li[3] += session_data;
+
+	return tal_error.toXMLString();
     };
 };
 

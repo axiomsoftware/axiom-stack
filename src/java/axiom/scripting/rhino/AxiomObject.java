@@ -69,7 +69,6 @@ import axiom.objectmodel.db.Node;
 import axiom.objectmodel.db.NodeHandle;
 import axiom.objectmodel.db.Relation;
 import axiom.objectmodel.dom.LuceneManager;
-import axiom.scripting.rhino.extensions.DOMParser;
 import axiom.util.CacheMap;
 import axiom.util.ExecutionCache;
 import axiom.util.ResourceProperties;
@@ -3071,7 +3070,7 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 	 throws Exception {
 		 Object result = null;
 		 Context cx = Context.getCurrentContext();
-		 RhinoCore core = ((RhinoEngine) cx.getThreadLocal("engine")).getCore();
+		 //RhinoCore core = ((RhinoEngine) cx.getThreadLocal("engine")).getCore();
 		 RhinoEngine re = (RhinoEngine) core.app.getCurrentRequestEvaluator().getScriptingEngine();
 		 Scriptable scope = re.global;
 		 String proto = this.getClassName();
@@ -3131,10 +3130,10 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			     cache.putResultInCache(this, name, result);
 			 }
 		 } catch (Exception ex) {
-             this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "jsFunction_renderTAL") 
+                    this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "jsFunction_renderTAL")
             		 + "TAL execution failed on object " + this 
             		 + " with data = " + ((Function)ScriptableObject.getProperty(data, "toSource")).call(cx, scope, data, new Object[]{}), ex);
-			 throw new Exception("ERROR in TAL() on " + name + ": " + ex.getMessage());
+                    throw ex;
 		 } 	
 
 		 return result;
