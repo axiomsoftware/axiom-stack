@@ -3130,9 +3130,12 @@ public class AxiomObject extends ScriptableObject implements Wrapper, PropertyRe
 			     cache.putResultInCache(this, name, result);
 			 }
 		 } catch (Exception ex) {
-                    this.core.app.logError(ErrorReporter.errorMsg(this.getClass(), "jsFunction_renderTAL")
-            		 + "TAL execution failed on object " + this 
-            		 + " with data = " + ((Function)ScriptableObject.getProperty(data, "toSource")).call(cx, scope, data, new Object[]{}), ex);
+                     String print = ErrorReporter.errorMsg(this.getClass(), "jsFunction_renderTAL") + "TAL execution failed on object " + this;
+                     if (this.core.app.debug()) {
+                         print += " with data = " + ((Function)ScriptableObject.getProperty(data, "toSource")).call(cx, scope, data, new Object[]{});
+                     }
+                     
+                    this.core.app.logError(print, ex);
                     throw ex;
 		 } 	
 
