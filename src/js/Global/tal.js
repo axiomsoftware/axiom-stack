@@ -64,24 +64,37 @@ TAL.namespace_transform = function(doc, ns_transform){
     return doc;
 }
 
-TAL.Scope = function () {;}
+TAL.Scope = function () {;};
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
     try {
-	return (new Function('data', 'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+e+'"); }')).call(d['this'],d);
+	return (
+	    new Function(
+		'data',
+		'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+e+'"); }'
+	    )
+	).call(d['this'],d);
     } catch (ex) {
 	if (ex instanceof TAL.Error) {
-	    throw ex;
+	    throw ex.toString();
 	} else {
 	    throw new TAL.Error(ex, d, e);
 	}
     }
-}
+};
 
 TAL.Error = function(error, data, expression) {
     this.toString = function() {
-	var error_file = data['this']._prototype + '/' + expression.replace(/this\.|\([^\)]*\)/g,'');
-	var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
+	var tal_error = <><html>
+	    <head>
+		<style type="text/css">
+		    /*<![CDATA[*/
+		    body{font-family:sans-serif}
+		    /*]]>*/
+		</style>
+	    </head>
+	    <body>
+	    <div style="border:1px dotted #999;margin:10px 0;padding:5px;">
 	    <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
 	    <h3 style="text-decoration:underline;">Exception Details</h3>
 	    <ul>
@@ -90,16 +103,12 @@ TAL.Error = function(error, data, expression) {
 	    <code>{data.node.toXMLString()}</code>
 	    </li>
 	    <li>
-	    <strong>Expression:</strong>
+	    <strong>Problem Expression:</strong>
 	    <code>{expression}</code>
 	    </li>
 	    <li>
-	    <strong>File With Issue:</strong>
-	    <code>{error_file}</code>
-	    </li>
-	    <li>
 	    <strong>Exception:</strong>
-	    <code>{error.toString()}</code>
+	    <code id="error"></code>
 	    </li>
 	    </ul>
 	    <h3 style="text-decoration:underline;">Additional Information</h3>
@@ -117,7 +126,10 @@ TAL.Error = function(error, data, expression) {
 	    <strong>Session:</strong>
 	    </li>
 	    </ul>
-	    </div></>;
+	    </div>
+	    </body>
+	    </html>
+	    </>;
 
 	function gen_list(o) {
 	    var ul = <><ul></ul></>;
@@ -141,7 +153,13 @@ TAL.Error = function(error, data, expression) {
 	tal_error..ul[1].li[2] += req_data;
 	tal_error..ul[1].li[3] += session_data;
 
-	return tal_error.toXMLString();
+	var code = tal_error..code.(@id=='error')[0];
+	if (error instanceof TAL.Error)
+	    code += error.toXMLString();
+	else
+	    code.appendChild(<>{error}</>);
+
+	return tal_error;
     };
 };
 
