@@ -426,6 +426,53 @@ axiom.Zip.extractData = function(stream) {
     return result;
 };
 
+/**
+ * Extract all files AND folders in a ByteArray passed as argument and return them as an Axiom.Zip.Content object.
+ * @param {java.lang.InputStream | java.lang.Byte[]} stream Either a java.lang.InputStream, sub-classes included, or a java.lang.Byte[] containing the data of the .zip file
+ * @returns {axiom.Zip.Content} An instance of axiom.Zip.Content
+ */
+axiom.Zip.extractDataWithFolders = function(stream) {
+    if (!stream) {
+	return null;
+    };
+
+    if (!(stream instanceof Packages.java.io.InputStream)) {
+	stream = new java.io.ByteArrayInputStream(stream);
+    };
+
+    var zInStream = new java.util.zip.ZipInputStream(stream);
+
+    if (!zInStream) {
+	return null;
+    };
+
+    var result = new axiom.Zip.Content();
+
+    var entry;
+    while ((entry = zInStream.getNextEntry()) != null) {
+		var tree = entry.toString().split('/');
+		var directory = tree.length > 1 ? tree[tree.length-2] : null;
+		var path = directory ? tree.splice(0, tree.length - 1).join('/') : null;
+        var eParam = new axiom.Zip.Entry(entry);
+        if (eParam.isDirectory) {
+            continue;
+		}
+        if (eParam.size == -1)
+            eParam.size = 16384;
+        var bos = new java.io.ByteArrayOutputStream(eParam.size);
+        var buf = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 8192);
+        var count;
+        while ((count = zInStream.read(buf)) != -1)
+            bos.write(buf, 0, count);
+        eParam.data = bos.toByteArray();
+        eParam.size = bos.size();
+		eParam.directory = directory;
+		eParam.path = path;
+        result.add(eParam);
+    }
+    zInStream.close();
+    return result;
+};
 
 axiom.lib = "Zip";
 axiom.dontEnum(axiom.lib);
