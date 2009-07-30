@@ -117,7 +117,7 @@ TAL.func = function (d, e) {
 	    return ul;
 	  }
 
-	  var scope_data = gen_list(data['this']);
+	  var scope_data = gen_list(d['this']);
 	  var params_data = gen_list(d);
 	  var req_data = gen_list(req.data);
 	  var session_data = gen_list(session.data);
