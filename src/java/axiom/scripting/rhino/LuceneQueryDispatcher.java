@@ -724,7 +724,7 @@ public class LuceneQueryDispatcher extends QueryDispatcher {
         if (filter instanceof FilterObject) {
             FilterObject fobj = (FilterObject) filter;
             Query filter_query = getFilterQuery(fobj, combined_props);
-            String analyzer = filter.jsFunction_getAnalyzer();
+            String analyzer = fobj.jsFunction_getAnalyzer();
             if (analyzer != null) {
                 QueryParser qp = new QueryParser(LuceneManager.ID, 
                         LuceneManager.getAnalyzer(analyzer));
