@@ -19,7 +19,7 @@
  * email: info@axiomsoftwareinc.com
  */
 
-importClass(Packages.org.mozilla.javascript.EcmaError,Packages.org.mozilla.javascript.RhinoException,Packages.org.mozilla.javascript.EvaluatorException);
+importClass(Packages.org.mozilla.javascript.WrappedException,Packages.org.mozilla.javascript.JavaScriptException,Packages.org.mozilla.javascript.EcmaError,Packages.org.mozilla.javascript.RhinoException,Packages.org.mozilla.javascript.EvaluatorException);
 
 /**
  * The global TAL function for rendering TAL/TALE documents.  This is called within
@@ -76,7 +76,10 @@ TAL.func = function (d, e) {
 	).call(d['this'],d);
     } catch (ex) {
 	if (ex instanceof TAL.Error) {
-	    throw ex.toString();
+	    var err = ex.toXML();
+	    var code = err..code.(@id=='error')[0];
+	    code.appendChild(<>{ex.getStackTrace()}</>);
+	    throw err.toString();
 	} else {
 	    throw new TAL.Error(ex, d, e);
 	}
@@ -84,19 +87,39 @@ TAL.func = function (d, e) {
 };
 
 TAL.Error = function(error, data, expression) {
-    this.toString = function() {
+    this.node = data.node;
+    this.expression = expression;
+    this.error = error;
+
+    this.getName = function() {
+	return 'TAL.Error';
+    };
+
+    this.getStackTrace = function() {
+	var method = 'getStackTrace';
+	if (this.error.getScriptStackTrace) {
+	    method = 'getScriptStackTrace';
+	}
+	if (!(this.error[method]))
+	    return this.error;
+	return this.error + this.error[method]();
+    };
+
+    this.toXML = function() {
 	var tal_error = <><html>
 	    <head>
 		<style type="text/css">
 		    /*<![CDATA[*/
 		    body{font-family:sans-serif}
+		    h1{padding:0 0 0 10px;margin:0 0 10px 0;background:#669933;color:#fff;}
+		    h3{text-decoration:underline;}
 		    /*]]>*/
 		</style>
 	    </head>
 	    <body>
 	    <div style="border:1px dotted #999;margin:10px 0;padding:5px;">
-	    <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
-	    <h3 style="text-decoration:underline;">Exception Details</h3>
+	    <h1>TALE Error</h1>
+	    <h3>Exception Details</h3>
 	    <ul>
 	    <li>
 	    <strong>Calling Node:</strong>
@@ -107,8 +130,8 @@ TAL.Error = function(error, data, expression) {
 	    <code>{expression}</code>
 	    </li>
 	    <li>
-	    <strong>Exception:</strong>
-	    <code id="error"></code>
+	    <strong>Stack Trace:</strong>
+	    <code id="error"> </code>
 	    </li>
 	    </ul>
 	    <h3 style="text-decoration:underline;">Additional Information</h3>
@@ -153,14 +176,10 @@ TAL.Error = function(error, data, expression) {
 	tal_error..ul[1].li[2] += req_data;
 	tal_error..ul[1].li[3] += session_data;
 
-	var code = tal_error..code.(@id=='error')[0];
-	if (error instanceof TAL.Error)
-	    code += error.toXMLString();
-	else
-	    code.appendChild(<>{error}</>);
-
 	return tal_error;
     };
+
+    return this;
 };
 
 TAL.TALE = function (n, data, tal) {
