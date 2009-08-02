@@ -2276,7 +2276,6 @@ public final class Application implements IPathElement, Runnable {
 			}
 			
 			String onStart = props.getProperty("onStart");
-                        System.out.println("onstarts: " + onStart);
 			if (onStart != null) {
 				for (String funcs : onStart.split(",")) {
 					this.onstartFunctions.add(funcs.trim());
