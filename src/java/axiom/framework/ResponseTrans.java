@@ -47,6 +47,9 @@ import org.mozilla.javascript.ScriptRuntimeWrapper;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.xmlimpl.XHTML;
+import org.mozilla.javascript.xmlimpl.XMLList;
+import org.mozilla.javascript.xmlimpl.XML;
 
 import axiom.framework.core.Application;
 import axiom.util.Base64;
@@ -230,17 +233,16 @@ public final class ResponseTrans extends Writer implements Serializable {
         	String className = jsobj.getClassName();
         	boolean is_html = (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList") || className.equalsIgnoreCase("XHTML"));
         	if (is_html) {
-        	    // allow bare ampersands within title tags and urls
-                String result = XmlUtils.objectToXMLString(jsobj);
-                if(is_html && this.contentType.startsWith("text/html")){
-                	Matcher urlAndTitleMatcher = Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(result);
-                	StringBuffer newResult = new StringBuffer();
-                	while(urlAndTitleMatcher.find()){
-                		urlAndTitleMatcher.appendReplacement(newResult, urlAndTitleMatcher.group(0).replaceAll("&amp;", "&").replaceAll("\\$", "\\\\\\$"));
-                	}
-                	urlAndTitleMatcher.appendTail(newResult);
-                	result = newResult.toString();
-                }
+        		String result = "";
+        		synchronized(jsobj){
+        			if(className.equalsIgnoreCase("XML")){
+        				result = ((XML) jsobj).toXMLString();	
+        			} else if(className.equalsIgnoreCase("XHTML")){
+        				result = ((XHTML) jsobj).toXMLString();	
+        			} else if(className.equalsIgnoreCase("XMLList")){
+        				result = ((XMLList) jsobj).toXMLString();	
+        			}
+        		}
         		String doctype = app.getProperty("doctype");
         		this.write(((doctype != null)?doctype+"\n":"\n")+result);
         	} else if (className.equalsIgnoreCase("String")) {
@@ -264,7 +266,7 @@ public final class ResponseTrans extends Writer implements Serializable {
     /**
      * Appends a javascript object to the response buffer, serialization is based on 
      */
-    public void write(Object obj, String doctype) {
+    public synchronized void write(Object obj, String doctype) {
     	Scriptable jsobj = (Scriptable)obj;
         if (jsobj != null && jsobj != Undefined.instance) {
         	String classname = jsobj.getClassName();
