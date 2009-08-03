@@ -1,153 +1,153 @@
 <?xml version="1.0"?>
 <project name="stack-trunk" default="all" basedir=".">
-    <!-- =================================================================== -->
-    <!-- Initializes some variables                                          -->
-    <!-- =================================================================== -->
-	
-    <property name="project" value="axiom"/>
-	<property name="home.dir" value="."/>
-	<property name="build.dir" value="${home.dir}/build"/>
-	<property name="lib.dir" value="${home.dir}/lib"/>
-	<property name="src.dir" value="${home.dir}/src"/>
-	<property name="apps.dir" value="${home.dir}/apps"/>
-	<property name="modules.dir" value="${home.dir}/modules"/>
-	<property name="jsdoc.dir" value="${home.dir}/doc"/>
-	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
-	<property name="utils.dir" value="${home.dir}/utils"/>
-	<property name="examples.dir" value="${home.dir}/examples"/>
-	<property name="axiom-jar.name" value="axiom.jar"/>
-	<property name="launcher-jar.name" value="launcher.jar"/>
-	<property name="js-jar.name" value="js.zip"/>
-	<property name="test.app" value="test"/>
-	<property environment="env"/>
+  <!-- =================================================================== -->
+  <!-- Initializes some variables                                          -->
+  <!-- =================================================================== -->
+  
+  <property name="project" value="axiom"/>
+  <property name="home.dir" value="."/>
+  <property name="build.dir" value="${home.dir}/build"/>
+  <property name="lib.dir" value="${home.dir}/lib"/>
+  <property name="src.dir" value="${home.dir}/src"/>
+  <property name="apps.dir" value="${home.dir}/apps"/>
+  <property name="modules.dir" value="${home.dir}/modules"/>
+  <property name="jsdoc.dir" value="${home.dir}/doc"/>
+  <property name="javadoc.dir" value="${home.dir}/javadoc"/>
+  <property name="utils.dir" value="${home.dir}/utils"/>
+  <property name="examples.dir" value="${home.dir}/examples"/>
+  <property name="axiom-jar.name" value="axiom.jar"/>
+  <property name="launcher-jar.name" value="launcher.jar"/>
+  <property name="js-jar.name" value="js.zip"/>
+  <property name="test.app" value="test"/>
+  <property environment="env"/>
 
-	
-	<path id="classpath">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar" />
-        </fileset>
-<!--         <fileset dir="${env.JAVA_HOME}/lib"> -->
-<!-- 	    	<include name="tools.jar"/> -->
-<!--         </fileset> -->
-	</path>
+  
+  <path id="classpath">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <!--         <fileset dir="${env.JAVA_HOME}/lib"> -->
+    <!-- 	    	<include name="tools.jar"/> -->
+    <!--         </fileset> -->
+  </path>
 
-	<target name="all" depends="build"/>
-	
-	<target name="init">
-		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.dir}/classes"/>
-    </target>
-	
-	<target name="clean">
-		<delete file="${home.dir}/${launcher-jar.name}"/>
-		<delete file="${lib.dir}/${axiom-jar.name}"/>
-		<delete file="${lib.dir}/${js-jar.name}"/>
-		<delete dir="${build.dir}"/>
-		<delete dir="${jsdoc.dir}"/>
-		<delete dir="${javadoc.dir}"/>
-	</target>
+  <target name="all" depends="build"/>
+  
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}/classes"/>
+  </target>
+  
+  <target name="clean">
+    <delete file="${home.dir}/${launcher-jar.name}"/>
+    <delete file="${lib.dir}/${axiom-jar.name}"/>
+    <delete file="${lib.dir}/${js-jar.name}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${jsdoc.dir}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
 
-	<target name="build" depends="clean, init">
-		<antcall target="jar"/>
-		<antcall target="jsdoc"/>
-		<antcall target="javadoc"/>
-	</target>
+  <target name="build" depends="clean, init">
+    <antcall target="jar"/>
+    <antcall target="jsdoc"/>
+    <antcall target="javadoc"/>
+  </target>
 
-	<target name="compile" depends="init">
-		<property name="deprecation" value="off"/>
-		<property name="debug" value="on"/>
-        <property name="optimize" value="on"/>
-		<property name="encoding" value="utf-8" /> 
+  <target name="compile" depends="init">
+    <property name="deprecation" value="off"/>
+    <property name="debug" value="on"/>
+    <property name="optimize" value="on"/>
+    <property name="encoding" value="utf-8" /> 
 
-		<javac srcdir="${src.dir}/java"
- 			encoding="${encoding}"
-	    	destdir="${build.dir}/classes"
-            debug="${debug}"
-            deprecation="${deprecation}"
-            optimize="${optimize}">
-            <classpath refid="classpath" />
-        </javac>
-	</target>
-	
-	<target name="jar" depends="compile" description="Packages the JAR file">
-		<!-- Build axiom.jar-->
-		<jar jarfile="${lib.dir}/${axiom-jar.name}"
-            basedir="${build.dir}/classes"
-	    	excludes="**/test/**, **/main/launcher/**"/>
+    <javac srcdir="${src.dir}/java"
+ 	   encoding="${encoding}"
+	   destdir="${build.dir}/classes"
+	   debug="${debug}"
+	   deprecation="${deprecation}"
+	   optimize="${optimize}">
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+  
+  <target name="jar" depends="compile" description="Packages the JAR file">
+    <!-- Build axiom.jar-->
+    <jar jarfile="${lib.dir}/${axiom-jar.name}"
+	 basedir="${build.dir}/classes"
+	 excludes="**/test/**, **/main/launcher/**"/>
 
-		<!-- build js.zip -->
-		<zip compress="false" destfile="${lib.dir}/js.zip" 
-		     basedir="${src.dir}/js"/>
+    <!-- build js.zip -->
+    <zip compress="false" destfile="${lib.dir}/js.zip" 
+	 basedir="${src.dir}/js"/>
 
-		<!-- Build launcher.jar -->
-		<jar jarfile="${home.dir}/${launcher-jar.name}"
-            basedir="${build.dir}/classes"
-            includes="**/main/launcher/**"
-            manifest="${src.dir}/java/axiom/main/launcher/manifest.txt"/>
-	</target>
+    <!-- Build launcher.jar -->
+    <jar jarfile="${home.dir}/${launcher-jar.name}"
+         basedir="${build.dir}/classes"
+         includes="**/main/launcher/**"
+         manifest="${src.dir}/java/axiom/main/launcher/manifest.txt"/>
+  </target>
 
-	<target name="test">
-		<delete failonerror="false" ><fileset dir="${home.dir}/db" /></delete>
-		
-		<move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
+  <target name="test">
+    <delete failonerror="false" ><fileset dir="${home.dir}/db" /></delete>
+    
+    <move file="${apps.dir}/${test.app}/app.properties.test" tofile="${apps.dir}/${test.app}/app.properties"/>
 
-		<move todir="${apps.dir}" includeemptydirs="false">
-			<fileset dir="${apps.dir}" casesensitive="yes">
-				<exclude name="**/${test.app}/*"/>
-				<include name="**/app.properties"/>
-			</fileset>
-			<mapper type="glob" from="*" to="*.testing"/>
-		</move>
+    <move todir="${apps.dir}" includeemptydirs="false">
+      <fileset dir="${apps.dir}" casesensitive="yes">
+	<exclude name="**/${test.app}/*"/>
+	<include name="**/app.properties"/>
+      </fileset>
+      <mapper type="glob" from="*" to="*.testing"/>
+    </move>
 
-		<antcall target="clean">
-			<param name="version" value="${java_version}"/>
-		</antcall>	
-				
-		<antcall target="jar">
-			<param name="version" value="${java_version}"/>
-		</antcall>		
+    <antcall target="clean">
+      <param name="version" value="${java_version}"/>
+    </antcall>	
+    
+    <antcall target="jar">
+      <param name="version" value="${java_version}"/>
+    </antcall>		
 
-		<java jar="${home.dir}/launcher.jar" fork="true" timeout="150000">
-			<sysproperty key="file.encoding" value="UTF-8"/>
-			<sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
-			<arg line="-w 8081 -h ${home.dir}"/>
-		</java>
+    <java jar="${home.dir}/launcher.jar" fork="true" timeout="150000">
+      <sysproperty key="file.encoding" value="UTF-8"/>
+      <sysproperty key="org.apache.lucene.FSDirectory.class" value="org.apache.lucene.store.TransFSDirectory"/>
+      <arg line="-w 8081 -h ${home.dir}"/>
+    </java>
 
-		<move todir="${apps.dir}" includeemptydirs="false">
-			<fileset dir="${apps.dir}" casesensitive="yes">
-				<exclude name="**/${test.app}/*"/>
-				<include name="**/app.properties.testing"/>
-			</fileset>
-			<mapper type="glob" from="*.testing" to="*"/>
-		</move>
+    <move todir="${apps.dir}" includeemptydirs="false">
+      <fileset dir="${apps.dir}" casesensitive="yes">
+	<exclude name="**/${test.app}/*"/>
+	<include name="**/app.properties.testing"/>
+      </fileset>
+      <mapper type="glob" from="*.testing" to="*"/>
+    </move>
 
-		<move file="${apps.dir}/test/app.properties" tofile="${apps.dir}/${test.app}/app.properties.test"/>
+    <move file="${apps.dir}/test/app.properties" tofile="${apps.dir}/${test.app}/app.properties.test"/>
 
-	</target>
+  </target>
 
-	<target name="javadoc">
-		<javadoc sourcepath="${src.dir}/java" 
-			destdir="${javadoc.dir}" 
-			packagenames="*" 
-			classpathref="classpath"/>
-	</target>
+  <target name="javadoc">
+    <javadoc sourcepath="${src.dir}/java" 
+	     destdir="${javadoc.dir}" 
+	     packagenames="*" 
+	     classpathref="classpath"/>
+  </target>
 
-	<target name="jsdoc" depends="compile">
-		<javadoc 
-			doclet="axiom.util.JSDoclet" 
-			docletpath="${build.dir}/classes/" 
-			sourcepath="${src.dir}/java"
-			classpathref="classpath">
-			<packageset dir="${src.dir}/java" defaultexcludes="yes">
-				<include name="axiom/**"/>
-			</packageset>
-		</javadoc>
+  <target name="jsdoc" depends="compile">
+    <javadoc 
+       doclet="axiom.util.JSDoclet" 
+       docletpath="${build.dir}/classes/" 
+       sourcepath="${src.dir}/java"
+       classpathref="classpath">
+      <packageset dir="${src.dir}/java" defaultexcludes="yes">
+	<include name="axiom/**"/>
+      </packageset>
+    </javadoc>
 
-		<java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
-			<arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${jsdoc.dir} alldoc.js ${src.dir}/js/Global"/>
-		</java>
-		
-		<delete file="alldoc.js"/>
-	</target>
+    <java jar="${utils.dir}/jsdoc-toolkit/jsrun.jar" fork="true">
+      <arg line="${utils.dir}/jsdoc-toolkit/app/run.js -t=${utils.dir}/jsdoc-toolkit/templates/jsdoc/ -d=${jsdoc.dir} alldoc.js ${src.dir}/js/Global"/>
+    </java>
+    
+    <delete file="alldoc.js"/>
+  </target>
 
 </project>
