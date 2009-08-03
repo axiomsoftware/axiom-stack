@@ -222,11 +222,11 @@ public class ResourceProperties extends Properties {
             							dir = pathPrefix + dir; 
             						} 
             						temp.setProperty("static." + staticDirs++, dir);
-            					} else if (key.equalsIgnoreCase("onStart")) { 
+            					} else if (key.equalsIgnoreCase("onStart")) {
             						String currOnStart = temp.getProperty(key);
             						String value = curr.getProperty(key);
             						if (currOnStart != null) {
-            							value = currOnStart + "," + value;
+            							value = value + "," + currOnStart;
             						}
             						temp.setProperty(key, value);
             					} else {
