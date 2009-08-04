@@ -62,80 +62,105 @@ TAL.namespace_transform = function(doc, ns_transform){
     return doc;
 }
 
-TAL.Scope = function () {;}
+TAL.Scope = function () {;};
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
     try {
-	return (new Function('data', 'with(data) {return '+e+';}')).call(d['this'],d);
+	return (
+	    new Function(
+		'data',
+		'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+e+'"); }'
+	    )
+	).call(d['this'],d);
     } catch (ex) {
 	if (ex instanceof TAL.Error) {
-	    throw ex;
+	    throw ex.toString();
 	} else {
-	  var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
-		  <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
-		  <h3 style="text-decoration:underline;">Exception Details</h3>
-		  <ul>
-		    <li>
-		      <strong>Node:</strong>
-		      <code>{d.node.toXMLString()}</code>
-		    </li>
-		    <li>
-		      <strong>Expression:</strong>
-		      <code>{e}</code>
-		    </li>
-		    <li>
-		      <strong>Exception:</strong>
-		      <code>{ex.toString()}</code>
-		    </li>
-		  </ul>
-		  <h3 style="text-decoration:underline;">Additional Information</h3>
-		  <ul>
-		    <li name="scope">
-		      <strong>Rendering Context:</strong>
-		    </li>
-		    <li>
-		      <strong>Parameters:</strong>
-		    </li>
-		    <li>
-		      <strong>Request:</strong>
-		    </li>
-		    <li>
-		      <strong>Session:</strong>
-		    </li>
-		</ul>
-	    </div></>;
-
-	  function gen_list(o) {
-	    var ul = <><ul></ul></>;
-	    for (var p in o) {
-	      var p_data = o[p];
-	      ul.ul += <><li>
-		<strong>{p}:</strong>
-		<code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
-	      </li></>;
-	    }
-	    return ul;
-	  }
-
-	  var scope_data = gen_list(d['this']);
-	  var params_data = gen_list(d);
-	  var req_data = gen_list(req.data);
-	  var session_data = gen_list(session.data);
-
-	  tal_error..ul[1].li[0] += scope_data;
-	  tal_error..ul[1].li[1] += params_data;
-	  tal_error..ul[1].li[2] += req_data;
-	  tal_error..ul[1].li[3] += session_data;
-	    throw new TAL.Error(
-		tal_error.toXMLString()
-	    );
+	    throw new TAL.Error(ex, d, e);
 	}
     }
-}
+};
 
-TAL.Error = function(str) {
+TAL.Error = function(error, data, expression) {
     this.toString = function() {
-	return str;
+	var tal_error = <><html>
+	    <head>
+		<style type="text/css">
+		    /*<![CDATA[*/
+		    body{font-family:sans-serif}
+		    h1{padding:0 0 0 5px;margin:0 0 10px 0;background:#669933;color:#fff;}
+		    h3{text-decoration:underline;}
+		    /*]]>*/
+		</style>
+	    </head>
+	    <body>
+	    <div style="border:1px dotted #999;margin:10px 0;padding:5px;">
+	    <h1>TALE Error</h1>
+	    <h3>Exception Details</h3>
+	    <ul>
+	    <li>
+	    <strong>Calling Node:</strong>
+	    <code>{data.node.toXMLString()}</code>
+	    </li>
+	    <li>
+	    <strong>Problem Expression:</strong>
+	    <code>{expression}</code>
+	    </li>
+	    <li>
+	    <strong>Exception:</strong>
+	    <code id="error"></code>
+	    </li>
+	    </ul>
+	    <h3>Additional Information</h3>
+	    <ul>
+	    <li name="scope">
+	    <strong>Rendering Context:</strong>
+	    </li>
+	    <li>
+	    <strong>Parameters:</strong>
+	    </li>
+	    <li>
+	    <strong>Request:</strong>
+	    </li>
+	    <li>
+	    <strong>Session:</strong>
+	    </li>
+	    </ul>
+	    </div>
+	    </body>
+	    </html>
+	    </>;
+
+	function gen_list(o) {
+	    var ul = <><ul></ul></>;
+	    for (var p in o) {
+		var p_data = o[p];
+		ul.ul += <><li>
+		    <strong>{p}:</strong>
+		    <code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
+		    </li></>;
+	    }
+	    return ul;
+	}
+
+	var scope_data = gen_list(data['this']);
+	var params_data = gen_list(data);
+	var req_data = gen_list(req.data);
+	var session_data = gen_list(session.data);
+
+	tal_error..ul[1].li[0] += scope_data;
+	tal_error..ul[1].li[1] += params_data;
+	tal_error..ul[1].li[2] += req_data;
+	tal_error..ul[1].li[3] += session_data;
+
+	var code = tal_error..code.(@id=='error')[0];
+	if (error instanceof TAL.Error) {
+	    code += error.toXMLString();
+	} else {
+	    code.appendChild(<>{error}</>);
+	}
+
+	return tal_error;
     };
 };
 
