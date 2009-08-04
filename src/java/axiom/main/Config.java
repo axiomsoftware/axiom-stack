@@ -29,9 +29,9 @@ public class Config {
 	    InetAddrPort xmlrpcPort = null;
 	    InetAddrPort ajp13Port  = null;
 	 */
-	String websrvPort = null; 
-    File         propFile   = null;
-    File         homeDir    = null;
+	public String websrvPort = null; 
+    public File   propFile   = null;
+    public File   homeDir    = null;
 
     public boolean hasPropFile() {
         return (propFile != null);

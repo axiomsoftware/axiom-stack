@@ -9,6 +9,7 @@
   <property name="build.dir" value="${home.dir}/build"/>
   <property name="lib.dir" value="${home.dir}/lib"/>
   <property name="src.dir" value="${home.dir}/src"/>
+  <property name="test.dir" value="${home.dir}/test"/>
   <property name="apps.dir" value="${home.dir}/apps"/>
   <property name="modules.dir" value="${home.dir}/modules"/>
   <property name="jsdoc.dir" value="${home.dir}/doc"/>
@@ -21,7 +22,13 @@
   <property name="test.app" value="test"/>
   <property environment="env"/>
 
+  <!-- compile variables -->  
+  <property name="deprecation" value="off"/>
+  <property name="debug" value="on"/>
+  <property name="optimize" value="on"/>
+  <property name="encoding" value="utf-8" /> 
   
+
   <path id="classpath">
     <fileset dir="${lib.dir}">
       <include name="**/*.jar" />
@@ -36,6 +43,7 @@
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}/test-classes"/>
   </target>
   
   <target name="clean">
@@ -54,11 +62,6 @@
   </target>
 
   <target name="compile" depends="init">
-    <property name="deprecation" value="off"/>
-    <property name="debug" value="on"/>
-    <property name="optimize" value="on"/>
-    <property name="encoding" value="utf-8" /> 
-
     <javac srcdir="${src.dir}/java"
  	   encoding="${encoding}"
 	   destdir="${build.dir}/classes"
@@ -69,6 +72,37 @@
     </javac>
   </target>
   
+  <target name="junit-compile" depends="init, compile">
+    <javac srcdir="${test.dir}"
+ 	   encoding="${encoding}"
+	   destdir="${build.dir}/test-classes"
+	   debug="${debug}"
+	   deprecation="${deprecation}"
+	   optimize="${optimize}">
+      <classpath>
+	<pathelement location="${build.dir}/classes"/>
+      </classpath>
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="junit" depends="junit-compile">
+    <junit showoutput="yes" printsummary="yes">
+      <classpath>
+	<pathelement location="${build.dir}/classes"/>
+	<pathelement location="${build.dir}/test-classes"/>
+      </classpath>
+      <classpath refid="classpath" />
+      <formatter type="plain"/>
+      <batchtest todir="test-results">
+	<fileset dir="${test.dir}">
+	  <include name="**/*Test*.java"/>
+	</fileset>
+      </batchtest>
+    </junit>
+
+  </target>
+
   <target name="jar" depends="compile" description="Packages the JAR file">
     <!-- Build axiom.jar-->
     <jar jarfile="${lib.dir}/${axiom-jar.name}"

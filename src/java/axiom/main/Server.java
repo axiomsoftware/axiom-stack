@@ -112,13 +112,10 @@ public class Server implements IPathElement, Runnable {
         starttime = System.currentTimeMillis();
         websrvPort = config.websrvPort;
         if (websrvPort == null) {
-            try {
                 websrvPort = "8080";
-            } catch (Exception ignore) {
-            }
         }
         
-        axiomHome    = config.homeDir;
+        axiomHome = config.homeDir;
 
         // create system properties
         sysProps = new ResourceProperties();
