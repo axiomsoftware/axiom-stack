@@ -157,7 +157,11 @@ TAL.Error = function(error, data, expression) {
 	if (error instanceof TAL.Error) {
 	    code += error.toXMLString();
 	} else {
-	    code.appendChild(<>{error}</>);
+	    var error_message = error;
+	    if (!(error.toXMLString))
+		error_message = error_message.toString();
+	    
+	    code.appendChild(<>{error_message}</>);
 	}
 
 	return tal_error;
