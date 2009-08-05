@@ -150,7 +150,7 @@
 		<delete file="alldoc.js"/>
 	</target>
 	<target name="loadtest">
-		<exec executable="/opt/jmeter/bin/jmeter"
+		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
 			<arg value="-t"/>
 			<arg value="utils/loadtest-basic.jmx"/>
