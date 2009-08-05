@@ -149,5 +149,16 @@
 		
 		<delete file="alldoc.js"/>
 	</target>
+	<target name="loadtest">
+		<exec executable="/opt/jmeter/bin/jmeter"
+			<arg value="-n"/>
+			<arg value="-t"/>
+			<arg value="utils/loadtest-basic.jmx"/>
+			<arg value="-p"/>
+			<arg value="/opt/jmeter/bin/jmeter.properties"/>
+			<arg value="-l"/>
+			<arg value="output.xml"/>
+		</exec>
+	</target>
 
 </project>
