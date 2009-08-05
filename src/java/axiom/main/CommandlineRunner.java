@@ -19,7 +19,10 @@ package axiom.main;
 import java.io.File;
 import java.util.*;
 
+import axiom.framework.RequestTrans;
+import axiom.framework.ResponseTrans;
 import axiom.framework.core.Application;
+import axiom.framework.core.Session;
 
 /**
  *  Axiom command line runner class. This class creates and starts a single application,
@@ -93,22 +96,21 @@ public class CommandlineRunner {
 
         // execute the function
         try {
-            Object result = app.executeExternal(function, funcArgs);
-            if (result != null) {
-                System.out.println(result.toString());
-            }
+        	RequestTrans req = new RequestTrans("/home", "main");
+        	Session session = new Session("0", app);
+        	ResponseTrans result = app.getEvaluator().invokeHttp(req, session);
+        	int contentLength = result.getContentLength();
+        	System.out.println("content-length: "+ contentLength);
+        	System.out.println("status: "+result.getStatus());
         } catch (Exception ex) {
             System.out.println("Error in application " + appName + ":");
             System.out.println(ex.getMessage());
-            if ("true".equals(server.getProperty("debug"))) {
-                System.out.println("");
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
 
         // stop the application
         server.stopApplication(appName);
-
+        server.stop();
     }
 
     
