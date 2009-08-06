@@ -1109,6 +1109,8 @@ public final class Application implements IPathElement, Runnable {
 			// get evaluator and invoke
 			ev = getEvaluator();
 			retval = ev.invokeExternal(method, args.toArray());
+		} catch(Exception e){
+			e.printStackTrace();
 		} finally {
 			releaseEvaluator(ev);
 		}

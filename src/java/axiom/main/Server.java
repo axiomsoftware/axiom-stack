@@ -583,6 +583,12 @@ public class Server implements IPathElement, Runnable {
     	}
     }
     
+    public void startApplications(){
+    	if(this.appManager != null){
+    		this.appManager.startAll();
+    	}
+    }
+    
     /**
      *  The main method of the Server. Basically, we set up Applications and than
      *  periodically check for changes in the apps.properties file, shutting down

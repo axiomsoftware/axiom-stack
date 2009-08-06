@@ -1093,7 +1093,7 @@ public final class RequestEvaluator implements Runnable {
     public synchronized Transactor getThread() {
         return rtx;
     }
-
+    
     /**
      * Return the current session
      *
