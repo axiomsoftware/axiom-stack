@@ -234,6 +234,10 @@ public class TransSource {
     public String getHostId() {
         return this.hostId;
     }
+    
+    public ResourceProperties getProperties() {
+        return this.props;
+    }
 
     public boolean checkConnection(Connection conn) {
         boolean validConn = false;
