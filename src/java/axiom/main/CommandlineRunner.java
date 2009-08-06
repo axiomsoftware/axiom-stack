@@ -79,7 +79,7 @@ public class CommandlineRunner {
         String function = null;
         // now split application name + path/function-name
         try {
-            int pos1 = commandStr.indexOf(".");
+            int pos1 = commandStr.indexOf(":");
             appName = commandStr.substring(0, pos1);
             function = commandStr.substring(pos1+1);
         } catch (Exception ex) {
@@ -96,12 +96,14 @@ public class CommandlineRunner {
 
         // execute the function
         try {
-        	RequestTrans req = new RequestTrans("/home", "main");
+        	RequestTrans req = new RequestTrans("GET", "");
         	Session session = new Session("0", app);
         	ResponseTrans result = app.getEvaluator().invokeHttp(req, session);
+        	result.close();
         	int contentLength = result.getContentLength();
         	System.out.println("content-length: "+ contentLength);
         	System.out.println("status: "+result.getStatus());
+        	System.out.println(new String(result.getContent()));
         } catch (Exception ex) {
             System.out.println("Error in application " + appName + ":");
             System.out.println(ex.getMessage());
@@ -111,6 +113,7 @@ public class CommandlineRunner {
         // stop the application
         server.stopApplication(appName);
         server.stop();
+        System.exit(0);
     }
 
     

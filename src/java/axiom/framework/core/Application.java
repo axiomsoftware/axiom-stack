@@ -755,8 +755,8 @@ public final class Application implements IPathElement, Runnable {
 		// invoke global onStop() function
 		RequestEvaluator eval = null;
 		try {
-			eval = getEvaluator();
-			eval.invokeInternal(null, "onStop", RequestEvaluator.EMPTY_ARGS);
+			//eval = getEvaluator();
+			//eval.invokeInternal(null, "onStop", RequestEvaluator.EMPTY_ARGS);
 		} catch (Exception x) {
 			logError("Error in " + name + "onStop()", x);
 		} 
