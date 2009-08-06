@@ -137,7 +137,7 @@ TAL.Error = function(error, data, expression) {
 		var p_data = o[p];
 		ul.ul += <><li>
 		    <strong>{p}:</strong>
-		    <code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
+		    <code>{((p_data && (typeof p_data != "string") && (p_data.toSource))?p_data.toSource():p_data)}</code>
 		    </li></>;
 	    }
 	    return ul;
@@ -160,7 +160,7 @@ TAL.Error = function(error, data, expression) {
 	    var error_message = error;
 	    if (!(error.toXMLString))
 		error_message = error_message.toString();
-	    
+
 	    code.appendChild(<>{error_message}</>);
 	}
 
