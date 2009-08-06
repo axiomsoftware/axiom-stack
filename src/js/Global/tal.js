@@ -76,7 +76,7 @@ TAL.func = function (d, e) {
 	if (ex instanceof TAL.Error) {
 	    throw ex.toString();
 	} else {
-	    throw new TAL.Error(ex, d, e);
+	    throw new TAL.Error(ex, d, e).toString();
 	}
     }
 };
