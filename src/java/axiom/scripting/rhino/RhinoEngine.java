@@ -628,22 +628,24 @@ public class RhinoEngine implements ScriptingEngine {
     
     private Object toCachableResult(Object result, Scriptable obj) {
         Object ret = null;
-        if (result instanceof String) {
-            ret = (String) result;
-        } else {
-            String className = result.getClass().getSimpleName();
-            String doctype = app.getProperty("doctype");
-            doctype = (doctype != null) ? doctype+"\n" : "";
-            if(className.equalsIgnoreCase("XML")){
-            	ret = doctype+((XML) result).toXMLString();	
-            } else if(className.equalsIgnoreCase("XHTML")){
-            	ret = doctype+((XHTML) result).toXMLString();	
-            } else if(className.equalsIgnoreCase("XMLList")){
-            	ret = doctype+((XMLList) result).toXMLString();	
+        if (result != null) {
+            if (result instanceof String) {
+                ret = (String) result;
             } else {
-            	ret = result;
+                //String className = result.getClass().getSimpleName();
+                String doctype = app.getProperty("doctype");
+                doctype = (doctype != null) ? doctype+"\n" : "";
+                if (result instanceof XML){
+                    ret = doctype+((XML) result).toXMLString();
+                } else if (result instanceof XHTML) {
+                    ret = doctype+((XHTML) result).toXMLString();
+                } else if (result instanceof XMLList){
+                    ret = doctype+((XMLList) result).toXMLString();
+                } else {
+                    ret = result;
+                }
             }
-        }        
+        }
         return ret;
     }
     
