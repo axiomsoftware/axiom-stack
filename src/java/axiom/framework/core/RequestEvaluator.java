@@ -227,6 +227,7 @@ public final class RequestEvaluator implements Runnable {
                             // If function doesn't exist, return immediately
                             if (functionName.indexOf('.') < 0 &&
                                     !scriptingEngine.hasFunction(thisObject, functionName)) {
+                            	app.logEvent(" --- requestevaluator::run function doesn't exit, breaking");
                             	done = true;
                                 reqtype = NONE;
                                 break;

@@ -19,10 +19,14 @@ package axiom.main;
 import java.io.File;
 import java.util.*;
 
+import org.mozilla.javascript.Scriptable;
+
 import axiom.framework.RequestTrans;
 import axiom.framework.ResponseTrans;
 import axiom.framework.core.Application;
+import axiom.framework.core.RequestEvaluator;
 import axiom.framework.core.Session;
+import axiom.scripting.rhino.RhinoEngine;
 
 /**
  *  Axiom command line runner class. This class creates and starts a single application,
@@ -45,6 +49,7 @@ public class CommandlineRunner {
 
         Config config = new Config();
         String commandStr = null;
+        String appName = null;
         Vector<String> funcArgs = new Vector<String>();
     
         // get possible environment setting for Axiom home
@@ -61,6 +66,8 @@ public class CommandlineRunner {
             } else if (commandStr != null) {
                 // we're past the command str, all args for the function
                 funcArgs.add (args[i]);
+            } else if (args[i].equals("-a") && ((i + 1) < args.length)) {
+                appName = args[++i];
             } else if ((i%2)==0 && !args[i].startsWith("-")) {
                 // first argument without a switch
                 commandStr = args[i];
@@ -75,17 +82,12 @@ public class CommandlineRunner {
             System.exit(1);
         }
 
-        String appName = null;
         String function = null;
         // now split application name + path/function-name
-        try {
-            int pos1 = commandStr.indexOf(":");
-            appName = commandStr.substring(0, pos1);
-            function = commandStr.substring(pos1+1);
-        } catch (Exception ex) {
-            printUsageError();
+        if(appName == null || commandStr == null){
+        	printUsageError();
             System.exit(1);
-        }
+        } 
 
         // init a server instance and start the application
         Server server = new Server(config);
@@ -96,14 +98,17 @@ public class CommandlineRunner {
 
         // execute the function
         try {
-        	RequestTrans req = new RequestTrans("GET", "");
-        	Session session = new Session("0", app);
-        	ResponseTrans result = app.getEvaluator().invokeHttp(req, session);
-        	result.close();
-        	int contentLength = result.getContentLength();
-        	System.out.println("content-length: "+ contentLength);
-        	System.out.println("status: "+result.getStatus());
-        	System.out.println(new String(result.getContent()));
+        	if(commandStr.startsWith("/")){
+        		System.out.println("fetching request for '"+commandStr+"'");
+        		ResponseTrans result = app.invokeHttp("GET", commandStr.substring(1));
+            	int contentLength = result.getContentLength();
+            	System.out.println("content-length: "+ contentLength);
+            	System.out.println("status: "+result.getStatus());
+            	System.out.println(new String(result.getContent()));
+        	} else {
+        		System.out.println("running global function '"+commandStr+"'");
+        		System.out.println(app.invokeGlobal(commandStr));
+        	}
         } catch (Exception ex) {
             System.out.println("Error in application " + appName + ":");
             System.out.println(ex.getMessage());
@@ -134,11 +139,12 @@ public class CommandlineRunner {
         System.out.println("");
         System.out.println("Error parsing command");
         System.out.println("");
-        System.out.println("Usage: java axiom.main.launcher.Commandline [options] [appname].[function] [argument-list]");
+        System.out.println("Usage: java axiom.main.launcher.Commandline [options] -a [appname] [function] [argument-list]");
         System.out.println("");
         System.out.println("Possible options:");
         System.out.println("  -h dir       Specify axiom home directory");
         System.out.println("  -f file      Specify server.properties file");
+        System.out.println("  -a file      Specify application name");
         System.out.println("");
     }
 

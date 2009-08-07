@@ -755,8 +755,8 @@ public final class Application implements IPathElement, Runnable {
 		// invoke global onStop() function
 		RequestEvaluator eval = null;
 		try {
-			//eval = getEvaluator();
-			//eval.invokeInternal(null, "onStop", RequestEvaluator.EMPTY_ARGS);
+			eval = getEvaluator();
+			eval.invokeInternal(null, "onStop", RequestEvaluator.EMPTY_ARGS);
 		} catch (Exception x) {
 			logError("Error in " + name + "onStop()", x);
 		} 
@@ -1552,6 +1552,33 @@ public final class Application implements IPathElement, Runnable {
 		return debug;
 	}
 
+	/**
+	 * Invoke a minimal simulated http path request, with a new session
+	 * @param path Path to simulate request for
+	 * @param method http method, (e.g. GET, POST, etc)
+	 * @return The ResponseTrans written to by the RequestEvaluator
+	 * @throws Exception
+	 */
+	public ResponseTrans invokeHttp(String method, String path) throws Exception {
+		RequestTrans req = new RequestTrans(method, path);
+    	Session session = new Session("0", this);
+    	ResponseTrans result = getEvaluator().invokeHttp(req, session);
+    	result.close();
+    	return result;
+	}
+	
+	/**
+	 * Invoke a global function by name
+	 * @param functionName name of function to be invoked
+	 * @return Object returned by function invocation
+	 * @throws Exception
+	 */
+	public Object invokeGlobal(String functionName) throws Exception{
+		RequestEvaluator evaluator = getEvaluator();
+    	Scriptable global = ((RhinoEngine) evaluator.getScriptingEngine()).getGlobal();
+    	return evaluator.invokeInternal(global, functionName, new Object[]{});
+	}
+	
 	/**
 	 *  Utility function invoker for the methods below. This *must* be called
 	 *  by an active RequestEvaluator thread.

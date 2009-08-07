@@ -36,6 +36,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 
 import axiom.framework.ErrorReporter;
+import axiom.framework.RequestTrans;
+import axiom.framework.ResponseTrans;
 import axiom.framework.repository.FileRepository;
 import axiom.framework.repository.Repository;
 import axiom.framework.repository.Resource;
@@ -1379,8 +1381,21 @@ public class ApplicationBean implements Serializable {
     public void setMaxThreads(int n) {
         // add one to the number to compensate for the internal scheduler.
         app.setNumberOfEvaluators(n + 1);
+ 
     }
     
+	/**
+	 * Invoke a minimal simulated http path request, with a new session
+	 * @param path Path to simulate request for
+	 * @param method http method, (e.g. GET, POST, etc)
+	 * @return The ResponseTrans written to by the RequestEvaluator
+	 * @jsfunction
+	 * @throws Exception
+	 */
+	public ResponseTrans invokeHttp(String path, String method) throws Exception {
+    	return app.invokeHttp(path, method);
+	}
+	
     /**
      * App's toString() method.
      *
