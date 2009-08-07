@@ -65,11 +65,12 @@ TAL.namespace_transform = function(doc, ns_transform){
 TAL.Scope = function () {;};
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
+  var q_e = e.toString().replace(/"/g, '\\"');
     try {
 	return (
 	    new Function(
 		'data',
-		'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+e+'"); }'
+	      'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+q_e+'"); }'
 	    )
 	).call(d['this'],d);
     } catch (ex) {
@@ -182,7 +183,7 @@ TAL.TALE = function (n, data, tal) {
                         TAL.Scope.prototype = data;
                         var repeat_data = new TAL.Scope();
                         repeat_data[l] = collection[k];
-                        if(!repeat_data['repeat']) repeat_data['repeat'] = {}
+			if(!repeat_data['repeat']) repeat_data['repeat'] = {};
                         repeat_data['repeat'][l] = new TAL.Repeat(k, collection.length);
                         p.insertChildBefore(n, n.copy());
                         TAL.TALE(p.*[n.childIndex()-1], repeat_data, tal);
@@ -266,7 +267,10 @@ TAL.TALE = function (n, data, tal) {
                 delete n.@tal::text;
                 for each(var t in n.text()){
 		    var text_str = t.toXMLString();
-                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
+                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r,
+		    function(m,m1,m2){
+		      return TAL.func(data, m1||m2);
+		    })).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
             }
         }
         if((tn=n.@tal::omit).length()) {
