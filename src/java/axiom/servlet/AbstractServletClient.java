@@ -433,9 +433,15 @@ public abstract class AbstractServletClient extends HttpServlet {
             StringBuffer loc = new StringBuffer(scheme);
 
             loc.append("://");
-            loc.append(req.getServerName());
+            String hostname = req.getServerName();
+            boolean forwarded = false;
+            if (req.getHeader("X-Forwarded-Host") != null) {
+                hostname = req.getHeader("X-Forwarded-Host");
+                forwarded = true;
+            }
+            loc.append(hostname);
 
-            int p = req.getServerPort();
+            int p = (!forwarded)?req.getServerPort():80;
 
             // check if we need to include server port
             if ((p > 0) &&
