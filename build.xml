@@ -149,15 +149,33 @@
 		
 		<delete file="alldoc.js"/>
 	</target>
-	<target name="loadtest-tsung">
+
+	<target name="loadtest-start">
 		<exec executable="./start.sh" spawn="true"/>
 		<exec executable="sleep">
-			<arg value="60"/>
+			<arg value="10"/>
 		</exec>
-		<exec executable="utils/tsung_ctl.sh"/>
 	</target>
 
-	<target name="loadtest-jmeter">
+	<target name="loadtest-tsung-cached" depends="loadtest-start">
+		<exec executable="utils/tsung_ctl.sh">
+			<env key="OUTPUT_PREFIX" value="tsung-cached"/>
+			<env key="TSUNG_LOG" value="tsunglog-cached"/>
+			<env key="TSUNG_TIME" value="4"/>
+			<env key="TSUNG_CONFIG" value="loadtesting/tsung/tsung-cached.xml"/>
+		</exec>
+	</target>
+
+	<target name="loadtest-tsung-notcached" depends="loadtest-start">
+		<exec executable="utils/tsung_ctl.sh">
+			<env key="OUTPUT_PREFIX" value="tsung-notcached"/>
+			<env key="TSUNG_LOG" value="tsunglog-notcached"/>
+			<env key="TSUNG_TIME" value="4"/>
+			<env key="TSUNG_CONFIG" value="loadtesting/tsung/tsung-notcached.xml"/>
+		</exec>
+	</target>
+
+	<target name="loadtest-jmeter" depends="loadtest-start">
 		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
 			<arg line="-t loadtesting/jmeter/basic.jmx"/>

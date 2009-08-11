@@ -34,7 +34,7 @@
 <match do="continue" when="match">
 WHATS NEW
 </match>
-<http url='http://localhost:8080/' version='1.1' method='GET'>
+<http url='http://10.0.1.129:8080/loadtest/notcached' version='1.1' method='GET'>
 </http>
 </request>
 </session>

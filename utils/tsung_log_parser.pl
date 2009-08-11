@@ -30,15 +30,15 @@ foreach $line (<logfile>) {
 		$line =~ s/^stats\: //g;
 		@line_split = split(/ /,$line);
 		switch($line){
-			case (/^200/) { 
+			case (/^2[0-9][0-9]/) { 
 				push(@r200A, $line); 
 				$r200 = $line_split[2]; 
 			}
-			case (/^400/) {  
+			case (/^4[0-9][0-9]/) {  
 				push(@r400A, $line); 
 				$r400 = $line_split[2]; 
 			}
-			case (/^500/) {  
+			case (/^5[0-9][0-9]/) {  
 				push(@r500A, $line); 
 				$r500 = $line_split[2]; 
 			}

@@ -4,10 +4,12 @@
 #	CLIENT_1 (optionally CLIENT_2) = client machines running tsung
 #	TSUNG_CONFIG = path to tsung config file to use
 #	TSUNG_TIME = time to let tsung run for before stopping
+#	OUTPUT_PREFIX = prefix to name output files (log and stats)
 
 TEMP_CONF="tsung_conf.xml"
-TSUNG_LOG="tsunglog"
+TSUNG_BIN="/usr/local/bin/tsung"
 rm -f $TEMP_CONF
+#rm -f ./loadtesting/tsung*.*
 
 if [ -z "$CLIENT_1" ]; then
 	echo "Need to specify \$CLIENT_1!"
@@ -29,6 +31,11 @@ if [ -z "$TSUNG_TIME" ]; then
 	exit 1
 fi
 
+if [ -z "$OUTPUT_PREFIX" ]; then
+	echo "Need to specify \$OUTPUT_PREFIX (minutes)!"
+	exit 1
+fi
+
 export C1="<client host='$CLIENT_1'/>"
 export C2="<client host='$CLIENT_2'/>"
 export M1="<monitor host='$CLIENT_1'/>"
@@ -45,21 +52,19 @@ fi
 rm -f $TEMP_CONF.2
 
 mkdir -p $TSUNG_LOG
-tsung -f $TEMP_CONF -l $TSUNG_LOG/ start &
+$TSUNG_BIN -f $TEMP_CONF -l $TSUNG_LOG/ start &
 SECONDS=`echo "$TSUNG_TIME 60 * p" | dc`
 sleep $SECONDS
 echo "Stopping tsung...."
-tsung stop
+$TSUNG_BIN stop
 
 most_recent=`ls -1t $TSUNG_LOG/ | head -n 1`
 most_recent_path="$TSUNG_LOG/$most_recent"
 echo "Analysing statistics...."
 pushd $most_recent_path
-p=`pwd`
-echo "PWD: $p"
 ../../utils/tsung_log_parser.pl "$TSUNG_LOG" "$TSUNG_TIME" > tsung_stats.txt
 popd
-cp $most_recent_path/tsung_stats.txt .
-cp $most_recent_path/tsung_conf.xml .
+cp $most_recent_path/tsung_stats.txt ./loadtesting/$OUTPUT_PREFIX.txt
+cp $most_recent_path/tsung_conf.xml ./loadtesting/$OUTPUT_PREFIX.xml
 echo "Done."
 
