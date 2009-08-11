@@ -41,13 +41,16 @@ public class Main {
      *
      */
     public static void main(String[] args) {
-
+    	String mainClass = System.getProperty("mainClass");
+    	if(mainClass == null){
+    		mainClass = "axiom.main.Server";
+    	}
         try {
             String installDir = getInstallDir(args);
             
             ClassLoader loader = createClassLoader(installDir);
             // get the main server class
-            Class clazz = loader.loadClass("axiom.main.Server");
+            Class clazz = loader.loadClass(mainClass);
             Class[] cargs = new Class[]{args.getClass()};
             Method main = clazz.getMethod("main", cargs);
             Object[] nargs = new Object[]{args};

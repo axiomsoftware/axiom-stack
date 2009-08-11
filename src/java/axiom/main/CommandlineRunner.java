@@ -36,22 +36,19 @@ import axiom.scripting.rhino.RhinoEngine;
  */
 public class CommandlineRunner {
 
-    /**
-     * boot method for running a request from the command line.
-     * This retrieves the Axiom home directory, creates the app and
-     * runs the function.
-     *
-     * @param args command line arguments
-     *
-     * @throws Exception if the Axiom home dir or classpath couldn't be built
-     */
-    public static void main(String[] args) throws Exception {
-
-        Config config = new Config();
-        String commandStr = null;
-        String appName = null;
-        Vector<String> funcArgs = new Vector<String>();
-    
+	Config config;
+	String commandStr;
+	String appName;
+	Vector<String> funcArgs;
+	public CommandlineRunner(String[] args){
+		config = new Config();
+        commandStr = null;
+        appName = null;
+        funcArgs = new Vector<String>();
+        parseArgs(args);
+	}
+	
+	public void parseArgs(String[] args){
         // get possible environment setting for Axiom home
         if (System.getProperty("axiom.home")!=null) {
             config.homeDir = new File(System.getProperty("axiom.home"));
@@ -88,7 +85,9 @@ public class CommandlineRunner {
         	printUsageError();
             System.exit(1);
         } 
-
+	}
+	
+	public void run(){
         // init a server instance and start the application
         Server server = new Server(config);
         server.init();
@@ -118,6 +117,20 @@ public class CommandlineRunner {
         // stop the application
         server.stopApplication(appName);
         server.stop();
+	}
+	
+    /**
+     * boot method for running a request from the command line.
+     * This retrieves the Axiom home directory, creates the app and
+     * runs the function.
+     *
+     * @param args command line arguments
+     *
+     * @throws Exception if the Axiom home dir or classpath couldn't be built
+     */
+    public static void main(String[] args) throws Exception {
+    	CommandlineRunner runner = new CommandlineRunner(args);
+    	runner.run();
         System.exit(0);
     }
 
