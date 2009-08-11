@@ -149,15 +149,22 @@
 		
 		<delete file="alldoc.js"/>
 	</target>
-	<target name="loadtest">
+	<target name="loadtest-tsung">
+		<exec executable="./start.sh" spawn="true"/>
+		<exec executable="sleep">
+			<arg value="60"/>
+		</exec>
+		<exec executable="utils/tsung_ctl.sh"/>
+	</target>
+
+	<target name="loadtest-jmeter">
 		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
-			<arg value="-t"/>
-			<arg value="utils/loadtest-basic.jmx"/>
-			<arg value="-p"/>
-			<arg value="/opt/jmeter/bin/jmeter.properties"/>
-			<arg value="-l"/>
-			<arg value="output.xml"/>
+			<arg line="-t loadtesting/jmeter/basic.jmx"/>
+			<arg line="-p /opt/jmeter/bin/jmeter.properties"/>
+			<arg line="-l loadtesting/jmeter.jtl"/>
+			<arg line="-j loadtesting/jmeter.log"/>
+			<arg value="-r"/>
 		</exec>
 	</target>
 
