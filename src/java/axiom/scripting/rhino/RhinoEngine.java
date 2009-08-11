@@ -25,6 +25,9 @@ package axiom.scripting.rhino;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.mozilla.javascript.serialize.ScriptableInputStream;
+import org.mozilla.javascript.xmlimpl.XHTML;
+import org.mozilla.javascript.xmlimpl.XML;
+import org.mozilla.javascript.xmlimpl.XMLList;
 
 import axiom.extensions.ConfigurationException;
 import axiom.extensions.AxiomExtension;
@@ -625,48 +628,24 @@ public class RhinoEngine implements ScriptingEngine {
     
     private Object toCachableResult(Object result, Scriptable obj) {
         Object ret = null;
-        
-        if (result instanceof String) {
-            ret = (String) result;
-        } else if (result instanceof org.w3c.dom.Document) {
-            boolean omitXmlDecl = false;
-            if (obj instanceof AxiomObject) {
-                Prototype prototype = 
-                    this.app.getPrototypeByName(((AxiomObject) obj).node.getPrototype());
-                if (prototype != null) {
-                    omitXmlDecl = prototype.getOmitXMLDeclaration();
+        if (result != null) {
+            if (result instanceof String) {
+                ret = (String) result;
+            } else {
+                //String className = result.getClass().getSimpleName();
+                String doctype = app.getProperty("doctype");
+                doctype = (doctype != null) ? doctype+"\n" : "";
+                if (result instanceof XML){
+                    ret = doctype+((XML) result).toXMLString();
+                } else if (result instanceof XHTML) {
+                    ret = doctype+((XHTML) result).toXMLString();
+                } else if (result instanceof XMLList){
+                    ret = doctype+((XMLList) result).toXMLString();
+                } else {
+                    ret = result;
                 }
             }
-            
-            try {
-                String dom = XMLSerializer.serializeDOM((org.w3c.dom.Document) result, omitXmlDecl);
-
-                // allow bare ampersands within title tags and urls
-                Matcher urlAndTitleMatcher = 
-                    Pattern.compile("(((href|src|value)=\"[^\"]*)|<title>[^<]*)").matcher(dom);
-                StringBuffer newResult = new StringBuffer();
-                while(urlAndTitleMatcher.find()) {
-                    urlAndTitleMatcher.appendReplacement(newResult, 
-                            urlAndTitleMatcher.group(0).replaceAll("&amp;", "&"));
-                }
-                urlAndTitleMatcher.appendTail(newResult);
-                dom = newResult.toString();
-
-                // fix self closing tags
-                ret = dom.replaceAll("\\<(?!img|br|hr|input|frame|link|meta|param)(\\w+)([^\\<]*)/\\>", "<$1$2></$1>");
-            } catch (Exception ex) {
-                ret = null;
-            }
-        } else if (result instanceof org.w3c.dom.DocumentFragment) {
-            try {
-                ret = XMLSerializer.serializeFragment((org.w3c.dom.DocumentFragment) result);
-            } catch (Exception ex) {
-                ret = null;
-            }
-        } else {
-            ret = result;
         }
-        
         return ret;
     }
     

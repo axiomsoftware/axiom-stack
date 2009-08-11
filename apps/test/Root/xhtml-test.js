@@ -84,6 +84,11 @@ this.xhtml_tests = {
 			    + '</div>',
 			    root.xhtml_query_string_test().toXMLString());
     },
+    test_tal_from_file_with_entities: function(){
+	Assert.assertEquals("html entities not preserved in TALE from file",
+			   '<div>&nbsp;</div>',
+			   root.xhtml_entities_test().toXMLString());
+    },
     // test persistence
     test_persisted_value_via_edit: function(){
 	var obj = new LuceneKitchenSink();
