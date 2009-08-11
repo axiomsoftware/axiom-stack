@@ -151,13 +151,13 @@
 	</target>
 
 	<target name="loadtest-start">
-		<exec executable="./start.sh" spawn="true"/>
+		<exec executable="./loadtest.sh" spawn="true"/>
 		<exec executable="sleep">
 			<arg value="10"/>
 		</exec>
 	</target>
 
-	<target name="loadtest-tsung-cached" depends="loadtest-start">
+	<target name="loadtest-tsung-cached" >
 		<exec executable="utils/tsung_ctl.sh">
 			<env key="OUTPUT_PREFIX" value="tsung-cached"/>
 			<env key="TSUNG_LOG" value="tsunglog-cached"/>
@@ -166,7 +166,7 @@
 		</exec>
 	</target>
 
-	<target name="loadtest-tsung-notcached" depends="loadtest-start">
+	<target name="loadtest-tsung-notcached" >
 		<exec executable="utils/tsung_ctl.sh">
 			<env key="OUTPUT_PREFIX" value="tsung-notcached"/>
 			<env key="TSUNG_LOG" value="tsunglog-notcached"/>
@@ -175,7 +175,7 @@
 		</exec>
 	</target>
 
-	<target name="loadtest-jmeter" depends="loadtest-start">
+	<target name="loadtest-jmeter">
 		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
 			<arg line="-t loadtesting/jmeter/basic.jmx"/>
@@ -184,6 +184,10 @@
 			<arg line="-j loadtesting/jmeter.log"/>
 			<arg value="-r"/>
 		</exec>
+	</target>
+
+	<target name="loadtest-stop">
+		<exec executable="./loadtest-stop.sh"/>
 	</target>
 
 </project>
