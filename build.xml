@@ -175,7 +175,7 @@
 		</exec>
 	</target>
 
-	<target name="loadtest-jmeter">
+	<target name="loadtest-jmeter-basic">
 		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
 			<arg line="-t loadtesting/jmeter/basic.jmx"/>
@@ -189,5 +189,15 @@
 	<target name="loadtest-stop">
 		<exec executable="./loadtest-stop.sh"/>
 	</target>
+
+	<target name="loadtest-tsung" depends="loadtest-start, loadtest-tsung-notcached, loadtest-tsung-cached, loadtest-stop">
+	</target>
+
+	<target name="loadtest-jmeter" depends="loadtest-start, loadtest-jmeter-basic, loadtest-stop">
+	</target>
+
+	<target name="loadtest-all" depends="loadtest-jmeter, loadtest-tsung">
+	</target>
+
 
 </project>
