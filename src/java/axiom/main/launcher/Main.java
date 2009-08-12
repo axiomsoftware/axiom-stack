@@ -45,6 +45,7 @@ public class Main {
     	if(mainClass == null){
     		mainClass = "axiom.main.Server";
     	}
+    	System.out.println("using mainClass "+mainClass);
         try {
             String installDir = getInstallDir(args);
             
@@ -58,8 +59,8 @@ public class Main {
             // and invoke the static main(String, String[]) method
             main.invoke(null, nargs);
         } catch (Exception x) {
-            // unable to get  installation dir from launcher jar
-            System.err.println("Unable to get  installation directory: ");
+            // unable to get installation dir from launcher jar
+            System.err.println("Error invoking main class "+mainClass);
             x.printStackTrace();
             System.exit(2);
         } 

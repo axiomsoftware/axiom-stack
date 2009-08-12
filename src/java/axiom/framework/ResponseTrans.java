@@ -622,6 +622,7 @@ public final class ResponseTrans extends Writer implements Serializable {
             }
         }
 
+        System.out.println("------ notify called in ResponseTrans");
         notifyAll();
 
         // if there was a problem with the encoding, let the app know

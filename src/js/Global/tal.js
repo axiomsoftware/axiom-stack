@@ -62,6 +62,7 @@ TAL.namespace_transform = function(doc, ns_transform){
     return doc;
 }
 
+
 TAL.Scope = function () {;};
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
