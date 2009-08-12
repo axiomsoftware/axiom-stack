@@ -32,7 +32,7 @@
 <session name='basic' probability='100'  type='ts_http'>
 <request>
 <match do="continue" when="match">
-WHATS NEW
+Load Testing Not Cached :(
 </match>
 <http url='http://10.0.1.129:8080/loadtest/notcached' version='1.1' method='GET'>
 </http>
