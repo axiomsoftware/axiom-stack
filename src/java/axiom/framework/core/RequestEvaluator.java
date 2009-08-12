@@ -177,9 +177,6 @@ public final class RequestEvaluator implements Runnable {
                 int tries = 0;
                 boolean done = false;
                 String error = null;
-                app.logEvent(" --- requestevaluator::run req "+req.getPath());
-                app.logEvent(" --- requestevaluator::run httprequest "+httprequest);
-                app.logEvent(" --- requestevaluator::run reqtype "+reqtype);
                 while (!done && localrtx == rtx) {
                     // catch errors in path resolution and script execution
                     try {
@@ -227,7 +224,6 @@ public final class RequestEvaluator implements Runnable {
                             // If function doesn't exist, return immediately
                             if (functionName.indexOf('.') < 0 &&
                                     !scriptingEngine.hasFunction(thisObject, functionName)) {
-                            	app.logEvent(" --- requestevaluator::run function doesn't exit, breaking");
                             	done = true;
                                 reqtype = NONE;
                                 break;
@@ -255,7 +251,6 @@ public final class RequestEvaluator implements Runnable {
 
                         switch (reqtype) {
                             case HTTP:
-                            	app.logEvent(" --- requestevaluator::run http case");
                             	// bring over the message from a redirect
                                 session.recoverResponseMessages(res);
 
@@ -293,7 +288,6 @@ public final class RequestEvaluator implements Runnable {
                                                 throw new FrameworkException("Action not found");
                                             }
                                         } else {
-                                        	app.logEvent(" --- requestevaluator::run marching down path ");
                                             // march down request path...	
                                             StringTokenizer st = new StringTokenizer(req.getPath(), "/");
                                             int ntokens = st.countTokens();
@@ -322,7 +316,6 @@ public final class RequestEvaluator implements Runnable {
                                                 if (i == (ntokens - 1)) {
                                                     action = getAction(currentElement, pathItems[i], req);
                                                 }
-                                                app.logEvent(" --- requestevaluator::run action: "+action);
                                                 if (action == null) {
                                                     currentElement = getChildElement(currentElement,
                                                             pathItems[i]);
@@ -335,8 +328,6 @@ public final class RequestEvaluator implements Runnable {
 
                                             if (action == null) {
                                                 action = getAction(currentElement, null, req);
-                                                app.logEvent(" --- requestevaluator::run second currentElement "+currentElement);
-                                                app.logEvent(" --- requestevaluator::run second action "+action);
                                             }
                                             
                                             if (action == null) {
@@ -434,7 +425,6 @@ public final class RequestEvaluator implements Runnable {
                                                 false);
 
                                         if (rgl != null && rgl != Undefined.instance) {
-                                            app.logEvent(" --- requestevaluator writing "+rgl);
                                         	res.write(rgl);
                                         }
                                     }
@@ -620,7 +610,6 @@ public final class RequestEvaluator implements Runnable {
                 
                 // exit execution context
                 scriptingEngine.exitContext();
-                
                 notifyAndWait();
                 
                 this.layer = defmode;
@@ -659,7 +648,7 @@ public final class RequestEvaluator implements Runnable {
             rtx.setContextClassLoader(app.getClassLoader());
             rtx.start();
         } else {
-            notifyAll();
+        	notifyAll();
         }
         
     }
@@ -739,8 +728,7 @@ public final class RequestEvaluator implements Runnable {
      * @return the result returned by the invocation
      * @throws Exception any exception thrown by the invocation
      */
-    public synchronized ResponseTrans invokeHttp(RequestTrans req, Session session)
-                                      throws Exception {
+    public synchronized ResponseTrans invokeHttp(RequestTrans req, Session session) throws Exception{
         initObjects(req, session);
         if (!req.rewriteDone()) {
         	req.setPath(this.app.resolveUrlToPath(req.getPath()));
@@ -749,7 +737,10 @@ public final class RequestEvaluator implements Runnable {
         app.activeRequests.put(req, this);
 
         startTransactor();
-        wait(app.requestTimeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && app.requestTimeout > System.currentTimeMillis() - begin){
+        	wait(app.requestTimeout);
+        }	
 
         if (reqtype != NONE) {
             app.logEvent("Stopping Thread for Request " + app.getName() + "/" + req.getPath());
@@ -805,7 +796,10 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait(app.requestTimeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && app.requestTimeout > System.currentTimeMillis() - begin){
+        	wait(app.requestTimeout);
+        }
 
         if (reqtype != NONE) {
             stopTransactor();
@@ -840,7 +834,9 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait();
+        while(reqtype != NONE){
+        	wait();
+        }
         
         if (reqtype != NONE) {
             stopTransactor();
@@ -909,7 +905,10 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait(timeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && timeout > System.currentTimeMillis() - begin){
+        	wait(timeout);
+        }	
         
         if (reqtype != NONE) {
             stopTransactor();
@@ -934,7 +933,6 @@ public final class RequestEvaluator implements Runnable {
      * @param session
      */
     private synchronized void initObjects(RequestTrans req, Session session) {
-        app.logEvent(" --- initObjects");
     	this.req = req;
         this.reqtype = HTTP;
         this.session = session;
@@ -1045,7 +1043,6 @@ public final class RequestEvaluator implements Runnable {
         }
 
         String method = req.getMethod();
-        app.logEvent(" --- requestevaluator::getAction method: "+method);
         // append HTTP method to action name
         if (method != null) {
             // append _methodname
