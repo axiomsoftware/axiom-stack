@@ -80,7 +80,6 @@ Assert.assertEquals = function( msg, expected, actual )
         actual = expected;
         expected = msg;
         msg = null;
-	equiv = true;
     }
 
     if ( actual == expected ) {
