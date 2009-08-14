@@ -1002,7 +1002,7 @@ public final class RhinoCore implements ScopeProvider {
 			for(int j = 0; j < talFiles.size(); j++){
             	Resource resource = talFiles.get(j);
         		sourceName = resource.getName();
-        		reader = new StringReader(ResourceConverter.convertTal(resource, app.debug()));
+        		reader = new StringReader(ResourceConverter.convertTal(resource, resource.getContent(), app.debug()));
         		cx.evaluateReader(op, reader, sourceName, 1, null);
         		
 	        }

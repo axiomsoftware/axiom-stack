@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import axiom.framework.core.Prototype;
 import axiom.framework.repository.Resource;
 
 /**
@@ -49,23 +50,27 @@ public class ResourceConverter {
         return f.toString();
     }
 
-    public static String convertTal(Resource action) throws IOException {
-    	return convertTal(action, false);
+    public static String convertTal(Resource action,String doc) throws IOException {
+    	return convertTal(action, doc, false);
     }
     
     /*
      * Add a renderTAL call as an action on a particular TAL file, making the TAL file a 
      * URL accessible action
      */
-    public static String convertTal(Resource action, boolean debug) throws IOException {
+    public static String convertTal(Resource action, String doc, boolean debug) throws IOException {
         String baseName = action.getBaseName();
         String functionName = baseName.replace('.', '_');
         String body = "if(data==undefined){data={};}\n" +
         			  (debug ? "app.log('starting renderTAL on " +baseName+"');" +
         					   "var start = (new Date()).getTime();" : "") +
-        			  "var rendered = this.renderTAL('"+baseName+"',data);\n" +
-        			  (debug ? "app.log('finished rendering "+baseName+" in '+((new Date()).getTime() - start)/1000.0+' seconds');": "")+
-        			  "return rendered";
+        					   "var doc = new XHTML(\""+doc.replaceAll("\"", "\\\\\"").replaceAll("\n", "")+"\");"+
+        					   //"var rendered = this.renderTAL('"+baseName+"',data);\n" +
+        					   "var rendered = TAL(doc, data);"+ 
+        					   (debug ? "app.log('finished rendering "+baseName+" in '+((new Date()).getTime() - start)/1000.0+' seconds');": "")+
+        					   "return rendered";
+        System.out.println("-------- "+action+" ----------");
+        System.out.println(body);
         return composeFunction(functionName, "data", body);
     }
     
