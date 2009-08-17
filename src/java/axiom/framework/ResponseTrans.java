@@ -234,7 +234,7 @@ public final class ResponseTrans extends Writer implements Serializable {
         	boolean is_html = (className.equalsIgnoreCase("XML") || className.equalsIgnoreCase("XMLList") || className.equalsIgnoreCase("XHTML"));
         	if (is_html) {
         		String result = "";
-        		synchronized(jsobj){
+        		//synchronized(jsobj){
         			if(className.equalsIgnoreCase("XML")){
         				result = ((XML) jsobj).toXMLString();	
         			} else if(className.equalsIgnoreCase("XHTML")){
@@ -242,7 +242,7 @@ public final class ResponseTrans extends Writer implements Serializable {
         			} else if(className.equalsIgnoreCase("XMLList")){
         				result = ((XMLList) jsobj).toXMLString();	
         			}
-        		}
+        		//}
         		String doctype = app.getProperty("doctype");
         		this.write(((doctype != null)?doctype+"\n":"\n")+result);
         	} else if (className.equalsIgnoreCase("String")) {
@@ -622,7 +622,6 @@ public final class ResponseTrans extends Writer implements Serializable {
             }
         }
 
-        System.out.println("------ notify called in ResponseTrans");
         notifyAll();
 
         // if there was a problem with the encoding, let the app know

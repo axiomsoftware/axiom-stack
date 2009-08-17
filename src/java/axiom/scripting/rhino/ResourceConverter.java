@@ -62,15 +62,16 @@ public class ResourceConverter {
         String baseName = action.getBaseName();
         String functionName = baseName.replace('.', '_');
         String body = "if(data==undefined){data={};}\n" +
-        			  (debug ? "app.log('starting renderTAL on " +baseName+"');" +
-        					   "var start = (new Date()).getTime();" : "") +
-        					   "var doc = new XHTML(\""+doc.replaceAll("\"", "\\\\\"").replaceAll("\n", "")+"\");"+
-        					   //"var rendered = this.renderTAL('"+baseName+"',data);\n" +
-        					   "var rendered = TAL(doc, data);"+ 
-        					   (debug ? "app.log('finished rendering "+baseName+" in '+((new Date()).getTime() - start)/1000.0+' seconds');": "")+
-        					   "return rendered";
-        System.out.println("-------- "+action+" ----------");
-        System.out.println(body);
+        				"data['this'] = this;"+
+        			  	(debug ? "app.log('starting renderTAL on " +baseName+"');" +
+        			  	"var start = (new Date()).getTime();" : "") +
+        			  	"var doc = new XHTML(\""+doc.replaceAll("\"", "\\\\\"").replaceAll("\n", "")+"\");"+
+        				//"var rendered = this.renderTAL('"+baseName+"',data);\n" +
+        				"var rendered = TAL(doc, data);"+ 
+        				(debug ? "app.log('finished rendering "+baseName+" in '+((new Date()).getTime() - start)/1000.0+' seconds');": "")+
+        				"return rendered";
+        //System.out.println("-------- "+action+" ----------");
+        //System.out.println(body);
         return composeFunction(functionName, "data", body);
     }
     

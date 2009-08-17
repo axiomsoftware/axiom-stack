@@ -102,7 +102,6 @@ public class ApplicationManager implements XmlRpcHandler {
         	
         	File[] apps = this.server.getAppsHome().listFiles();
         	for (File app : apps) {
-        		System.out.println(app.getAbsolutePath());
         		File appPropsFile = new File(app, "app.properties");
         		if (!appPropsFile.exists() || !appPropsFile.canRead()) {
         			continue;
