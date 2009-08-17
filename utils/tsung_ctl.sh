@@ -5,6 +5,8 @@
 #	TSUNG_CONFIG = path to tsung config file to use
 #	TSUNG_TIME = time to let tsung run for before stopping
 #	OUTPUT_PREFIX = prefix to name output files (log and stats)
+#	LT_HOST = host to be load tested
+#	LT_PORT = port of host to be load tested
 
 TEMP_CONF="tsung_conf.xml"
 TSUNG_BIN="/usr/local/bin/tsung"
@@ -32,7 +34,17 @@ if [ -z "$TSUNG_TIME" ]; then
 fi
 
 if [ -z "$OUTPUT_PREFIX" ]; then
-	echo "Need to specify \$OUTPUT_PREFIX (minutes)!"
+	echo "Need to specify \$OUTPUT_PREFIX!"
+	exit 1
+fi
+
+if [ -z "$LT_HOST" ]; then
+	echo "Need to specify \$LT_HOST!"
+	exit 1
+fi
+
+if [ -z "$LT_PORT" ]; then
+	echo "Need to specify \$LT_PORT!"
 	exit 1
 fi
 
@@ -47,6 +59,10 @@ if [ -n "$CLIENT_2" ]; then
 	cat $TEMP_CONF | sed "s|</clients>|$C2\n</clients>|g" | sed "s|</monitoring>|$M2\n</monitoring>|g" > $TEMP_CONF.2
 	mv $TEMP_CONF.2 $TEMP_CONF
 fi
+
+# Insert Host/Port into config file
+cat $TEMP_CONF | sed "s|\[HOST\]|$LT_HOST|g" | sed "s|\[PORT\]|$LT_PORT|g" > $TEMP_CONF.2
+mv $TEMP_CONF.2 $TEMP_CONF
 
 # Clean up the .2 temp file
 rm -f $TEMP_CONF.2

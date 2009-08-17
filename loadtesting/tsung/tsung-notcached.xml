@@ -34,7 +34,7 @@
 <match do="continue" when="match">
 Load Testing Not Cached :(
 </match>
-<http url='http://10.0.1.129:8080/loadtest/notcached' version='1.1' method='GET'>
+<http url='http://[HOST]:[PORT]/loadtest/notcached' version='1.1' method='GET'>
 </http>
 </request>
 </session>
