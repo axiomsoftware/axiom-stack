@@ -190,9 +190,13 @@
 	</target>
 
 	<target name="loadtest-jmeter-tests">
+		<copy file="loadtesting/jmeter/tests.jmx" tofile="jmeter_conf.jmx"/>
+		<exec executable="utils/jmeter_config.sh">
+			<arg value="jmeter_conf.jmx"/>
+		</exec>
 		<exec executable="/opt/jmeter/bin/jmeter">
 			<arg value="-n"/>
-			<arg line="-t loadtesting/jmeter/tests.jmx"/>
+			<arg line="-t jmeter_conf.jmx"/>
 			<arg line="-p /opt/jmeter/bin/jmeter.properties"/>
 			<arg line="-l loadtesting/jmeter.jtl"/>
 			<arg line="-j loadtesting/jmeter.log"/>
