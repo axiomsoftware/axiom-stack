@@ -567,8 +567,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
             }
         } else {
             boolean arg_undefined = 
-                (arg == null || arg == Undefined.instance || arg == Scriptable.NOT_FOUND ||
-                    ((Scriptable) arg).getClassName().equals("undefined")); 
+                (arg == null || arg == Undefined.instance || arg == Scriptable.NOT_FOUND || 
+                    ((arg instanceof Scriptable) && ((Scriptable) arg).getClassName().equals("undefined")));
             splice = new Object[newlen + (arg_undefined ? 0 : 1)];
             int count = 0;
             for (int i = 0; i < s; i++) {
