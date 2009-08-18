@@ -297,7 +297,6 @@ public class MultiValue extends ScriptableObject implements Serializable {
             }
         } else {
             for (int i = 0; i < length; i++) {
-                System.out.println("o: " + o + " - i: " + values[i] + " - #: " + i);
                 if (o.equals(values[i])) {
                     return i;
                 }
