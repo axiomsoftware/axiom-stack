@@ -554,10 +554,8 @@ this._test = {
 	    for each(var value in values) {
 		if (!(sink[property]) || sink[property].length === 0) {
 		    sink[property] = new MultiValue(value);
-		    Packages.java.lang.System.out.println('not - ' + sink[property].toSource());
 		} else {
 		    sink[property] = sink[property].concat(new MultiValue(value));
-		    Packages.java.lang.System.out.println('is - ' + sink[property].toSource());
 		}
 	    }
 	},
@@ -597,8 +595,6 @@ this._test = {
 	    Assert.assertNotUndefined("test_mv_number_add_numbers failed.", sink.mv_number);
 	    Assert.assertEquals("test_mv_number_add_numbers failed.", val3, sink.mv_number[2]);
 	    Assert.assertIterableEquals("test_mv_number_add_numbers failed.", new MultiValue(val1,val2,val3), sink.mv_number);
-	    
-	    Packages.java.lang.System.out.println("FINISHED test_mv_number_add_numbers --------------------");
 	},
 	test_mv_number_add_string: function() {
 	    try {
@@ -659,11 +655,9 @@ this._test = {
 	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
       },
       test_mv_number_indexOf_idx2: function() {
-	  app.log('\n\n\n\n\nstart idx2 logging\n\n\n\n\n');
 	var sink = this.getKitchenSink();
 	var val = 5;
 	this.addToMV('mv_number', [3, 10, val]);
-	Packages.java.lang.System.out.println(sink.mv_number.toSource());
 	Assert.assertEquals("There are no values that match.", 2, sink.mv_number.indexOf(val));
       },
 	test_mv_date_add_date: function() {
