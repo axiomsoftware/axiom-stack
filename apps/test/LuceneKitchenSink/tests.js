@@ -771,11 +771,7 @@ this._test = {
 	var val = "bacon";
 	this.addToMV('mv_string', ["hello world", "goodbye world", val]);
 	Assert.assertEquals("There are no values that match.", 2, sink.mv_string.indexOf(val));
-      }
-
-
-
-,
+      },
 	test_mv_boolean_add_boolean: function() {
 	    var val = true;
 	    var sink = this.getKitchenSink();
