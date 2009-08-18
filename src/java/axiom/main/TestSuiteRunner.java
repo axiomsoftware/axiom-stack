@@ -1,5 +1,7 @@
 package axiom.main;
 
+import java.sql.Connection;
+
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
@@ -25,38 +27,52 @@ public class TestSuiteRunner extends CommandlineRunner {
         server.checkAppManager(0);
         server.startApplication(appName);
         Application app = server.getApplication(appName);
-        
+                
         RequestEvaluator reqeval = app.getEvaluator();
         try{
         	// TODO change this when we've made a healthier way to access an app's global scope
         	Scriptable result = (Scriptable) reqeval.invokeInternal(null, "eval", new Object[]{"_test"});
-        	runSuite(result, reqeval);
+        	runSuite(result, server, appName);
         } catch(Exception e){
         	e.printStackTrace();
         }
 	}
 	
-	public void runSuite(Scriptable suite, RequestEvaluator evaluator){
+	public void runSuite(Scriptable suite, Server server, String name){
 		Object setup = suite.get("setup", suite);
 		Object teardown = suite.get("teardown", suite);
+		Application app = server.getApplication(name);
+		RequestEvaluator evaluator = new RequestEvaluator(app);
 		for(Object i: suite.getIds()){
 			Scriptable obj = (Scriptable) suite.get((String)i, suite);
-			if(obj instanceof Function){
-				System.out.println(i);
+			if(obj instanceof Function && !"setup".equals(i) && !"teardown".equals(i) && i.toString().startsWith("test")){
+				System.out.println(" >>>>>> "+ i+ " <<<<<<<");
+				System.out.println("app hashCode "+evaluator.app.hashCode());
 				try{
 					if(setup != null){
 						evaluator.invokeInternal(suite, "setup", new Object[]{});
-						//evaluator.
+						evaluator.getThread().commit(0, evaluator);
 					}
 					evaluator.invokeInternal(suite, i.toString(), new Object[]{});
 					if(setup != null){
 						evaluator.invokeInternal(suite, "teardown", new Object[]{});
+						evaluator.getThread().commit(0, evaluator);
 					}
+					//app.getNodeManager().clearDefaultDb();
+					Connection conn = evaluator.app.getTransSource().getConnection();
+					server.stopApplication(name);
+					conn.createStatement().execute("DELETE FROM PathIndices");
+					conn.createStatement().execute("DELETE FROM Lucene");
+					conn.commit();
+					conn.close();
+					server.startApplication(name);
+					app = server.getApplication(name);
+					evaluator = new RequestEvaluator(app);
 				} catch(Exception e){
 					e.printStackTrace();
 				}
 			} else {
-				runSuite(obj, evaluator);	
+				runSuite(obj, server, name);	
 			}
 		}
 	}

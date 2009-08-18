@@ -32,6 +32,8 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
+import net.sf.ehcache.CacheManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -83,9 +85,11 @@ public final class NodeManager {
                    IllegalAccessException, InstantiationException {
         
         String cacheImpl = props.getProperty("cacheImpl", "axiom.util.EhCacheMap");
-
-        this.cache = (ObjectCache) Class.forName(cacheImpl).newInstance();
-        this.cache.init(app);
+        
+        if(this.cache == null){
+        	this.cache = (ObjectCache) Class.forName(cacheImpl).newInstance();
+        	this.cache.init(app);
+        }
 
         String idgenImpl = props.getProperty("idGeneratorImpl");
 
@@ -98,6 +102,10 @@ public final class NodeManager {
         logReplication = "true".equalsIgnoreCase(props.getProperty("logReplication"));
 
         this.setupDbs(dbHome);
+    }
+    
+    public void clearDefaultDb(){
+    	((LuceneDatabase)this.defaultDb).getLuceneManager().clearIndex(); 
     }
     
     private void setupDbs(File dbHome) {

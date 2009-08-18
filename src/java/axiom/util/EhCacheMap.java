@@ -46,7 +46,7 @@ public class EhCacheMap implements ObjectCache {
     }
     
     public void init(Application app, String cacheName) {
-        int cacheSize;
+    	int cacheSize;
         try {
             cacheSize = Integer.parseInt(app.getProperty("cachesize", "1000"));
         } catch (Exception ex) {
@@ -61,6 +61,13 @@ public class EhCacheMap implements ObjectCache {
         } else {
             this.cacheName = "default-" + app.getName();
         }
+        
+        Cache existing = this.manager.getCache(this.cacheName);
+        if(existing != null){
+        	this.cache = existing;
+        	return;
+        }
+        
         
         boolean eternal = true;
         long timeoutFromCreation;

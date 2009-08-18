@@ -2489,6 +2489,10 @@ public class LuceneManager{
         return this.writerManager.getCurrentVersion();
     }
     
+    public void clearIndex(){
+    	this.writerManager.clearAllInfos();
+    }
+    
     public ArrayList getChildrenIds(INode node) throws Exception {
         ArrayList childrenIds = new ArrayList();
         IndexSearcher searcher = null;

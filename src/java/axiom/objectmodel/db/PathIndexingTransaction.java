@@ -71,11 +71,16 @@ public class PathIndexingTransaction implements ITransaction {
 
     public void commitToTransaction() throws TransactionException {
     	try {
-    		Connection conn = tmgr.getConnection(); 
+    		Connection conn = tmgr.getConnection();
+    		for(Object obj: toAdd){
+    			Node node = (Node)obj;
+    			System.out.println(node.toString());
+    		}
     		indexer.addPathIndices(conn, toAdd);
     		indexer.updatePathIndices(conn, toUpdate);
     		indexer.deletePathIndices(conn, toDelete);
     	} catch (Exception ex) {
+    		ex.printStackTrace();
     		throw new TransactionException(ex.getMessage());
     	} 
     }

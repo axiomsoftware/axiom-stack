@@ -427,7 +427,7 @@ public final class LuceneDatabase implements IDatabase {
             writer = lmgr.updateLucene(dbHomeDir, saveNodes, updateNodes, delNodes, mode);
             clearLists();
         }
-        
+                
         public void setTransactionManager(TransactionManager tmgr) {
             this.tmgr = tmgr;
         }

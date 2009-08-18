@@ -136,24 +136,26 @@ public class GlobalObject extends ImporterTopLevel implements PropertyRecorder {
             changedProperties.add(name);
         }
         Context cx = Context.getCurrentContext();
-        GlobalObject scope = (GlobalObject) cx.getThreadLocal("threadscope");
-        if (scope != null) {
-            // make thread scope accessible as "global"
-            if ("global".equals(name)) {
-                return scope;
-            }
-            // use synchronized get on fast changing per-thread scopes just to be sure
-            Object obj = scope.getSynchronized(name);
-            if (obj != null && obj != NOT_FOUND) {
-                return obj;
-            }
+        if(cx != null){
+        	GlobalObject scope = (GlobalObject) cx.getThreadLocal("threadscope");
+        	if (scope != null) {
+        		// make thread scope accessible as "global"
+        		if ("global".equals(name)) {
+        			return scope;
+        		}
+        		// use synchronized get on fast changing per-thread scopes just to be sure
+        		Object obj = scope.getSynchronized(name);
+        		if (obj != null && obj != NOT_FOUND) {
+        			return obj;
+        		}
+        	}
         }
         if (sharedGlobal != null) {
-            // we're a per-thread scope
-            return sharedGlobal.getInternal(name);
+        	// we're a per-thread scope
+        	return sharedGlobal.getInternal(name);
         } else {
-            // we are the shared scope
-            return super.get(name, start);
+        	// we are the shared scope
+        	return super.get(name, start);
         }
     }
 

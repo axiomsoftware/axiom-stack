@@ -28,7 +28,7 @@ _test = {
 	    Assert.assertIterableEquals("test_checkJarLoaded", ['/blah','/home'], rules);
 	}
     },
-	app_suite: {
+    app_suite: {
 		setup: function() {
 			app.log("Global app_suite Setup");
 			var lph = new LucenePlaceHolder();
@@ -38,9 +38,9 @@ _test = {
 		},
 		teardown: function() {
 			app.log("Global app_suite Teardown");
-			for each(var child in root.getChildren()){
+			/*for each(var child in root.getChildren()){
 				root.remove(child);
-			}
+			}*/
 		},
 		getPlaceHolder: function(){
  			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];

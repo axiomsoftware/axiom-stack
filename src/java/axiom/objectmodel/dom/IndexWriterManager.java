@@ -88,6 +88,31 @@ public class IndexWriterManager {
         }
     }
     
+    public void clearAllInfos(){
+    	if(this.indexDir instanceof TransFSDirectory){
+    		try {
+				((TransFSDirectory) this.indexDir).deleteSegments();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+    	} else {
+    		SegmentInfos segments = IndexObjectsFactory.getFSSegmentInfos(this.indexDir);
+    		for(int i=0; i< segments.size(); i++){
+    			SegmentInfo segment= segments.info(i);
+    			try {
+    				this.indexDir.deleteFile(segment.name);
+    			} catch (IOException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+    		} 
+    	}
+    	//IndexObjectsFactory.setFSSegmentInfos(this.indexDir, null);
+    	//IndexObjectsFactory.setDeletedInfos(this.indexDir, null);
+    }
+    
     public IndexWriter getWriter() throws Exception {
         IndexWriter writer = new IndexWriter(indexDir, this.analyzer, false);
         writer.setUseCompoundFile(DEFAULT_USE_COMPOUND_FILE);

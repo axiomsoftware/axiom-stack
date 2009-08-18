@@ -513,6 +513,7 @@ public final class Application implements IPathElement, Runnable {
 	throws DatabaseException, IllegalAccessException,
 	InstantiationException, ClassNotFoundException {
 
+		System.out.println("Application::init");
 		running = true;
 
 		// create and init type mananger
@@ -830,20 +831,22 @@ public final class Application implements IPathElement, Runnable {
         releaseEvaluator(eval);
         
         Handler[] handlers = this.server.getContexts().getHandlers();
-        for(int i = 0; i < handlers.length; i++){
-	    	if(handlers[i] instanceof ContextHandler){
-	    		if(handlers[i] != null){
-	    			ContextHandler context = (ContextHandler)handlers[i];
-	    			if(this.contextPaths.contains(context.getContextPath())){
-	    				if(!context.isStopped()){
-	    					try{
-	    						context.stop();
-	    						context.destroy();
-	    					} catch(Exception e){ }
-	    				}
-	    			}
-	    		}
-	    	}
+        if(handlers != null){
+        	for(int i = 0; i < handlers.length; i++){
+        		if(handlers[i] instanceof ContextHandler){
+        			if(handlers[i] != null){
+        				ContextHandler context = (ContextHandler)handlers[i];
+        				if(this.contextPaths.contains(context.getContextPath())){
+        					if(!context.isStopped()){
+        						try{
+        							context.stop();
+        							context.destroy();
+        						} catch(Exception e){ }
+        					}
+        				}
+        			}
+        		}
+        	}
         }
         contextPaths.clear();
 	}
@@ -2210,9 +2213,13 @@ public final class Application implements IPathElement, Runnable {
         return session.createUpload(uploadId);
     }
 
-    private synchronized void updateProperties() {
+    public synchronized void updateProperties() {
+    	updateProperties(false);
+    }
+    
+    public synchronized void updateProperties(boolean force) {
 		// if so property file has been updated, re-read props.
-		if (props.lastModified() > lastPropertyRead) {
+		if (force || props.lastModified() > lastPropertyRead) {
 			// force property update
 			props.update();
 
@@ -2247,6 +2254,7 @@ public final class Application implements IPathElement, Runnable {
 			// set base URI
 			String base = props.getProperty("baseuri");
 
+			System.out.println("setting baseURI -> "+base);
 			if (base != null) {
 				setBaseURI(base);
 			} else if (baseURI == null) {

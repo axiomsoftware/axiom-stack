@@ -387,7 +387,6 @@ public class Server implements IPathElement, Runnable {
         System.out.println(startMessage);
 
         logger.info("Setting Axiom Home to " + axiomHome);
-
         RequestLogHandler requestLogHandler = new RequestLogHandler();
         handlers.setHandlers(new Handler[]{contexts, new AxiomHandler(), requestLogHandler});
         if(this.sysProps.getProperty("enableRequestLog") == null 
