@@ -513,7 +513,6 @@ public final class Application implements IPathElement, Runnable {
 	throws DatabaseException, IllegalAccessException,
 	InstantiationException, ClassNotFoundException {
 
-		System.out.println("Application::init");
 		running = true;
 
 		// create and init type mananger
@@ -2253,8 +2252,6 @@ public final class Application implements IPathElement, Runnable {
 			
 			// set base URI
 			String base = props.getProperty("baseuri");
-
-			System.out.println("setting baseURI -> "+base);
 			if (base != null) {
 				setBaseURI(base);
 			} else if (baseURI == null) {

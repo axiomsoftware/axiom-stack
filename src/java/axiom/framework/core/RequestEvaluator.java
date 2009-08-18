@@ -904,8 +904,6 @@ public final class RequestEvaluator implements Runnable {
         this.functionName = functionName;
         this.args = args;
 
-        System.out.println("app in invokeInternal -> "+app);
-        System.out.println("app.isRunning -> "+app.isRunning());
         startTransactor();
         long begin = System.currentTimeMillis();
         while(reqtype != NONE && timeout > System.currentTimeMillis() - begin){

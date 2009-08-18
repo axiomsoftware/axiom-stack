@@ -352,7 +352,9 @@ public class ApplicationManager implements XmlRpcHandler {
 
             // stop application
             try {
-                System.out.println("Stopping app " + app.getName());
+            	if(System.getProperty("mainClass") == null){
+            		System.out.println("Stopping app " + app.getName());
+            	}
                 app.stop();
                 server.getLogger().info("Stopped application " + appName);
             } catch (Exception x) {

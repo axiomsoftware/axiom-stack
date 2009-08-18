@@ -200,7 +200,9 @@ public final class LuceneDatabase implements IDatabase {
             throw new DatabaseException("Error initializing the optimizer for index " + dbHome);
         }
         
-        System.out.println("LuceneDatabase initialization completed for " + app.getName());
+        if(System.getProperty("mainClass") == null){
+        	System.out.println("LuceneDatabase initialization completed for " + app.getName());
+        } 
     }
     
     protected void commitTransaction(TransactionManager tmgr) {

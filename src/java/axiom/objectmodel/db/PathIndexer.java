@@ -277,14 +277,10 @@ public final class PathIndexer {
                 Object item = nodes.get(i);
                 if (item instanceof Node) {
                     Node node = (Node) item;
-                    System.out.println("-----------------------");
                     pstmt.setString(1, node.getID());
-                    System.out.println("----- id: "+node.getID());
                     pstmt.setInt(2, node.getKey().getLayer());
-                    System.out.println("----- layer: "+node.getKey().getLayer());
                     pstmt.setString(3, getNodeHref(node, this.app));
-                    System.out.println("----- path: "+getNodeHref(node, this.app));
-                } else {
+               } else {
                     String[] values = (String[]) item;
                     
                     pstmt.setString(1, values[0]);
@@ -383,7 +379,6 @@ public final class PathIndexer {
     
     public static String getNodeHref(Node n, Application app) throws Exception {
         String href = app.getNodeHref(n, null);    
-        System.out.println(app.getBaseURI());
         if (app.getBaseURI().equals("/")) {
             return href;
         }

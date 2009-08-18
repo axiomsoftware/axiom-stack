@@ -74,7 +74,6 @@ public class PathIndexingTransaction implements ITransaction {
     		Connection conn = tmgr.getConnection();
     		for(Object obj: toAdd){
     			Node node = (Node)obj;
-    			System.out.println(node.toString());
     		}
     		indexer.addPathIndices(conn, toAdd);
     		indexer.updatePathIndices(conn, toUpdate);

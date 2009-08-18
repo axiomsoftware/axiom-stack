@@ -1,6 +1,7 @@
 package axiom.main;
 
 import java.sql.Connection;
+import java.util.Properties;
 
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
@@ -24,6 +25,11 @@ public class TestSuiteRunner extends CommandlineRunner {
 	public void run(){
         Server server = new Server(config);
         server.init();
+
+        // use separate test db so we don't wreck an app's existing db!
+        Properties serverProps = server.getProperties();
+        serverProps.setProperty("dbHome", "test-"+serverProps.getProperty("dbHome", "db"));
+
         server.checkAppManager(0);
         server.startApplication(appName);
         Application app = server.getApplication(appName);
@@ -46,8 +52,6 @@ public class TestSuiteRunner extends CommandlineRunner {
 		for(Object i: suite.getIds()){
 			Scriptable obj = (Scriptable) suite.get((String)i, suite);
 			if(obj instanceof Function && !"setup".equals(i) && !"teardown".equals(i) && i.toString().startsWith("test")){
-				System.out.println(" >>>>>> "+ i+ " <<<<<<<");
-				System.out.println("app hashCode "+evaluator.app.hashCode());
 				try{
 					if(setup != null){
 						evaluator.invokeInternal(suite, "setup", new Object[]{});
@@ -58,7 +62,6 @@ public class TestSuiteRunner extends CommandlineRunner {
 						evaluator.invokeInternal(suite, "teardown", new Object[]{});
 						evaluator.getThread().commit(0, evaluator);
 					}
-					//app.getNodeManager().clearDefaultDb();
 					Connection conn = evaluator.app.getTransSource().getConnection();
 					server.stopApplication(name);
 					conn.createStatement().execute("DELETE FROM PathIndices");
@@ -68,7 +71,9 @@ public class TestSuiteRunner extends CommandlineRunner {
 					server.startApplication(name);
 					app = server.getApplication(name);
 					evaluator = new RequestEvaluator(app);
+					System.out.print(".");
 				} catch(Exception e){
+					System.out.println(" error running"+ i);
 					e.printStackTrace();
 				}
 			} else {
