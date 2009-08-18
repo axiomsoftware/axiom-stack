@@ -248,7 +248,7 @@ public class MultiValue extends ScriptableObject implements Serializable {
      * Returns integer of the position if the input object is contained in this MultiValue, 
      * returns <code> -1 </code> otherwise.  An object <code> foo </code> is contained 
      * in a MultiValue if there exists an object <code> bar </code> in the MultiValue 
-     * such that <code> foo.equals(bar) </code> is <code> true</code>.
+     * such that <code> foo.equals(bar) </code> is <code> true</code>. The index of that is returned.
      * 
      * @param {Object} obj The object to check if it is contained in this MultiValue
      * @returns {Number} Index value of the object
@@ -377,7 +377,6 @@ public class MultiValue extends ScriptableObject implements Serializable {
         
         if (mv != null) {
         	if (mv.getValueType() != this.valueType && this.length > 0) {
-                System.out.println(mv.getValueType() + " - " + this.valueType);
         		return this;
         	}
 
