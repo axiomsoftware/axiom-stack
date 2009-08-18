@@ -703,7 +703,136 @@ this._test = {
 	    } catch(e) {
 		// threw an exception so it passes
 	    }
-	}
+	},
+      test_mv_date_indexOf_date: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date();
+	this.addToMV('mv_date', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_date.indexOf(val));
+      },
+      test_mv_date_indexOf_idx2: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date();
+	this.addToMV('mv_date', [new Date('2000/10/13'), new Date('1984/04/19'), val]);
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_date.indexOf(val));
+      },
+	test_mv_string_add_string: function() {
+	    var val = "hello world";
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_string', val);
+	    Assert.assertNotUndefined("test_mv_string_add_string failed.", sink.mv_string);
+	    Assert.assertEquals("test_mv_string_add_string failed.", val, sink.mv_string[0]);
+	},
+	test_mv_string_add_strings: function() {
+	    var val1 = "hello world";
+	    var val2 = "goodbye world";
+	    var val3 = "bacon!";
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_string', val1);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    this.addToMV('mv_string', val2);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    this.addToMV('mv_string', val3);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    Assert.assertIterableEquals("test_mv_string_add_strings failed.", new MultiValue(val1,val2,val3), sink.mv_string);
+	},
+	test_mv_string_add_date: function() {
+	    try {
+		this.addToMV('mv_string', new Date());
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_string_add_number: function() {
+	    try {
+		this.addToMV('mv_string', 5);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_string_add_boolean: function() {
+	    try {
+		this.addToMV('mv_string', false);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+      test_mv_string_indexOf_string: function() {
+	var sink = this.getKitchenSink();
+	var val = "bacon";
+	this.addToMV('mv_string', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_string.indexOf(val));
+      },
+      test_mv_string_indexOf_idx2: function() {
+	var sink = this.getKitchenSink();
+	var val = "bacon";
+	this.addToMV('mv_string', ["hello world", "goodbye world", val]);
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_string.indexOf(val));
+      }
+
+
+
+,
+	test_mv_boolean_add_boolean: function() {
+	    var val = true;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_boolean', val);
+	    Assert.assertNotUndefined("test_mv_boolean_add_boolean failed.", sink.mv_boolean);
+	    Assert.assertEquals("test_mv_boolean_add_boolean failed.", val, sink.mv_boolean[0]);
+	},
+	test_mv_boolean_add_booleans: function() {
+	    var val1 = true;
+	    var val2 = false;
+	    var val3 = true;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_boolean', val1);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    this.addToMV('mv_boolean', val2);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    this.addToMV('mv_boolean', val3);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    Assert.assertIterableEquals("test_mv_boolean_add_booleans failed.", new MultiValue(val1,val2,val3), sink.mv_boolean);
+	},
+	test_mv_boolean_add_date: function() {
+	    try {
+		this.addToMV('mv_boolean', new Date());
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_boolean_add_number: function() {
+	    try {
+		this.addToMV('mv_boolean', 5);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_boolean_add_string: function() {
+	    try {
+		this.addToMV('mv_boolean', 'bacon');
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+      test_mv_boolean_indexOf_boolean: function() {
+	var sink = this.getKitchenSink();
+	var val = true;
+	this.addToMV('mv_boolean', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_boolean.indexOf(val));
+      },
+      test_mv_boolean_indexOf_idx1: function() {
+	var sink = this.getKitchenSink();
+	var val = true;
+	this.addToMV('mv_boolean', [false, val]);
+	Assert.assertEquals("There are no values that match.", 1, sink.mv_boolean.indexOf(val));
+      }
+
     }
 }
 
