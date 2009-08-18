@@ -16,7 +16,7 @@ this._test = {
 		teardown: function(){
 			app.log('app_getObjects_suite teardown');
 			for each(var child in root.getChildren()){
-				root.remove(child)
+			  root.remove(child);
 			}
 		},
 		getPlaceHolder: function(){
@@ -528,41 +528,6 @@ this._test = {
 			Assert.assertEquals("test_AxiomObject_getChildrenWithPrototype failed", 5, children.length);
 		}
 	},
-	Performance_suite: {
-		setup: function(){
-			app.log('Performance suite setup');
-			var lph = new LucenePlaceHolder();
-			lph.id = 'lph';
-			root.add(lph);
-			res.commit();
-		},
-		teardown: function(){
-			app.log('Performance suite teardown');
-			for each(var child in root.getChildren()){
-				root.remove(child)
-			}
-		},
-		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
-		},
-		test_Performance_1000_objects_insert: function() {
-			var lph = this.getPlaceHolder();
-			var num = 1000;
-			var start = new Date();
-			var slowspeed = 50;
-			for(var i = 0; i < num; i++){
-				var ks = new LuceneKitchenSink();
-				ks.id = 'testks' + i;
-				ks.title = 'testtitle ' + i;
-				lph.add(ks);
-			}
-			res.commit();
-			var now = new Date();
-			var persec = num / ((now.getTime()-start.getTime()) / 1000);
-//			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);
-		}
-	},
     multivalue_suite: {
 	setup: function(){
 	    app.log('multivalue_suite setup');
@@ -581,12 +546,19 @@ this._test = {
 	    app.log('KITCHEN SINK --> ' + app.getObjects('LuceneKitchenSink'));
  	    return app.getObjects('LuceneKitchenSink', {id:'lks'})[0];
 	},
-	addToMV: function(property, value) {
+	addToMV: function(property, values) {
 	    var sink = this.getKitchenSink();
-	    if (!(sink[property]) || sink[property].length == 0) {
-		sink[property] = new MultiValue(value);
-	    } else {
-		sink[property] = sink[property].concat(new MultiValue(value));
+	    if (!(values instanceof Array)) {
+		values = [values];
+	    }
+	    for each(var value in values) {
+		if (!(sink[property]) || sink[property].length === 0) {
+		    sink[property] = new MultiValue(value);
+		    Packages.java.lang.System.out.println('not - ' + sink[property].toSource());
+		} else {
+		    sink[property] = sink[property].concat(new MultiValue(value));
+		    Packages.java.lang.System.out.println('is - ' + sink[property].toSource());
+		}
 	    }
 	},
 	test_mv_number_add_number_int: function() {
@@ -625,6 +597,8 @@ this._test = {
 	    Assert.assertNotUndefined("test_mv_number_add_numbers failed.", sink.mv_number);
 	    Assert.assertEquals("test_mv_number_add_numbers failed.", val3, sink.mv_number[2]);
 	    Assert.assertIterableEquals("test_mv_number_add_numbers failed.", new MultiValue(val1,val2,val3), sink.mv_number);
+	    
+	    Packages.java.lang.System.out.println("FINISHED test_mv_number_add_numbers --------------------");
 	},
 	test_mv_number_add_string: function() {
 	    try {
@@ -650,6 +624,48 @@ this._test = {
 		// threw an exception so it passes
 	    }
 	},
+      test_mv_number_indexOf_undefined: function() {
+	try {
+	  var sink = this.getKitchenSink();
+	  var val = 5;
+	  sink.mv_number.indexOf(val);
+	  Assert.fail("An exception should have been thrown here as mv_number is undefined.");
+	} catch(e) {
+	  //threw exception and so passes
+	}
+      },
+      test_mv_number_indexOf_empty: function() {
+	var sink = this.getKitchenSink();
+	var val = 5;
+	sink.mv_number = new MultiValue();
+	Assert.assertEquals("There is a value that matches.", -1, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_int: function() {
+	var sink = this.getKitchenSink();
+	var val = 5;
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_double: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date().getTime();
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_float: function() {
+	var sink = this.getKitchenSink();
+	var val = 4353452346.543523452345;
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_idx2: function() {
+	  app.log('\n\n\n\n\nstart idx2 logging\n\n\n\n\n');
+	var sink = this.getKitchenSink();
+	var val = 5;
+	this.addToMV('mv_number', [3, 10, val]);
+	Packages.java.lang.System.out.println(sink.mv_number.toSource());
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_number.indexOf(val));
+      },
 	test_mv_date_add_date: function() {
 	    var val = new Date();
 	    var sink = this.getKitchenSink();
