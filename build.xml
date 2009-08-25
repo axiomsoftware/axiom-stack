@@ -150,4 +150,69 @@
 		<delete file="alldoc.js"/>
 	</target>
 
+	<target name="loadtest-start">
+		<exec executable="./loadtest.sh" spawn="true"/>
+		<exec executable="sleep">
+			<arg value="10"/>
+		</exec>
+	</target>
+
+	<target name="loadtest-stop">
+		<exec executable="./loadtest-stop.sh"/>
+	</target>
+
+	<target name="loadtest-remote-deploy">
+		<exec executable="./utils/loadtest-remote-deploy.sh"/>
+		<exec executable="sleep">
+			<arg value="10"/>
+		</exec>
+	</target>
+	<target name="loadtest-remote-cleanup">
+		<exec executable="./loadtest.sh"/>
+	</target>
+
+	<target name="loadtest-tsung-cached" >
+		<exec executable="utils/tsung_ctl.sh">
+			<env key="OUTPUT_PREFIX" value="tsung-cached"/>
+			<env key="TSUNG_LOG" value="tsunglog-cached"/>
+			<env key="TSUNG_TIME" value="4"/>
+			<env key="TSUNG_CONFIG" value="loadtesting/tsung/tsung-cached.xml"/>
+		</exec>
+	</target>
+
+	<target name="loadtest-tsung-notcached" >
+		<exec executable="utils/tsung_ctl.sh">
+			<env key="OUTPUT_PREFIX" value="tsung-notcached"/>
+			<env key="TSUNG_LOG" value="tsunglog-notcached"/>
+			<env key="TSUNG_TIME" value="4"/>
+			<env key="TSUNG_CONFIG" value="loadtesting/tsung/tsung-notcached.xml"/>
+		</exec>
+	</target>
+
+	<target name="loadtest-jmeter-tests">
+		<copy file="loadtesting/jmeter/tests.jmx" tofile="jmeter_conf.jmx"/>
+		<exec executable="utils/jmeter_config.sh">
+			<arg value="jmeter_conf.jmx"/>
+		</exec>
+		<exec executable="/opt/jmeter/bin/jmeter">
+			<arg value="-n"/>
+			<arg line="-t jmeter_conf.jmx"/>
+			<arg line="-p /opt/jmeter/bin/jmeter.properties"/>
+			<arg line="-l loadtesting/jmeter.jtl"/>
+			<arg line="-j loadtesting/jmeter.log"/>
+			<arg value="-r"/>
+		</exec>
+	</target>
+
+
+	<target name="loadtest-tsung" depends="loadtest-start, loadtest-tsung-notcached, loadtest-tsung-cached, loadtest-stop">
+	</target>
+
+	<target name="loadtest-jmeter" depends="loadtest-start, loadtest-jmeter-tests, loadtest-stop">
+	</target>
+
+	<target name="loadtest-all" depends="loadtest-jmeter, loadtest-tsung">
+	</target>
+
+
 </project>

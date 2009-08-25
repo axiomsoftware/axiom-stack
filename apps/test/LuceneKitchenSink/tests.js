@@ -16,7 +16,7 @@ this._test = {
 		teardown: function(){
 			app.log('app_getObjects_suite teardown');
 			for each(var child in root.getChildren()){
-				root.remove(child)
+			  root.remove(child);
 			}
 		},
 		getPlaceHolder: function(){
@@ -528,41 +528,6 @@ this._test = {
 			Assert.assertEquals("test_AxiomObject_getChildrenWithPrototype failed", 5, children.length);
 		}
 	},
-	Performance_suite: {
-		setup: function(){
-			app.log('Performance suite setup');
-			var lph = new LucenePlaceHolder();
-			lph.id = 'lph';
-			root.add(lph);
-			res.commit();
-		},
-		teardown: function(){
-			app.log('Performance suite teardown');
-			for each(var child in root.getChildren()){
-				root.remove(child)
-			}
-		},
-		getPlaceHolder: function(){
- 			return app.getObjects('LucenePlaceHolder', {id:'lph'})[0];
-		},
-		test_Performance_1000_objects_insert: function() {
-			var lph = this.getPlaceHolder();
-			var num = 1000;
-			var start = new Date();
-			var slowspeed = 50;
-			for(var i = 0; i < num; i++){
-				var ks = new LuceneKitchenSink();
-				ks.id = 'testks' + i;
-				ks.title = 'testtitle ' + i;
-				lph.add(ks);
-			}
-			res.commit();
-			var now = new Date();
-			var persec = num / ((now.getTime()-start.getTime()) / 1000);
-//			app.log("Inserted " + num + " objects at a rate of " + persec.toFixed() + " per second");
-			Assert.assertTrue("test_Performance_1000_objects_insert failed " + persec.toFixed() + " per second", persec > slowspeed);
-		}
-	},
     multivalue_suite: {
 	setup: function(){
 	    app.log('multivalue_suite setup');
@@ -581,12 +546,17 @@ this._test = {
 	    app.log('KITCHEN SINK --> ' + app.getObjects('LuceneKitchenSink'));
  	    return app.getObjects('LuceneKitchenSink', {id:'lks'})[0];
 	},
-	addToMV: function(property, value) {
+	addToMV: function(property, values) {
 	    var sink = this.getKitchenSink();
-	    if (!(sink[property]) || sink[property].length == 0) {
-		sink[property] = new MultiValue(value);
-	    } else {
-		sink[property] = sink[property].concat(new MultiValue(value));
+	    if (!(values instanceof Array)) {
+		values = [values];
+	    }
+	    for each(var value in values) {
+		if (!(sink[property]) || sink[property].length === 0) {
+		    sink[property] = new MultiValue(value);
+		} else {
+		    sink[property] = sink[property].concat(new MultiValue(value));
+		}
 	    }
 	},
 	test_mv_number_add_number_int: function() {
@@ -650,6 +620,71 @@ this._test = {
 		// threw an exception so it passes
 	    }
 	},
+	test_mv_number_splice_newmv: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 5;
+	    this.addToMV('mv_number', [3, 10]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_number.indexOf(10));
+	    sink.mv_number = sink.mv_number.splice(1, 1, new MultiValue(val));
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_number.indexOf(val));
+	},
+	test_mv_number_splice_value: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 5;
+	    this.addToMV('mv_number', [3, 10]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_number.indexOf(10));
+	    sink.mv_number = sink.mv_number.splice(1, 1, val);
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_number.indexOf(val));
+	},
+	test_mv_number_splice_value_fail: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 5;
+	    this.addToMV('mv_number', [3, 10]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_number.indexOf(10));
+	    sink.mv_number = sink.mv_number.splice(0, 1, val);
+	    Assert.assertNotSame("Value was found at the wrong location in the multivalue.", 1, sink.mv_number.indexOf(val));
+	    Assert.assertEquals("Could not find spliced in value.", 0, sink.mv_number.indexOf(val));
+	},
+      test_mv_number_indexOf_undefined: function() {
+	try {
+	  var sink = this.getKitchenSink();
+	  var val = 5;
+	  sink.mv_number.indexOf(val);
+	  Assert.fail("An exception should have been thrown here as mv_number is undefined.");
+	} catch(e) {
+	  //threw exception and so passes
+	}
+      },
+      test_mv_number_indexOf_empty: function() {
+	var sink = this.getKitchenSink();
+	var val = 5;
+	sink.mv_number = new MultiValue();
+	Assert.assertEquals("There is a value that matches.", -1, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_int: function() {
+	var sink = this.getKitchenSink();
+	var val = 5;
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_double: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date().getTime();
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_float: function() {
+	var sink = this.getKitchenSink();
+	var val = 4353452346.543523452345;
+	this.addToMV('mv_number', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_number.indexOf(val));
+      },
+      test_mv_number_indexOf_idx2: function() {
+	var sink = this.getKitchenSink();
+	var val = 5;
+	this.addToMV('mv_number', [3, 10, val]);
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_number.indexOf(val));
+      },
 	test_mv_date_add_date: function() {
 	    var val = new Date();
 	    var sink = this.getKitchenSink();
@@ -693,6 +728,214 @@ this._test = {
 	    } catch(e) {
 		// threw an exception so it passes
 	    }
+	},
+      test_mv_date_indexOf_date: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date();
+	this.addToMV('mv_date', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_date.indexOf(val));
+      },
+      test_mv_date_indexOf_idx2: function() {
+	var sink = this.getKitchenSink();
+	var val = new Date();
+	this.addToMV('mv_date', [new Date('2000/10/13'), new Date('1984/04/19'), val]);
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_date.indexOf(val));
+      },
+	test_mv_date_splice_newmv: function() {
+	    var sink = this.getKitchenSink();
+	    var val = new Date();
+	    var replace_val = new Date('2000/10/13');
+	    this.addToMV('mv_date', [new Date('2000/10/13'), replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_date.indexOf(replace_val));
+	    sink.mv_date = sink.mv_date.splice(1, 1, new MultiValue(val));
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_date.indexOf(val));
+	},
+	test_mv_date_splice_value: function() {
+	    var sink = this.getKitchenSink();
+	    var val = new Date();
+	    var replace_val = new Date('2000/10/13');
+	    this.addToMV('mv_date', [new Date('2000/10/13'), replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_date.indexOf(replace_val));
+	    sink.mv_date = sink.mv_date.splice(1, 1, val);
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_date.indexOf(val));
+	},
+	test_mv_date_splice_value_fail: function() {
+	    var sink = this.getKitchenSink();
+	    var val = new Date();
+	    var replace_val = new Date('2000/10/13');
+	    this.addToMV('mv_date', [new Date('2000/10/13'), replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_date.indexOf(replace_val));
+	    sink.mv_date = sink.mv_date.splice(0, 1, val);
+	    Assert.assertNotSame("Value was found at the wrong location in the multivalue.", 1, sink.mv_date.indexOf(val));
+	    Assert.assertEquals("Could not find spliced in value.", 0, sink.mv_date.indexOf(val));
+	},
+	test_mv_string_add_string: function() {
+	    var val = "hello world";
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_string', val);
+	    Assert.assertNotUndefined("test_mv_string_add_string failed.", sink.mv_string);
+	    Assert.assertEquals("test_mv_string_add_string failed.", val, sink.mv_string[0]);
+	},
+	test_mv_string_add_strings: function() {
+	    var val1 = "hello world";
+	    var val2 = "goodbye world";
+	    var val3 = "bacon!";
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_string', val1);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    this.addToMV('mv_string', val2);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    this.addToMV('mv_string', val3);
+	    Assert.assertNotUndefined("test_mv_string_add_strings failed.", sink.mv_string);
+	    Assert.assertIterableEquals("test_mv_string_add_strings failed.", new MultiValue(val1,val2,val3), sink.mv_string);
+	},
+	test_mv_string_add_date: function() {
+	    try {
+		this.addToMV('mv_string', new Date());
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_string_add_number: function() {
+	    try {
+		this.addToMV('mv_string', 5);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_string_add_boolean: function() {
+	    try {
+		this.addToMV('mv_string', false);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+      test_mv_string_indexOf_string: function() {
+	var sink = this.getKitchenSink();
+	var val = "bacon";
+	this.addToMV('mv_string', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_string.indexOf(val));
+      },
+      test_mv_string_indexOf_idx2: function() {
+	var sink = this.getKitchenSink();
+	var val = "bacon";
+	this.addToMV('mv_string', ["hello world", "goodbye world", val]);
+	Assert.assertEquals("There are no values that match.", 2, sink.mv_string.indexOf(val));
+      },
+	test_mv_string_splice_newmv: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 'bacon';
+	    var replace_val = 'flu';
+	    this.addToMV('mv_string', ['kevin', replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_string.indexOf(replace_val));
+	    sink.mv_string = sink.mv_string.splice(1, 1, new MultiValue(val));
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_string.indexOf(val));
+	},
+	test_mv_string_splice_value: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 'bacon';
+	    var replace_val = 'flu';
+	    this.addToMV('mv_string', ['kevin', replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_string.indexOf(replace_val));
+	    sink.mv_string = sink.mv_string.splice(1, 1, val);
+	    Assert.assertEquals("Could not find spliced in value.", 1, sink.mv_string.indexOf(val));
+	},
+	test_mv_string_splice_value_fail: function() {
+	    var sink = this.getKitchenSink();
+	    var val = 'bacon';
+	    var replace_val = 'flu';
+	    this.addToMV('mv_string', ['kevin', replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 1, sink.mv_string.indexOf(replace_val));
+	    sink.mv_string = sink.mv_string.splice(0, 1, val);
+	    Assert.assertNotSame("Value was found at the wrong location in the multivalue.", 1, sink.mv_string.indexOf(val));
+	    Assert.assertEquals("Could not find spliced in value.", 0, sink.mv_string.indexOf(val));
+	},
+	test_mv_boolean_add_boolean: function() {
+	    var val = true;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_boolean', val);
+	    Assert.assertNotUndefined("test_mv_boolean_add_boolean failed.", sink.mv_boolean);
+	    Assert.assertEquals("test_mv_boolean_add_boolean failed.", val, sink.mv_boolean[0]);
+	},
+	test_mv_boolean_add_booleans: function() {
+	    var val1 = true;
+	    var val2 = false;
+	    var val3 = true;
+	    var sink = this.getKitchenSink();
+	    this.addToMV('mv_boolean', val1);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    this.addToMV('mv_boolean', val2);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    this.addToMV('mv_boolean', val3);
+	    Assert.assertNotUndefined("test_mv_boolean_add_booleans failed.", sink.mv_boolean);
+	    Assert.assertIterableEquals("test_mv_boolean_add_booleans failed.", new MultiValue(val1,val2,val3), sink.mv_boolean);
+	},
+	test_mv_boolean_add_date: function() {
+	    try {
+		this.addToMV('mv_boolean', new Date());
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_boolean_add_number: function() {
+	    try {
+		this.addToMV('mv_boolean', 5);
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+	test_mv_boolean_add_string: function() {
+	    try {
+		this.addToMV('mv_boolean', 'bacon');
+		Assert.fail("This test should have thrown an exception");
+	    } catch(e) {
+		// threw an exception so it passes
+	    }
+	},
+      test_mv_boolean_indexOf_boolean: function() {
+	var sink = this.getKitchenSink();
+	var val = true;
+	this.addToMV('mv_boolean', val);
+	Assert.assertEquals("There are no values that match.", 0, sink.mv_boolean.indexOf(val));
+      },
+      test_mv_boolean_indexOf_idx1: function() {
+	var sink = this.getKitchenSink();
+	var val = true;
+	this.addToMV('mv_boolean', [false, val]);
+	Assert.assertEquals("There are no values that match.", 1, sink.mv_boolean.indexOf(val));
+      },
+
+	test_mv_boolean_splice_newmv: function() {
+	    var sink = this.getKitchenSink();
+	    var val = true;
+	    var replace_val = false;
+	    this.addToMV('mv_boolean', [replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 0, sink.mv_boolean.indexOf(replace_val));
+	    sink.mv_boolean = sink.mv_boolean.splice(0, 1, new MultiValue(val));
+	    Assert.assertEquals("Could not find spliced in value.", 0, sink.mv_boolean.indexOf(val));
+	},
+	test_mv_boolean_splice_value: function() {
+	    var sink = this.getKitchenSink();
+	    var val = true;
+	    var replace_val = false;
+	    this.addToMV('mv_boolean', [replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 0, sink.mv_boolean.indexOf(replace_val));
+	    sink.mv_boolean = sink.mv_boolean.splice(0, 1, val);
+	    Assert.assertEquals("Could not find spliced in value.", 0, sink.mv_boolean.indexOf(val));
+	},
+	test_mv_boolean_splice_value_fail: function() {
+	    var sink = this.getKitchenSink();
+	    var val = true;
+	    var replace_val = false;
+	    this.addToMV('mv_boolean', [replace_val]);
+	    Assert.assertEquals("Data set is not properly set up for splice test.", 0, sink.mv_boolean.indexOf(replace_val));
+	    sink.mv_boolean = sink.mv_boolean.splice(0, 1);
+	    Assert.assertEquals("Multivalue still has elements.", 0, sink.mv_boolean.length);
 	}
     }
 }

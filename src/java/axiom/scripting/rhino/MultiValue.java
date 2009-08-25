@@ -114,7 +114,13 @@ public class MultiValue extends ScriptableObject implements Serializable {
     }
     
     public String toString() {
-        return "[MultiValue]";
+        String values = "";
+        Object[] arr = this.jsFunction_toArray();
+        final int len = arr.length;
+        for (int i = 0; i < len; i++) {
+            values += arr[i] + ((i!=(len-1))?",":"");
+        }
+        return "[MultiValue: ["+values+"]]";
     }
     
     public void setValues(ArrayList values) {
@@ -236,6 +242,19 @@ public class MultiValue extends ScriptableObject implements Serializable {
      */
     public boolean jsFunction_contains(final Object o) {
         return this.contains(o) > -1;
+    }
+
+    /**
+     * Returns integer of the position if the input object is contained in this MultiValue, 
+     * returns <code> -1 </code> otherwise.  An object <code> foo </code> is contained 
+     * in a MultiValue if there exists an object <code> bar </code> in the MultiValue 
+     * such that <code> foo.equals(bar) </code> is <code> true</code>. The index of that is returned.
+     * 
+     * @param {Object} obj The object to check if it is contained in this MultiValue
+     * @returns {Number} Index value of the object
+     */
+    public int jsFunction_indexOf(final Object o) {
+        return this.contains(o);
     }
     
     public void clearAll() {
@@ -547,8 +566,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
             }
         } else {
             boolean arg_undefined = 
-                (arg == null || arg == Undefined.instance || arg == Scriptable.NOT_FOUND ||
-                    ((Scriptable) arg).getClassName().equals("undefined")); 
+                (arg == null || arg == Undefined.instance || arg == Scriptable.NOT_FOUND || 
+                    ((arg instanceof Scriptable) && ((Scriptable) arg).getClassName().equals("undefined")));
             splice = new Object[newlen + (arg_undefined ? 0 : 1)];
             int count = 0;
             for (int i = 0; i < s; i++) {
@@ -599,10 +618,8 @@ public class MultiValue extends ScriptableObject implements Serializable {
             type = IProperty.BOOLEAN;
         } else if (o instanceof Date) {
             type = IProperty.DATE;
-        } else if (o instanceof Float || o instanceof Double) {
+        } else if (o instanceof Float || o instanceof Double || o instanceof Integer || o instanceof Long) {
             type = IProperty.FLOAT;
-        } else if (o instanceof Integer || o instanceof Long) {
-            type = IProperty.INTEGER;
         } else if (o instanceof String) {
             type = IProperty.STRING;
         } else {

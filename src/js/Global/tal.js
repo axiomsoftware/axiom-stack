@@ -62,80 +62,110 @@ TAL.namespace_transform = function(doc, ns_transform){
     return doc;
 }
 
-TAL.Scope = function () {;}
+TAL.Scope = function () {;};
 TAL.terms = function (d, e) {return (new Function('data','with(data) return {'+e+'}')).call(d['this'],d);};
 TAL.func = function (d, e) {
+  var q_e = e.toString().replace(/"/g, '\\"');
     try {
-	return (new Function('data', 'with(data) {return '+e+';}')).call(d['this'],d);
+	return (
+	    new Function(
+		'data',
+	      'try { with(data) {return '+e+';} } catch(exp) { throw new TAL.Error(exp, data, "'+q_e+'"); }'
+	    )
+	).call(d['this'],d);
     } catch (ex) {
 	if (ex instanceof TAL.Error) {
-	    throw ex;
+	    throw ex.toString();
 	} else {
-	  var tal_error = <><div style="border:1px dotted #999;margin:10px 0;padding:5px;">
-		  <h1 style="paddin:0;margin:0 0 10px 0;background:#669933;color:#fff;">TALE Error</h1>
-		  <h3 style="text-decoration:underline;">Exception Details</h3>
-		  <ul>
-		    <li>
-		      <strong>Node:</strong>
-		      <code>{d.node.toXMLString()}</code>
-		    </li>
-		    <li>
-		      <strong>Expression:</strong>
-		      <code>{e}</code>
-		    </li>
-		    <li>
-		      <strong>Exception:</strong>
-		      <code>{ex.toString()}</code>
-		    </li>
-		  </ul>
-		  <h3 style="text-decoration:underline;">Additional Information</h3>
-		  <ul>
-		    <li name="scope">
-		      <strong>Rendering Context:</strong>
-		    </li>
-		    <li>
-		      <strong>Parameters:</strong>
-		    </li>
-		    <li>
-		      <strong>Request:</strong>
-		    </li>
-		    <li>
-		      <strong>Session:</strong>
-		    </li>
-		</ul>
-	    </div></>;
-
-	  function gen_list(o) {
-	    var ul = <><ul></ul></>;
-	    for (var p in o) {
-	      var p_data = o[p];
-	      ul.ul += <><li>
-		<strong>{p}:</strong>
-		<code>{((typeof p_data == "string" || (!(p_data.toSource)))?p_data:p_data.toSource())}</code>
-	      </li></>;
-	    }
-	    return ul;
-	  }
-
-	  var scope_data = gen_list(d['this']);
-	  var params_data = gen_list(d);
-	  var req_data = gen_list(req.data);
-	  var session_data = gen_list(session.data);
-
-	  tal_error..ul[1].li[0] += scope_data;
-	  tal_error..ul[1].li[1] += params_data;
-	  tal_error..ul[1].li[2] += req_data;
-	  tal_error..ul[1].li[3] += session_data;
-	    throw new TAL.Error(
-		tal_error.toXMLString()
-	    );
+	    throw new TAL.Error(ex, d, e).toString();
 	}
     }
-}
+};
 
-TAL.Error = function(str) {
+TAL.Error = function(error, data, expression) {
     this.toString = function() {
-	return str;
+	var tal_error = <><html>
+	    <head>
+		<style type="text/css">
+		    /*<![CDATA[*/
+		    body{font-family:sans-serif}
+		    h1{padding:0 0 0 5px;margin:0 0 10px 0;background:#669933;color:#fff;}
+		    h3{text-decoration:underline;}
+		    /*]]>*/
+		</style>
+	    </head>
+	    <body>
+	    <div style="border:1px dotted #999;margin:10px 0;padding:5px;">
+	    <h1>TALE Error</h1>
+	    <h3>Exception Details</h3>
+	    <ul>
+	    <li>
+	    <strong>Calling Node:</strong>
+	    <code>{data.node.toXMLString()}</code>
+	    </li>
+	    <li>
+	    <strong>Problem Expression:</strong>
+	    <code>{expression}</code>
+	    </li>
+	    <li>
+	    <strong>Exception:</strong>
+	    <code id="error"></code>
+	    </li>
+	    </ul>
+	    <h3>Additional Information</h3>
+	    <ul>
+	    <li name="scope">
+	    <strong>Rendering Context:</strong>
+	    </li>
+	    <li>
+	    <strong>Parameters:</strong>
+	    </li>
+	    <li>
+	    <strong>Request:</strong>
+	    </li>
+	    <li>
+	    <strong>Session:</strong>
+	    </li>
+	    </ul>
+	    </div>
+	    </body>
+	    </html>
+	    </>;
+
+	function gen_list(o) {
+	    var ul = <><ul></ul></>;
+	    for (var p in o) {
+		var p_data = o[p];
+		ul.ul += <><li>
+		    <strong>{p}:</strong>
+		    <code>{((p_data && (typeof p_data != "string") && (p_data.toSource))?p_data.toSource():p_data)}</code>
+		    </li></>;
+	    }
+	    return ul;
+	}
+
+	var scope_data = gen_list(data['this']);
+	var params_data = gen_list(data);
+	var req_data = gen_list(req.data);
+	var session_data = gen_list(session.data);
+
+	tal_error..ul[1].li[0] += scope_data;
+	tal_error..ul[1].li[1] += params_data;
+	tal_error..ul[1].li[2] += req_data;
+	tal_error..ul[1].li[3] += session_data;
+
+	var code = tal_error..code.(@id=='error')[0];
+	if (error instanceof TAL.Error) {
+	    code += error.toXMLString();
+	} else {
+	    var error_message = error;
+	    if (!(error.toXMLString))
+		error_message = error_message.toString();
+
+	    code.appendChild(<>{error_message}</>);
+	}
+
+	return tal_error;
     };
 };
 
@@ -153,7 +183,7 @@ TAL.TALE = function (n, data, tal) {
                         TAL.Scope.prototype = data;
                         var repeat_data = new TAL.Scope();
                         repeat_data[l] = collection[k];
-                        if(!repeat_data['repeat']) repeat_data['repeat'] = {}
+			if(!repeat_data['repeat']) repeat_data['repeat'] = {};
                         repeat_data['repeat'][l] = new TAL.Repeat(k, collection.length);
                         p.insertChildBefore(n, n.copy());
                         TAL.TALE(p.*[n.childIndex()-1], repeat_data, tal);
@@ -237,7 +267,10 @@ TAL.TALE = function (n, data, tal) {
                 delete n.@tal::text;
                 for each(var t in n.text()){
 		    var text_str = t.toXMLString();
-                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r, function(m,m1,m2){return TAL.func(data, m1||m2);})).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
+                    n.replace(t.childIndex(), (/^\s/.test(text_str) ? ' ' : '') + new XHTML(text_str.replace(r,
+		    function(m,m1,m2){
+		      return TAL.func(data, m1||m2);
+		    })).toXMLString() + (/\s$/.test(text_str) ? ' ' : ''));
             }
         }
         if((tn=n.@tal::omit).length()) {

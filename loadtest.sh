@@ -104,4 +104,6 @@ if [ "$AXIOM_HOME" ]; then
 fi
 
 # Invoke the Java VM
-$JAVACMD -Dfile.encoding=$ENCODING -Dorg.apache.lucene.FSDirectory.class=$FSDIRECTORY $JAVA_OPTIONS -jar "$INSTALL_DIR/launcher.jar" $SWITCHES
+$JAVACMD -Dfile.encoding=$ENCODING -Dorg.apache.lucene.FSDirectory.class=$FSDIRECTORY $JAVA_OPTIONS -jar "$INSTALL_DIR/launcher.jar" $SWITCHES  > /dev/null 2>&1 &
+JAVA_PID="$!"
+echo $JAVA_PID > axiom_stack.pid

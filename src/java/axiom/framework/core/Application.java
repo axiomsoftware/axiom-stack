@@ -383,7 +383,7 @@ public final class Application implements IPathElement, Runnable {
         
 		// create app-level db sources
 		dbProps = new ResourceProperties(this, "db.properties", sysDbProps, false);
-        
+
         setupDefaultDb(dbProps);
         
         searchProps = new ResourceProperties(this, "search.properties", null, false);
@@ -2070,13 +2070,23 @@ public final class Application implements IPathElement, Runnable {
 		}
 
 		try {
-			dbs = new DbSource(name, dbProps);
-			dbSources.put(dbSrcName, dbs);
+            if (name.equalsIgnoreCase("_default")) {
+                ResourceProperties tsource_props = tsource.getProperties();
+                ResourceProperties def_props = new ResourceProperties();
+                for (Object key_object : tsource_props.keySet()) {
+                    String key = (String)key_object;
+                    def_props.setProperty("_default."+key, tsource_props.getProperty(key));
+                }
+                dbs = new DbSource(name, def_props);
+            } else {
+                dbs = new DbSource(name, dbProps);
+            }
 		} catch (Exception problem) {
 			logEvent("Error creating DbSource " + name +": ");
 			logEvent(problem.toString());
 		}
 
+        dbSources.put(dbSrcName, dbs);
 		return dbs;
 	}
 
