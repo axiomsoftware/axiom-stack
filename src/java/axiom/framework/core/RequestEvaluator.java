@@ -289,7 +289,8 @@ public final class RequestEvaluator implements Runnable {
                                                 throw new FrameworkException("Action not found");
                                             }
                                         } else {
-                                            // march down request path...
+
+                                            // march down request path...	
                                             StringTokenizer st = new StringTokenizer(req.getPath(), "/");
                                             int ntokens = st.countTokens();
 
@@ -610,7 +611,6 @@ public final class RequestEvaluator implements Runnable {
                 
                 // exit execution context
                 scriptingEngine.exitContext();
-                
                 notifyAndWait();
                 
                 this.layer = defmode;
@@ -649,7 +649,7 @@ public final class RequestEvaluator implements Runnable {
             rtx.setContextClassLoader(app.getClassLoader());
             rtx.start();
         } else {
-            notifyAll();
+        	notifyAll();
         }
         
     }
@@ -729,8 +729,7 @@ public final class RequestEvaluator implements Runnable {
      * @return the result returned by the invocation
      * @throws Exception any exception thrown by the invocation
      */
-    public synchronized ResponseTrans invokeHttp(RequestTrans req, Session session)
-                                      throws Exception {
+    public synchronized ResponseTrans invokeHttp(RequestTrans req, Session session) throws Exception{
         initObjects(req, session);
         if (!req.rewriteDone()) {
         	req.setPath(this.app.resolveUrlToPath(req.getPath()));
@@ -739,7 +738,10 @@ public final class RequestEvaluator implements Runnable {
         app.activeRequests.put(req, this);
 
         startTransactor();
-        wait(app.requestTimeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && app.requestTimeout > System.currentTimeMillis() - begin){
+        	wait(app.requestTimeout);
+        }	
 
         if (reqtype != NONE) {
             app.logEvent("Stopping Thread for Request " + app.getName() + "/" + req.getPath());
@@ -795,7 +797,10 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait(app.requestTimeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && app.requestTimeout > System.currentTimeMillis() - begin){
+        	wait(app.requestTimeout);
+        }
 
         if (reqtype != NONE) {
             stopTransactor();
@@ -830,7 +835,9 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait();
+        while(reqtype != NONE){
+        	wait();
+        }
         
         if (reqtype != NONE) {
             stopTransactor();
@@ -899,7 +906,10 @@ public final class RequestEvaluator implements Runnable {
         this.args = args;
 
         startTransactor();
-        wait(timeout);
+        long begin = System.currentTimeMillis();
+        while(reqtype != NONE && timeout > System.currentTimeMillis() - begin){
+        	wait(timeout);
+        }	
         
         if (reqtype != NONE) {
             stopTransactor();
