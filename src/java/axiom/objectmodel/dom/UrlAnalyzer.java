@@ -11,7 +11,8 @@ import org.apache.lucene.analysis.TokenStream;
 public class UrlAnalyzer extends Analyzer {
 	public TokenStream tokenStream(String fieldName, final Reader reader) {
 		return new TokenStream() {
-			private final Pattern stripTokens = Pattern.compile("^(http:/|www|com|org|net)");
+		    private final String tokenString = "^([^:]*://|www|com|org|net)";
+			private final Pattern stripTokens = Pattern.compile(tokenString);
             private final Pattern endTokens = Pattern.compile("(\\.|/|-|_|\\?)$");
             private boolean done = false;
             public Token next() throws IOException {
@@ -29,10 +30,10 @@ public class UrlAnalyzer extends Analyzer {
 	                	if(startMatcher.matches()){
 	                		// strip prefix
 	                		String tmp = sb.toString();
-	                		sb = new StringBuffer(tmp.replaceFirst("^(http:/|www|com|org|net)", ""));
+	                		sb = new StringBuffer(tmp.replaceFirst(tokenString, ""));
 	                	}
 	                	matcher = endTokens.matcher(sb);
-	                	found = matcher.find();	  
+	                	found = matcher.find();
 	                	
 	                	if(found){
 		                	final String text = sb.toString().substring(0, matcher.end()-1).toLowerCase();
