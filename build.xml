@@ -22,7 +22,7 @@
 	<property name="launcher-jar.name" value="launcher.jar"/>
 	<property name="js-jar.name" value="js.zip"/>
 	<property name="test.app" value="test"/>
-	<property name="reports.tests" value="${reports.dir}/test"/>
+	<property name="reports.test" value="${reports.dir}/test"/>
 	<property environment="env"/>
 
 	
@@ -92,17 +92,18 @@
 	</target>
 
 	<target name="junits" depends="clean,jar">
-	  <mkdir dir="${build.tests}"/>
-	  <mkdir dir="${reports.tests}"/>
+	  <mkdir dir="${build.test}"/>
+	  <mkdir dir="${reports.test}"/>
 	  <junit printsummary="yes" haltonfailure="yes">
 	    <classpath>
-	      <pathelement location="${build.tests}"/>
+	      <pathelement location="${build.test}"/>
+	      <pathelement location="${build.dir}/classes"/>
 	      <path refid="classpath"/>
 	    </classpath>
 
 	    <formatter type="xml"/>
 
-	    <batchtest fork="yes" todir="${reports.tests}">
+	    <batchtest fork="yes" todir="${reports.test}">
     	      <fileset dir="${src.tests}">
 		<include name="**/*Test*.java"/>
 	      </fileset>
