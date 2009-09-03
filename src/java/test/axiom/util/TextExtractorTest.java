@@ -18,7 +18,7 @@
  * Axiom Software Inc., 11480 Commerce Park Drive, Third Floor, Reston, VA 20191 USA
  * email: info@axiomsoftwareinc.com
  */
-package test.axiom.util;
+package axiom.util;
 
 
 import java.io.FileInputStream;
