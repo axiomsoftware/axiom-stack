@@ -7,18 +7,22 @@
     <property name="project" value="axiom"/>
 	<property name="home.dir" value="."/>
 	<property name="build.dir" value="${home.dir}/build"/>
+	<property name="build.test" value="${build.dir}/test"/>
 	<property name="lib.dir" value="${home.dir}/lib"/>
 	<property name="src.dir" value="${home.dir}/src"/>
+	<property name="src.tests" value="${src.dir}/java/test"/>
 	<property name="apps.dir" value="${home.dir}/apps"/>
 	<property name="modules.dir" value="${home.dir}/modules"/>
 	<property name="jsdoc.dir" value="${home.dir}/doc"/>
 	<property name="javadoc.dir" value="${home.dir}/javadoc"/>
 	<property name="utils.dir" value="${home.dir}/utils"/>
 	<property name="examples.dir" value="${home.dir}/examples"/>
+	<property name="reports.dir" value="${home.dir}/reports"/>
 	<property name="axiom-jar.name" value="axiom.jar"/>
 	<property name="launcher-jar.name" value="launcher.jar"/>
 	<property name="js-jar.name" value="js.zip"/>
 	<property name="test.app" value="test"/>
+	<property name="reports.tests" value="${reports.dir}/test"/>
 	<property environment="env"/>
 
 	
@@ -64,7 +68,8 @@
 	    	destdir="${build.dir}/classes"
             debug="${debug}"
             deprecation="${deprecation}"
-            optimize="${optimize}">
+            optimize="${optimize}"
+	    excludes="${src.dir}/test/**/*Test*.java">
             <classpath refid="classpath" />
         </javac>
 	</target>
@@ -84,6 +89,26 @@
             basedir="${build.dir}/classes"
             includes="**/main/launcher/**"
             manifest="${src.dir}/java/axiom/main/launcher/manifest.txt"/>
+	</target>
+
+	<target name="junits" depends="clean,jar">
+	  <mkdir dir="${build.tests}"/>
+	  <mkdir dir="${reports.tests}"/>
+	  <junit printsummary="yes" haltonfailure="yes">
+	    <classpath>
+	      <pathelement location="${build.tests}"/>
+	      <path refid="classpath"/>
+	    </classpath>
+
+	    <formatter type="xml"/>
+
+	    <batchtest fork="yes" todir="${reports.tests}">
+    	      <fileset dir="${src.tests}">
+		<include name="**/*Test*.java"/>
+	      </fileset>
+	    </batchtest>
+	  </junit>
+
 	</target>
 
 	<target name="test">
@@ -106,6 +131,8 @@
 		<antcall target="jar">
 			<param name="version" value="${java_version}"/>
 		</antcall>		
+
+		<antcall target="junits"></antcall>
 
 		<java jar="${home.dir}/launcher.jar" fork="true" timeout="150000">
 			<sysproperty key="file.encoding" value="UTF-8"/>
