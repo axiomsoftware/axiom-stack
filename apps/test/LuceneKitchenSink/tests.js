@@ -543,7 +543,6 @@ this._test = {
 	    }
 	},
 	getKitchenSink: function(){
-	    app.log('KITCHEN SINK --> ' + app.getObjects('LuceneKitchenSink'));
  	    return app.getObjects('LuceneKitchenSink', {id:'lks'})[0];
 	},
 	addToMV: function(property, values) {
@@ -936,6 +935,150 @@ this._test = {
 	    Assert.assertEquals("Data set is not properly set up for splice test.", 0, sink.mv_boolean.indexOf(replace_val));
 	    sink.mv_boolean = sink.mv_boolean.splice(0, 1);
 	    Assert.assertEquals("Multivalue still has elements.", 0, sink.mv_boolean.length);
+	}
+    },
+    url_analyzer_suite: {
+	setup: function(){
+	    app.log('url_analyzer_suite setup');
+	    var lks = new LuceneKitchenSink();
+	    lks.id = 'lks';
+	    root.add(lks);
+	    res.commit();
+	},
+	teardown: function(){
+	    app.log('url_analyzer_suite teardown');
+	    for each(var child in root.getChildren()){
+		root.remove(child);
+	    }
+	},
+	getKitchenSink: function(){
+ 	    return app.getObjects('LuceneKitchenSink', {id:'lks'})[0];
+	},
+	test_url_search: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path/";
+	    res.commit();
+
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'test'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+	    
+	    Assert.assertEquals("test_url_search failed.", sink, sink_result);
+	},
+	test_url_search_paths: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path/";
+	    res.commit();
+
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'test/path'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+	    
+	    Assert.assertEquals("test_url_search_paths failed.", sink, sink_result);
+	},
+	test_url_search_exact: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path/";
+	    res.commit();
+
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'http://www.axiomstack.com/test/path/'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+	    
+	    Assert.assertEquals("test_url_search_exact failed.", sink, sink_result);
+	},
+	test_url_search_query_string_key: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'param1'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_key failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_key failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_key failed.", sink, sink_result);
+	},
+	test_url_search_query_string_value: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'value1'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_value failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_value failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_value failed.", sink, sink_result);
+	},
+	test_url_search_query_string_key_value: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'param1=value1'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_key_value failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_key_value failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_key_value failed.", sink, sink_result);
+	},
+	test_url_search_query_string_exact: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1";
+	    res.commit();
+
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'http://www.axiomstack.com/test/path?param1=value1'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_exact failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_exact failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_exact failed.", sink, sink_result);
+	},
+	test_url_search_query_string_with_amp_key: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1&param2=value2";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'param2'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_key failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_key failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_with_amp_key failed.", sink, sink_result);
+	},
+	test_url_search_query_string_with_amp_value: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1&param2=value2";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'value2'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_value failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_value failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_with_amp_value failed.", sink, sink_result);
+	},
+	test_url_search_query_string_with_amp_key_value: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1&param2=value2";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'param2=value2'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_key_value failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_key_value failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_with_amp_key_value failed.", sink, sink_result);
+	},
+	test_url_search_query_string_with_amp_keys_values: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1&param2=value2";
+	    res.commit();
+	    
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'param1=value1&param2=value2'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_keys_values failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_keys_values failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_with_amp_keys_values failed.", sink, sink_result);
+	},
+	test_url_search_query_string_with_amp_exact: function() {
+	    var sink = this.getKitchenSink();
+	    sink.url = "http://www.axiomstack.com/test/path?param1=value1&param2=value2";
+	    res.commit();
+
+	    var sink_result = app.getObjects('LuceneKitchenSink', new Filter({url: 'http://www.axiomstack.com/test/path?param1=value1&param2=value2'}, "axiom.objectmodel.dom.UrlAnalyzer"))[0];
+
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_exact failed.", sink);
+	    Assert.assertNotUndefined("test_url_search_query_string_with_amp_exact failed.", sink_result);
+	    Assert.assertEquals("test_url_search_query_string_with_amp_exact failed.", sink, sink_result);
 	}
     }
 }

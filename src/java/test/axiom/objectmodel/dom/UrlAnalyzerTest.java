@@ -20,7 +20,6 @@ public class UrlAnalyzerTest extends TestCase {
 	try {
 	    Token t = null;
 	    while ((t=ts.next())!=null) {
-		System.out.println(t.toString());
 		token_count++;
 	    } ;
 	} catch(IOException ioe) {
@@ -37,7 +36,6 @@ public class UrlAnalyzerTest extends TestCase {
 	try {
 	    Token t = null;
 	    while ((t=ts.next())!=null) {
-		System.out.println(t.toString());
 		terms.add(t.termText());
 	    }
 	} catch(IOException ioe) {
@@ -58,7 +56,6 @@ public class UrlAnalyzerTest extends TestCase {
 	try {
 	    Token t = null;
 	    while ((t=ts.next())!=null) {
-		System.out.println(t.toString());
 		terms.add(t.termText());
 	    }
 	} catch(IOException ioe) {
@@ -71,5 +68,53 @@ public class UrlAnalyzerTest extends TestCase {
 	assertEquals("Unexpected token found.", "axiomstack", (String)terms.get(1));
 	assertEquals("Unexpected token found.", "test", (String)terms.get(2));
 	assertEquals("Unexpected token found.", "path", (String)terms.get(3));
+    }
+
+    public void testQueryStream() {
+	UrlAnalyzer analyzer = new UrlAnalyzer();
+	TokenStream ts = analyzer.tokenStream("searchable_url", new StringReader("http://www.axiomstack.com/test?param1=value1"));
+	ArrayList<String> terms = new ArrayList<String>();
+
+	try {
+	    Token t = null;
+	    while ((t=ts.next())!=null) {
+		terms.add(t.termText());
+	    }
+	} catch(IOException ioe) {
+	    ioe.printStackTrace();
+	    fail("There was an exception.");
+	}
+
+	assertEquals("There were an unexpected number of tokens returned.", 5, terms.size());
+	assertEquals("Unexpected token found.", "http", (String)terms.get(0));
+	assertEquals("Unexpected token found.", "axiomstack", (String)terms.get(1));
+	assertEquals("Unexpected token found.", "test", (String)terms.get(2));
+	assertEquals("Unexpected token found.", "param1", (String)terms.get(3));
+	assertEquals("Unexpected token found.", "value1", (String)terms.get(4));
+    }
+    
+    public void testQueryStreamWithAmp() {
+	UrlAnalyzer analyzer = new UrlAnalyzer();
+	TokenStream ts = analyzer.tokenStream("searchable_url", new StringReader("http://www.axiomstack.com/test?param1=value1&param2=value2"));
+	ArrayList<String> terms = new ArrayList<String>();
+
+	try {
+	    Token t = null;
+	    while ((t=ts.next())!=null) {
+		terms.add(t.termText());
+	    }
+	} catch(IOException ioe) {
+	    ioe.printStackTrace();
+	    fail("There was an exception.");
+	}
+
+	assertEquals("There were an unexpected number of tokens returned.", 7, terms.size());
+	assertEquals("Unexpected token found.", "http", (String)terms.get(0));
+	assertEquals("Unexpected token found.", "axiomstack", (String)terms.get(1));
+	assertEquals("Unexpected token found.", "test", (String)terms.get(2));
+	assertEquals("Unexpected token found.", "param1", (String)terms.get(3));
+	assertEquals("Unexpected token found.", "value1", (String)terms.get(4));
+	assertEquals("Unexpected token found.", "param2", (String)terms.get(5));
+	assertEquals("Unexpected token found.", "value2", (String)terms.get(6));
     }
 }

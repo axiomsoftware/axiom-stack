@@ -13,47 +13,52 @@ public class UrlAnalyzer extends Analyzer {
 		return new TokenStream() {
 		    private final String tokenString = "^([^:]*://|www|com|org|net)";
 			private final Pattern stripTokens = Pattern.compile(tokenString);
-            private final Pattern endTokens = Pattern.compile("(:|\\.|/|-|_|\\?)$");
+            private final Pattern endTokens = Pattern.compile("(:|\\.|/|-|_|\\?|&|=|\\s)$");
             private boolean done = false;
+            private boolean last = false;
             public Token next() throws IOException {
             	if(!done){
 	                final char[] buffer = new char[1];
 	                StringBuffer sb = new StringBuffer();
 	                int length = 0;
-	                    
+	                
 	                Matcher matcher = endTokens.matcher(sb);
 	                boolean found = matcher.find();
 	                
 	                while (!found && (length = reader.read(buffer)) != -1) {
 	                	sb.append(buffer, 0, length);
-	                	Matcher startMatcher = stripTokens.matcher(sb);
-	                	if(startMatcher.matches()){
-	                		// strip prefix
-	                		String tmp = sb.toString();
-	                		sb = new StringBuffer(tmp.replaceFirst(tokenString, ""));
-	                	}
-	                	matcher = endTokens.matcher(sb);
-	                	found = matcher.find();
-	                	
-	                	if(found){
-		                	final String text = sb.toString().substring(0, matcher.end()-1).toLowerCase();
-		                	int len = text.length();
-		                	if(len > 0 && !text.isEmpty()){
-		                		// matched a token
-		                		return new Token(text, 0, len);
-		                	} else {
-		                		// only contains a stop token, continue reading
-		                		sb = new StringBuffer();
-		                		found = false;
-		                	}
-		                }
+                        if (!last) { // no more end tokens, return a new token with the remainder of the input
+                            Matcher startMatcher = stripTokens.matcher(sb);
+                            if(startMatcher.matches()){
+                                // strip prefix
+                                String tmp = sb.toString();
+                                sb = new StringBuffer(tmp.replaceFirst(tokenString, ""));
+                            }
+                            matcher = endTokens.matcher(sb);
+                            found = matcher.find();
+
+                            if(found){
+                                final String text = sb.toString().substring(0, matcher.end()-1).toLowerCase();
+                                int len = text.length();
+                                if(len > 0 && !text.isEmpty()){
+                                    // matched a token
+                                    return new Token(text, 0, len);
+                                } else {
+                                    // only contains a stop token, continue reading
+                                    sb = new StringBuffer();
+                                    found = false;
+                                }
+                            }
+		                } else {
+                            last = true;
+                        }
 	                }
                 	// at end of string
 	                done = true;
 	                final String value = sb.toString().toLowerCase();
-			if (!value.isEmpty()) {
-			    return new Token(value, 0, value.length());
-			}
+                    if (!value.isEmpty()) {
+                        return new Token(value, 0, value.length());
+                    }
             	}
             	return null;
             }
