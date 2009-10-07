@@ -117,4 +117,28 @@ public class UrlAnalyzerTest extends TestCase {
 	assertEquals("Unexpected token found.", "param2", (String)terms.get(5));
 	assertEquals("Unexpected token found.", "value2", (String)terms.get(6));
     }
+
+    public void testQueryStreamWithUnderscore() {
+        UrlAnalyzer analyzer = new UrlAnalyzer();
+        TokenStream ts = analyzer.tokenStream("searchable_url", new StringReader("http://www.axiomstack.com/test/path_to_something"));
+        ArrayList<String> terms = new ArrayList<String>();
+
+        try {
+            Token t = null;
+            while ((t=ts.next())!=null) {
+            terms.add(t.termText());
+            }
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+            fail("There was an exception.");
+        }
+
+        assertEquals("There were an unexpected number of tokens returned.", 6, terms.size());
+        assertEquals("Unexpected token found.", "http", (String)terms.get(0));
+        assertEquals("Unexpected token found.", "axiomstack", (String)terms.get(1));
+        assertEquals("Unexpected token found.", "test", (String)terms.get(2));
+        assertEquals("Unexpected token found.", "path", (String)terms.get(3));
+        assertEquals("Unexpected token found.", "to", (String)terms.get(4));
+        assertEquals("Unexpected token found.", "something", (String)terms.get(5));
+    }
 }
